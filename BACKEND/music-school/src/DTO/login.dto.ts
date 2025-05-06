@@ -13,4 +13,4 @@ export class LoginDto{
     @MinLength(8 , {message:'password must be at least 8 characters long'})
     readonly password : string;
 
-}
+} 

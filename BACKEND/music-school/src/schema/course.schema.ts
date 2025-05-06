@@ -26,6 +26,9 @@ export class Course extends Document{
 
   @Prop()
   teacher_id: string; // Assuming teacher_id is a reference to another document
+
+  @Prop()
+  image: string; // Assuming image is a URL or path to the image
 }
 
 export const courseSchema = SchemaFactory.createForClass(Course);

@@ -1,0 +1,74 @@
+.admin-user-form {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f5f7fa;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .admin-user-form h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+  }
+  
+  .admin-user-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .admin-user-form input,
+  .admin-user-form select {
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  
+  .admin-user-form input:focus,
+  .admin-user-form select:focus {
+    border-color: #3b82f6;
+  }
+  
+  .admin-user-form button {
+    padding: 0.75rem;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .admin-user-form button:hover {
+    background-color: #059669;
+  }
+  
+  .admin-user-form p {
+    margin: 0;
+    padding: 0.5rem;
+    border-radius: 6px;
+  }
+  
+  .admin-user-form p[style*='red'] {
+    background-color: #fee2e2;
+    color: #b91c1c;
+  }
+  
+  .admin-user-form p[style*='green'] {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+  
+  @media (max-width: 600px) {
+    .admin-user-form {
+      padding: 1.5rem;
+    }
+  }
+  

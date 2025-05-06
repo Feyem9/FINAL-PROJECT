@@ -3,12 +3,18 @@ import { NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Profile } from '../dashboards/profile/Profile';
+import { useAuth0 } from '@auth0/auth0-react';
+import '../dashboards/profile/profile.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const { user, loginWithRedirect, logout, isAuthenticated } = useAuth0();
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -40,7 +46,7 @@ const Login = () => {
 
       // Navigate based on user role
       if (response.data) {
-        navigate('/home');
+        navigate('/admin/profile');
       }else {
         setError('page not found'); // Handle unknown roles
       }
@@ -80,6 +86,17 @@ const Login = () => {
         <div className="form-section">
           <p>Don't have an account? <NavLink to="/register">Register</NavLink></p>
         </div>
+        <h1>
+        <div>
+      {!isAuthenticated ? (
+        <button onClick={() => loginWithRedirect()} className='google-signin-btn'> <img src="/google.png" alt="google" className='img' />log in with google</button>
+      ) : (
+        <>
+          
+        </>
+      )}
+    </div>
+        </h1>
       </div>
     </div>
   );

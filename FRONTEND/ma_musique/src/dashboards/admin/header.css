@@ -1,0 +1,50 @@
+/* Style principal du Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items : center;
+    padding: 10px 20px;
+    background-color: #86ff57;
+    color: #2c3e50;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 5.5rem;
+  }
+  
+  /* Conteneur de l'info de l'organisation (logo et nom) */
+  .organisation-info {
+    display: flex; 
+    margin-left:45rem;
+    justify-content: center;
+  }
+  
+  /* Style pour l'avatar (logo de l'organisation) */
+  .organisation-avatar {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin-left: 7rem;
+    cursor: pointer;
+  }
+  
+  /* Style pour le nom de l'organisation */
+  .org-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 7rem;
+    cursor: pointer;
+  }
+  
+  /* Conteneur pour l'icône de notification */
+  .notification-icon-wrapper {
+    display: flex;
+    justify-content: end;
+  }
+  
+  /* Icône de notification */
+  .notification-icon {
+    font-size: 24px;
+    cursor: pointer;
+    width: 30px;
+    margin-left: 7rem;
+  }
+  

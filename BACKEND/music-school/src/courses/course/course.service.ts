@@ -17,10 +17,10 @@ export class CourseService {
   async createCourse(courseDto: CourseDto): Promise<Course> {
     console.log('corseDto' , courseDto);
 
-    const {title , description , amount , level , media , teacher_id} = courseDto
-    console.log('Received courseDto:', {title , description , amount , level , media , teacher_id}); // Vérifie les données reçues du frontend
+    const {title , description , amount , level , media , teacher_id , image} = courseDto;
+    console.log('Received courseDto:', {title , description , amount , level , media , teacher_id , image}); // Vérifie les données reçues du frontend
 
-    const newCourse = new this.courseModel({title , description , amount , level , media , teacher_id});
+    const newCourse = new this.courseModel({title , description , amount , level , media , teacher_id , image});
     console.log('newCourse', newCourse);
     return newCourse.save();
   }

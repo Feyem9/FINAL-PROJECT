@@ -1,0 +1,284 @@
+/* dash.css */
+.dashboard-container {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background-color: #05253A;
+    color: #fff;
+    padding: 20px;
+    height: 100vh;
+  }
+  
+  .sidebar .sidebar-header{
+    margin-bottom: 2rem;
+  }
+  
+  .sidebar-header img {
+    width: 80px;
+    /* margin-bottom: 10px; */
+  }
+  
+  .sidebar-item {
+    margin: 10px 0;
+  }
+  
+  .sidebar-item :hover{
+    background-color: #1d3f55;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #fff;
+    font-size: 16px;
+  }
+  
+  .icon {
+    margin-right: 10px;
+    font-size: 20px;
+  }
+  
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    background-color:#ffffff;
+    color: #05253A;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    /* border: 1px solid #fff; */
+    border-radius: 5px;
+    margin-top: 1rem;
+  }
+  
+  .logout-btn:hover {
+    background-color: #447494;
+    color: #fff;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .skeleton {
+    margin: 10px 0;
+    background-color: #ddd;
+    border-radius: 5px;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  
+  .skeleton-header {
+    height: 50px;
+    width: 100%;
+    margin-bottom: 5rem;
+    /* margin-top: -10rem; */
+  }
+  
+  
+  .skeleton-large {
+    height: 200px;
+    width: 100%;
+  }
+  
+  .skeleton-small {
+    height: 100px;
+    width: 48%;
+  }
+  
+  /* dash.css */
+  
+  /* Conteneur principal de la page de Dashboard */
+  .hbg{
+    background-color: #d0dbe2;
+    /* margin: 2rem; */
+    padding: 3rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .Hom {
+    font-weight: 700;
+    font-style: normal;
+    font-size: x-large;
+    background-color: #d0dbe2;
+    padding-left: 2rem;
+    margin-bottom: 1rem; /* Ajout d'une marge en bas pour séparer du contenu suivant */
+  }
+
+  .hbg .hom {
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  .content-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  /* Conteneur des livres en grille */
+  .books-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Grille responsive */
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
+    justify-items: center;
+    background-color: #fff;
+  }
+  
+  /* Carte d'un livre */
+  .book-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  /* Effet de survol pour les cartes */
+  .book-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Image du livre */
+  .book-card img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  /* Détails du livre */
+  .book-card .book-details {
+    padding: 15px;
+  }
+  
+  /* Titre du livre */
+  .book-card .book-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    text-align: center;
+    height: 40px;
+    overflow: hidden;
+  }
+  
+  /* Auteur du livre */
+  .book-card .book-author {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 12px;
+    text-align: center;
+    height: 20px;
+    overflow: hidden;
+  }
+  
+  /* Description du livre (optionnel) */
+  .book-card .book-description {
+    font-size: 12px;
+    color: #777;
+    text-align: center;
+    height: 60px;
+    overflow: hidden;
+  }
+  
+  /* Grille responsive */
+  @media (max-width: 768px) {
+    .books-container {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+  }
+  .Hom{
+    font-weight: 700;
+    font-style: normal;
+    font-size: x-large;
+    background-color: #d0dbe2;
+    padding-left: 2rem;
+  }
+  
+  /* dash.css */
+  
+  /* Conteneur de la page de contenu */
+  .content-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  /* Tableau des livres */
+  .books-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .books-table th, .books-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  .books-table th {
+    background-color: #f4f4f4;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .books-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .books-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .books-table a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .books-table a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Style pour le chargement */
+  .content-body .loading {
+    font-size: 18px;
+    color: #777;
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+  .organisation-logo{
+    border-radius: 15px;
+    /* width: 220px; */
+    height: 90px;
+  }
+  

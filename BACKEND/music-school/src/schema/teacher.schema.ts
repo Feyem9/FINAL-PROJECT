@@ -11,6 +11,12 @@ export class Teacher extends User {  // 👈 Héritage du modèle User
 
   @Prop({ type: [String], default: [] })
   courses: string[]; // 📌 Liste des IDs des cours créés par l’enseignant
+
+  @Prop()
+  proofDocument: string;
+
+  @Prop({ default: false })  
+  isVerified: boolean; // 📌 Vérification par l'admin
 }
 
 export const TeacherSchema = SchemaFactory.createForClass(Teacher);

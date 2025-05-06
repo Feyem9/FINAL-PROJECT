@@ -55,7 +55,7 @@ const useNewCourse = () => {
   return { newCourse, setNewCourse, file, setFile, handleInputChange, handleFileChange };
 };
 
-export const Course = () => {
+export default function Course () {
   const { courses, setCourses, loading, setLoading } = useCourses();
   const { newCourse, setNewCourse, file, setFile, handleInputChange, handleFileChange } = useNewCourse();
 

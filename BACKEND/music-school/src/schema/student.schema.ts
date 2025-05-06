@@ -6,8 +6,14 @@ export type StudentDocument = Student & Document;
 
 @Schema({ timestamps: true })
 export class Student extends User {  // 👈 Héritage du modèle User
-  @Prop({ required: true  , type: [String], default: []})
+  @Prop({ required: false  , type: [String], default: []})
   enrolledCourses: string[]; // Liste des IDs de cours suivis par l’étudiant
+
+  @Prop({ required: true })
+  instrument: string; // Instrument que l'étudiant veut apprendre (ex: "Piano", "Guitare")
+
+  @Prop({ required: true })
+  level: string; // Niveau de l’étudiant (ex: "Débutant", "Intermédiaire", "Avancé")
 }
 
 
