@@ -147,7 +147,6 @@ export class StudentController {
   }
 
   
-
   // ✅ Accessible uniquement à l’admin
   @Post('create')
   // @UseGuards(AdminGuard)
@@ -177,6 +176,8 @@ export class StudentController {
   @ApiResponse({ status: 200, description: 'Student details' })
   @ApiResponse({ status: 404, description: 'Student not found' })
   async findById(@Param('id') id: string, @Req() req: Request) {
+      console.log('ID reçu depuis la route :', id); // <== Ajoute ceci
+
     const user = req['user'];
 
     // Si student, il ne peut voir que son propre profil
@@ -214,7 +215,7 @@ export class StudentController {
     await this.studentService.deleteStudent(id);
     return { message: 'Student deleted successfully. Deletion email sent!' };
   }
-
+ 
   // ✅ Accessible sans auth
   @Post('/register')
   @ApiOperation({ summary: 'Register a new student' })

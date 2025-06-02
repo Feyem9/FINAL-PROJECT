@@ -5,7 +5,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 export class AdminDto extends UserDto {
   @ApiPropertyOptional({
     description: 'Indicates if the admin has super admin privileges',
-    example: true,
+    example: true,   
   })
   @IsOptional()
   @IsBoolean()

@@ -26,10 +26,11 @@ export class AdminService {
     
     // Planifier l'envoi du token toutes les 24 heures
     cron.schedule('0 0 * * *', async () => {
-      await this.sendDailyToken();
+      await this.sendDailyToken();  
     });
   }
 
+  
   async createAdmin(createAdminDto: UserDto): Promise<Admin> {
     if (createAdminDto.role !== 'admin') {
       throw new BadRequestException('Ce service est uniquement pour créer des administrateurs.');

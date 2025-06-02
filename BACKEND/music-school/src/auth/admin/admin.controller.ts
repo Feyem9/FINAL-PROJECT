@@ -55,7 +55,7 @@ export class AdminController {
     return { message: 'Bienvenue sur le tableau de bord administrateur !' };
   }
 
-  @Post('create')
+  @Post('/create')
   @ApiOperation({ summary: 'Create a new admin' })
   @ApiResponse({ status: 201, description: 'Admin created successfully' })
   @ApiResponse({ status: 400, description: 'Invalid input data' })

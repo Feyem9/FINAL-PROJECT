@@ -202,7 +202,7 @@ export class TeacherController {
     return result;
   }
 
-  //   @UseGuards(TeacherGuard)
+    // @UseGuards(TeacherGuard)
   @Get('/all')
   @ApiOperation({ summary: 'Get all teachers' })
   @ApiResponse({ status: 200, description: 'List of all teachers' })
@@ -246,7 +246,7 @@ export class TeacherController {
   }
 
   @Patch(':id/verify')
-  // @UseGuards(RolesGuard)  // Seul l'admin peut vérifier un enseignant
+  @UseGuards(RolesGuard)  // Seul l'admin peut vérifier un enseignant
   @ApiOperation({ summary: 'Verify a teacher by ID (Admin only)' })
   @ApiParam({ name: 'id', description: 'The ID of the teacher', example: '64b7f3c2e4b0f5a1d2c3e4f5' })
   @ApiResponse({ status: 200, description: 'Teacher verified successfully' })

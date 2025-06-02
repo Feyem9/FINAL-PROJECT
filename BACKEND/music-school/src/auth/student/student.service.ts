@@ -84,7 +84,7 @@ export class StudentService {
     const result = await this.studentModel.findByIdAndDelete(id).exec();
     if (!result) {
       throw new NotFoundException('Student not found');
-    }
+    } 
   }
 
   async sendWelcomeEmail(email: string, name: string): Promise<void> {
@@ -112,7 +112,7 @@ export class StudentService {
     await this.mailerService.sendMail({
       to: email,
       subject: 'Votre compte a été supprimé',
-      template: './deletion',
+      template: 'deletion',
       context: { name },
     });
   }

@@ -37,22 +37,26 @@ const Request = () => {
       alert("Please upload a PDF file.");
       return;
     }
+    if (role === "teacher" && !certificate) {
+  setError("Le certificat est requis pour les enseignants.");
+  return;
+}
 
     const formData = new FormData();
     formData.append("certificate", certificate);
     formData.append("experience", experience);
     formData.append("certificate", certificate);
 
-    try {
+    // try {
 
-      if (response.ok) {
-        alert("File uploaded successfully!");
-      } else {
-        alert("Failed to upload file.");
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
+    //   if (response.ok) {
+    //     alert("File uploaded successfully!");
+    //   } else {
+    //     alert("Failed to upload file.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error uploading file:", error);
+    // }
     const userData = { name, email, contact, password, role };
 
     // Ajout des champs spécifiques au rôle
@@ -63,17 +67,17 @@ const Request = () => {
       userData.speciality = speciality;
       userData.experience = experience;
       userData.certificate = certificate;
-    } 
+    }
     // else if (role === 'admin') {
     //   userData.adminCode = adminCode;
     // }
-     // Déterminer l'URL en fonction du rôle
-     let apiUrl = 'http://localhost:3000/auth/register';
-     if (role === 'student') {
-       apiUrl = 'http://localhost:3000/students/create';
-     } else if (role === 'teacher') {
-       apiUrl = 'http://localhost:3000/teachers/register';
-     } 
+    // Déterminer l'URL en fonction du rôle
+    let apiUrl = 'http://localhost:3000/auth/register';
+    if (role === 'student') {
+      apiUrl = 'http://localhost:3000/students/create';
+    } else if (role === 'teacher') {
+      apiUrl = 'http://localhost:3000/teachers/register';
+    }
     //  else if (role === 'admin') {
     //    apiUrl = 'http://localhost:3000/admins/create';
     //  }
@@ -111,10 +115,10 @@ const Request = () => {
 
   // const handleSubmit = async (event) => {
   //   event.preventDefault();
-  
+
   //   // Données de base pour tous les rôles
   //   const userData = { name, email, contact, password, role };
-  
+
   //   // Ajout des champs spécifiques au rôle
   //   if (role === 'student') {
   //     userData.studyLevel = studyLevel;
@@ -122,24 +126,24 @@ const Request = () => {
   //   } else if (role === 'teacher') {
   //     userData.speciality = speciality;
   //     userData.experience = experience;
-  
+
   //     if (!certificate) {
   //       alert("Please upload a PDF file.");
   //       return;
   //     }
-  
+
   //     // Upload du certificat
   //     const formData = new FormData();
   //     formData.append("certificate", certificate);
   //     formData.append("experience", experience); // Facultatif selon ton backend
-  
+
   //     try {
   //       const uploadResponse = await axios.post("http://localhost:3000/teachers/upload", formData, {
   //         headers: {
   //           "Content-Type": "multipart/form-data",
   //         },
   //       });
-  
+
   //       console.log("Upload response:", uploadResponse.data);
   //       alert("Certificate uploaded successfully!");
   //     } catch (uploadError) {
@@ -148,7 +152,7 @@ const Request = () => {
   //       return;
   //     }
   //   }
-  
+
   //   // Déterminer l'URL d'enregistrement selon le rôle
   //   let apiUrl = 'http://localhost:3000/auth/register';
   //   if (role === 'student') {
@@ -156,18 +160,18 @@ const Request = () => {
   //   } else if (role === 'teacher') {
   //     apiUrl = 'http://localhost:3000/teachers/register';
   //   }
-  
+
   //   try {
   //     const response = await axios.post(apiUrl, userData);
-  
+
   //     console.log('Registration successful:', response.data);
-  
+
   //     if (response.data) {
   //       navigate('/home');
   //     }
-  
+
   //     const user = response.data;
-  
+
   //     if (user && user._id) {
   //       localStorage.setItem('userId', user._id);
   //       localStorage.setItem('userEmail', user.email);
@@ -181,7 +185,7 @@ const Request = () => {
   //     console.error(err);
   //   }
   // };
-  
+
 
   return (
     <div className="register">
@@ -206,8 +210,8 @@ const Request = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <input 
-              type="password" 
+            <input
+              type="password"
               className="input"
               placeholder="Password"
               value={password}
@@ -222,19 +226,19 @@ const Request = () => {
               onChange={(e) => setContact(e.target.value)}
               required
             />
-            
+
             {/* Sélecteur de rôle */}
             <select className="input" value={role} onChange={(e) => setRole(e.target.value)} required>
-            <option value="" disabled>Register As A </option>
+              <option value="" disabled>Register As A </option>
               <option value="student">Student</option>
               <option value="teacher">Teacher</option>
-</select>
+            </select>
 
             {/* Champs dynamiques selon le rôle sélectionné */}
             {role === 'student' && (
-              
+
               <>
-                
+
                 <select
                   className="input"
                   value={studyLevel}
@@ -262,17 +266,17 @@ const Request = () => {
             {role === 'teacher' && (
               <>
                 <select
-  className="input"
-  value={speciality}
-  onChange={(e) => setSpeciality(e.target.value)}
-  required
->
-  <option value="" disabled>What speciality did you want to teach ?</option>
-  <option value="piano">Piano</option>
-  <option value="flute">Flute</option>
-  <option value="violon">Violon</option>
-  <option value="drum kit">Drum kit</option>
-</select>
+                  className="input"
+                  value={speciality}
+                  onChange={(e) => setSpeciality(e.target.value)}
+                  required
+                >
+                  <option value="" disabled>What speciality did you want to teach ?</option>
+                  <option value="piano">Piano</option>
+                  <option value="flute">Flute</option>
+                  <option value="violon">Violon</option>
+                  <option value="drum kit">Drum kit</option>
+                </select>
                 <input
                   type="number"
                   className="input"
@@ -282,16 +286,16 @@ const Request = () => {
                   required
                 />
 
-<input
-      type="file"
-      className="input"
-      accept=".pdf"
-      onChange={(e) => handleFileUpload(e)} // Sauvegarde le fichier PDF dans le state
-      required
-    />
-     {certificate && (
-      <p>Selected file: {certificate.name}</p>
-    )}
+                <input
+                  type="file"
+                  className="input"
+                  accept=".pdf"
+                  onChange={(e) => handleFileUpload(e)} // Sauvegarde le fichier PDF dans le state
+                  required={role === 'teacher'} // ✅ Obligatoire seulement pour les enseignants
+                />
+                {certificate && (
+                  <p>Selected file: {certificate.name}</p>
+                )}
               </>
             )}
 

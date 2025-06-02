@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { FormControl } from "@mui/material"
+import { InputLabel } from "@mui/material"
+import { MenuItem } from "@mui/material"
+import { TextField } from "@mui/material"
+import { Box } from "@mui/material"
+import { Typography } from "@mui/material"
+import { TableContainer } from "@mui/material"
+import { TableHead } from "@mui/material"
+import { TableBody } from "@mui/material"
+import { Table } from "@mui/material"
+import { TableRow } from "@mui/material"
+import { Paper } from "@mui/material"
+import { TableCell } from "@mui/material"
+import { Tooltip } from "@mui/material"
+import { IconButton } from "@mui/material"
+import Select from '@mui/material/Select';
+import { toast } from "react-toastify";
+
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-  Box,
-  Typography,
   List,
   ListItem,
   ListItemText,
@@ -18,12 +31,13 @@ export const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [teachers, setTeachers] = useState([]);
   const [students, setStudents] = useState([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
       console.log('voici le', token);
-      
+
       try {
         const [teachersRes, studentsRes] = await Promise.all([
           axios.get("http://localhost:3000/teachers/all", {
@@ -37,7 +51,7 @@ export const Dashboard = () => {
             },
           }),
         ]);
-    
+
         setTeachers(teachersRes.data);
         setStudents(studentsRes.data);
       } catch (error) {
@@ -46,9 +60,9 @@ export const Dashboard = () => {
     };
     fetchData();
   }
-  , []);
-  
-  
+    , []);
+
+
   const handleUserTypeChange = (event) => {
     setUserType(event.target.value);
   };
@@ -70,6 +84,71 @@ export const Dashboard = () => {
   };
 
   const filteredUsers = getFilteredUsers();
+
+  const userTypeLabelMap = {
+    all: 'All Users',
+    teacher: 'Users: Teachers',
+    student: 'Users: Students',
+  };
+
+  const userTypeLabel = `${userTypeLabelMap[userType]} (${filteredUsers.length})`;
+
+  const handleEdit = async (userId, userType) => {
+    console.log("user and type", userId, userType);
+    if (!userId || !userType) {
+      toast.error("Informations manquantes pour la modification.");
+      return;
+    }
+
+    // un formulaire de modification en appelant la route put du backend
+  };
+
+  const handleDelete = async (userId, userType) => {
+    console.log("user and type", userId, userType);
+
+    if (!userId || !userType) {
+      toast.error("Informations manquantes pour la suppression.");
+      return;
+    }
+    const confirm = window.confirm("Es-tu sûr de vouloir supprimer cet utilisateur ?");
+    if (!confirm) return;
+
+    const raison = window.prompt("Pourquoi voulez-vous supprimer cet utilisateur ?");
+    if (!raison) {
+      toast.error("La raison de la suppression est obligatoire.");
+      return;
+    }
+
+    setIsDeleting(true);
+
+    try {
+
+      const id = userId;
+
+      console.log('id', id);
+
+
+      const studentDeleteUrl = `http://localhost:3000/students/${id}`;
+      const teacherDeleteUrl = `http://localhost:3000/teachers/${id}`;
+      if (userType === "student") {
+        await axios.delete(studentDeleteUrl);
+      } else if (userType === "teacher") {
+        await axios.delete(teacherDeleteUrl);
+      }
+
+      // Mise à jour locale (si tu veux mettre à jour l'affichage sans recharger)
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+      toast.success(`L'utilisateur a été supprimé avec succès.`);
+    } catch (error) {
+      console.error("Erreur lors de la suppression :", error);
+      toast.error("Échec de la suppression de l'utilisateur.");
+
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+
 
   return (
     <>
@@ -98,23 +177,70 @@ export const Dashboard = () => {
         />
       </Box>
 
+      <Box display="flex" alignItems="center" gap={4} mb={2}>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Box width={16} height={16} bgcolor="rgba(0, 128, 0, 0.5)" borderRadius={1} />
+          <Typography variant="body2">Étudiants</Typography>
+        </Box>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Box width={16} height={16} bgcolor="rgba(255, 165, 0, 0.5)" borderRadius={1} />
+          <Typography variant="body2">Enseignants</Typography>
+        </Box>
+      </Box>
+
       <Box mt={4}>
-        <Typography variant="h6">Users</Typography>
-        <List>
-          {filteredUsers.map((user) => (
-            <ListItem key={user.id}>
-              <ListItemText
-                primary={user.name}
-                secondary={user.email || user.role}
-              />
-            </ListItem>
-          ))}
-          {filteredUsers.length === 0 && (
-            <Typography variant="body2" color="text.secondary">
-              No matching users found.
-            </Typography>
-          )}
-        </List>
+        <Typography variant="h6">{userTypeLabel}</Typography>
+
+        <TableContainer component={Paper} sx={{ mt: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>id</strong></TableCell>
+                <TableCell><strong>Name</strong></TableCell>
+                <TableCell><strong>Email</strong></TableCell>
+                <TableCell><strong>Role</strong></TableCell>
+                <TableCell align="center"><strong>Actions</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredUsers.map((user, index) => (
+                <TableRow key={user.id} sx={{
+                  backgroundColor:
+                    user.role === 'student'
+                      ? 'rgba(0, 128, 0, 0.3)' // vert pâle
+                      : user.role === 'teacher'
+                        ? 'rgba(255, 165, 0, 0.3)' // orange pâle
+                        : 'transparent',
+                }}>
+                  <TableCell>{user._id}</TableCell>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.role}</TableCell>
+                  <TableCell align="center">
+                    <Tooltip title="Edit">
+                      <IconButton color="primary" onClick={() => handleEdit(user)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton key={name} color="error" onClick={() => handleDelete(user._id, user.role)}>
+                        {/* {isDeleting ? "Suppression..." : "Supprimer"} */}
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {filteredUsers.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} align="center">
+                    No matching users found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Box>
     </>
   );
