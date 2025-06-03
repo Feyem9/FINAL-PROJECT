@@ -33,14 +33,14 @@ const Request = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!certificate) {
-      alert("Please upload a PDF file.");
+    // if (!certificate) {
+    //   alert("Please upload a PDF file.");
+    //   return;
+    // }
+    if (role === "teacher" && !certificate) {
+      setError("Le certificat est requis pour les enseignants.");
       return;
     }
-    if (role === "teacher" && !certificate) {
-  setError("Le certificat est requis pour les enseignants.");
-  return;
-}
 
     const formData = new FormData();
     formData.append("certificate", certificate);
@@ -61,26 +61,22 @@ const Request = () => {
 
     // Ajout des champs spécifiques au rôle
     if (role === 'student') {
-      userData.studyLevel = studyLevel;
+      userData.level = studyLevel;
       userData.instrument = instrument;
     } else if (role === 'teacher') {
       userData.speciality = speciality;
       userData.experience = experience;
       userData.certificate = certificate;
     }
-    // else if (role === 'admin') {
-    //   userData.adminCode = adminCode;
-    // }
+ 
     // Déterminer l'URL en fonction du rôle
     let apiUrl = 'http://localhost:3000/auth/register';
     if (role === 'student') {
-      apiUrl = 'http://localhost:3000/students/create';
+      apiUrl = 'http://localhost:3000/students/register';
     } else if (role === 'teacher') {
       apiUrl = 'http://localhost:3000/teachers/register';
     }
-    //  else if (role === 'admin') {
-    //    apiUrl = 'http://localhost:3000/admins/create';
-    //  }
+
 
     try {
 
@@ -90,20 +86,26 @@ const Request = () => {
       console.log('Registration successful:', response.data);
 
       if (response.data) {
-        navigate('/home');
+        navigate('/login');
       }
 
-      const user = response.data;
+      let user = response.data;
+      console.log('user data:', user);
+
+
+      if (role === 'student') {
+        user = response.data.student;
+      } else if (role === 'teacher') {
+        user = response.data.teacher;
+        console.log('user data teacher:', user);
+        
+      }
 
       if (user && user._id) {
         localStorage.setItem('userId', user._id);
-        console.log('User ID saved:', user._id);
-
         localStorage.setItem('userEmail', user.email);
-        console.log('User email saved:', user.email);
-
         localStorage.setItem('userRole', user.role);
-        console.log('User role saved:', user.role);
+        console.log('User data saved:', user);
       } else {
         throw new Error("User data is invalid");
       }
@@ -111,8 +113,9 @@ const Request = () => {
       setError('Registration failed. Please try again.');
       console.error(err);
     }
-  };
 
+
+  }
   // const handleSubmit = async (event) => {
   //   event.preventDefault();
 

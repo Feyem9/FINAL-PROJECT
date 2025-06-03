@@ -2,7 +2,16 @@
 import React from 'react';
 
 export const Header = () => {
-  const studentName = "Haleema";
+
+
+   const id = localStorage.getItem('userId');
+    // console.log(`User ID received: ${id}`);
+  const API_URL = `http://localhost:3000/students/${id}`;
+
+    const student = JSON.parse(localStorage.getItem('student'));
+
+
+    const studentName = student ? student.name : 'Étudiant inconnu';
   const progress = 80;
 
   return (

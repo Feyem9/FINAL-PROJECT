@@ -3,9 +3,9 @@ import { NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Profile } from '../dashboards/profile/Profile';
 import { useAuth0 } from '@auth0/auth0-react';
 import '../dashboards/profile/profile.css';
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -17,46 +17,63 @@ const Login = () => {
 
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+  event.preventDefault();
 
-    try {
-      const response = await axios.post('http://localhost:3000/auth/login', {
-        email,
-        password,
-      });
+  try {
+const role = localStorage.getItem('userRole');
+console.log(`Attempting to log in with role: ${role}`);
 
-      const user = response.data.user;
-      console.log('login user is : ',user);
+    if (!role) throw new Error("User role not specified");
 
-      const token = response.data.token;
-      console.log('this is a simple token :' , token);
+    const loginUrl = `http://localhost:3000/${role}s/login`;
+    console.log(`Logging in as ${role} at ${loginUrl}`);
+    
 
-      if (user && user._id) {
-        localStorage.setItem('token', token);
-        console.log('login token is : ',token);
+    // Login request
+    const response = await axios.post(loginUrl, {
+      email,
+      password,
+    });
 
-        localStorage.setItem('userId', user._id);
-        console.log(user.id);
-        localStorage.setItem('userEmail', user.email);
-        console.log(user.email);
-        }
-      else{throw new Error("User data is invalid");
-      }
-      
+    const token = response.data.token;
+    if (!token) throw new Error("Token not found");
 
-      // Navigate based on user role
-      if (response.data) {
-        navigate('/admin/profile');
-      }else {
-        setError('page not found'); // Handle unknown roles
-      }
+    localStorage.setItem('token', token);
+    console.log(`Token received: ${token}`);
+    
+    localStorage.setItem('userRole', role);
+    console.log(`User role set to: ${role}`);
 
-      // Optionally, you might want to store the token in local storage or context
-    } catch (err) {
-      setError('Login failed. Please check your credentials.');
-      console.error(err);
-    }
-  };
+    // Ensuite, on appelle l'endpoint pour récupérer l'utilisateur
+
+    const id = localStorage.getItem('userId');
+    console.log(`User ID received: ${id}`);
+    
+    const profileUrl = `http://localhost:3000/${role}s/${id}`;
+    console.log(`Fetching profile from ${profileUrl}`);
+
+    const me = await axios.get(profileUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const user = me.data;
+    console.log(`User data received:`, user);
+    
+    if (!user || !user._id) throw new Error("User data is invalid");
+
+    localStorage.setItem(role, JSON.stringify(user));
+
+    // Redirection selon le rôle
+    navigate(`/${role}/dashboard`);
+
+  } catch (err) {
+    console.error(err);
+    setError("Login failed. Check credentials or role.");
+  }
+};
+
 
   return (
     <div className="login">

@@ -10,26 +10,12 @@ export const Profile = () => {
   if (!admin) return <p>Admin non connecté.</p>;
   console.log('Admin dans le profil:', admin);
 
-  // if (!isAuthenticated) return null; // profile reste vide si l'utilisateur n'est pas connecté
 
 
 
 
   return (
-    // <div className="profile-container">
-    //   <img src={user.picture} alt="Profil" className="profile-img" />
-
-    //   <div className="profile-info">
-    //     <p className="profile-name">Bienvenue <strong>{user.name}</strong></p>
-    //     <p className="profile-email">{user.email}</p>
-
-    //     <div className="profile-details">
-    //       <p><strong>Nom complet :</strong> {user.name}</p>
-    //       <p><strong>Identifiant unique :</strong> {user.sub}</p>
-    //       <p><strong>Email vérifié :</strong> {user.email_verified ? 'Oui' : 'Non'}</p>
-    //       <p><strong>Dernière connexion :</strong> {user.updated_at ? new Date(user.updated_at).toLocaleString() : 'N/A'}</p>
-    //       {/* Tu peux ajouter d'autres champs si ton Auth0 en fournit */}
-        // </div>
+  
         <div className="admin-card">
   <div className="admin-header">
     <img

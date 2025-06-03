@@ -169,7 +169,7 @@ export class StudentController {
   }
 
   // ✅ Étudiant ou Admin peut voir le profil — sécurité renforcée
-  // @UseGuards(StudentGuard)
+  // @UseGuards(StudentGuard) 
   @Get(':id')
   @ApiOperation({ summary: 'Get a student by ID' })
   @ApiParam({ name: 'id', description: 'Student ID' })
