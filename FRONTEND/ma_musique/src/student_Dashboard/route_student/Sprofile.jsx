@@ -6,8 +6,12 @@ export const Sprofile = () => {
   const [loading, setLoading] = useState(true);
 
   // ⚠️ Remplace par l'URL correcte de ton backend
-  const id = localStorage.getItem('userId');
-    // console.log(`User ID received: ${id}`);
+  const studentData = JSON.parse(localStorage.getItem('student'));
+
+  const id = studentData?._id;
+
+
+  // console.log(`User ID received student: ${id}`);
   const API_URL = `http://localhost:3000/students/${id}`;
 
   useEffect(() => {
@@ -15,14 +19,14 @@ export const Sprofile = () => {
       try {
         const token = localStorage.getItem('token'); // récupère le token stocké
         console.log(`Token received: ${token}`);
-        
+
         const response = await axios.get(API_URL, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         console.log('Profil récupéré:', response.data);
-        
+
         setStudent(response.data.student); // adapte selon ta structure
       } catch (error) {
         console.error('Erreur lors de la récupération du profil :', error);
@@ -35,11 +39,11 @@ export const Sprofile = () => {
   }, []);
 
   if (loading) return <div className="p-6 text-gray-600">Chargement...</div>;
-    const student = JSON.parse(localStorage.getItem('student'));
+  const student = JSON.parse(localStorage.getItem('student'));
 
   if (!student) {
     return <div className="p-6 text-red-500">Impossible de charger le profil</div>;
-  }  console.log('Student data:', student);
+  } console.log('Student data:', student);
 
   return (
     <div className="max-w-3xl mx-auto mt-8 bg-white p-6 rounded-lg shadow-lg">

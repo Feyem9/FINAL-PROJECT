@@ -1,7 +1,5 @@
-
-
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString, IsOptional } from "class-validator";
 
 export class CalenderDto {
 
@@ -36,7 +34,7 @@ export class CalenderDto {
     })
     @IsNotEmpty()
     @IsString()
-    readonly end_date: string;
+    readonly end_date: Date;
 
     @ApiProperty({
         description: 'To who the shedule is concerning',
@@ -44,6 +42,14 @@ export class CalenderDto {
     })
     @IsNotEmpty()
     @IsString()
-    readonly audience: 'teacher' | 'student' | 'teacher_and_student'
+    readonly audience: 'teacher' | 'student' | 'teacher_and_student';
 
+    @ApiProperty({
+        description: 'ID of the user who created the event',
+        example: '665f1c2b8e4b2a0012a4e123',
+        required: false,
+    })
+    @IsOptional()
+    @IsString()
+    readonly creator?: string;
 }

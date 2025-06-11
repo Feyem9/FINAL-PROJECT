@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export const Tprofile = () => {
-  // const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // ⚠️ Remplace par l'URL correcte de ton backend
-  const id = localStorage.getItem('userId');
-    // console.log(`User ID received: ${id}`);
+  const teacherData = JSON.parse(localStorage.getItem('teacher'));
+
+  const id = teacherData?._id;
+
+
+  // console.log(`User ID received teacher: ${id}`);
   const API_URL = `http://localhost:3000/teachers/${id}`;
 
   useEffect(() => {
@@ -15,14 +18,14 @@ export const Tprofile = () => {
       try {
         const token = localStorage.getItem('token'); // récupère le token stocké
         console.log(`Token received: ${token}`);
-        
+
         const response = await axios.get(API_URL, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         console.log('Profil récupéré:', response.data);
-        
+
         // setStudent(response.data.student); // adapte selon ta structure
       } catch (error) {
         console.error('Erreur lors de la récupération du profil :', error);
@@ -35,11 +38,11 @@ export const Tprofile = () => {
   }, []);
 
   if (loading) return <div className="p-6 text-gray-600">Chargement...</div>;
-    const teacher = JSON.parse(localStorage.getItem('teacher'));
+  const teacher = JSON.parse(localStorage.getItem('teacher'));
 
   if (!teacher) {
     return <div className="p-6 text-red-500">Impossible de charger le profil</div>;
-  }  console.log('Student data:', teacher);
+  } console.log('teacher data:', teacher);
 
   return (
     <div className="max-w-3xl mx-auto mt-8 bg-white p-6 rounded-lg shadow-lg">
