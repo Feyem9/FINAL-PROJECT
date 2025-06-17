@@ -12,9 +12,10 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CourseService } from './course.service';
 import { CourseDto } from 'src/DTO/course.dto';
+import { multerOptions } from './course.service'; // adapte le chemin si besoin
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
-@ApiTags('Course') // Regroupe les endpoints sous le tag "Course" dans Swagger
+@ApiTags('Course')
 @Controller('course')
 export class CourseController {
   constructor(private readonly courseService: CourseService) { }
@@ -23,9 +24,14 @@ export class CourseController {
   @ApiOperation({ summary: 'Create a new course' })
   @ApiResponse({ status: 201, description: 'Course created successfully', type: CourseDto })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
-  async createCourse(@Body() courseDto: CourseDto): Promise<CourseDto> {
-    console.log('Received request body:', courseDto);
-    return await this.courseService.createCourse(courseDto);
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  @ApiConsumes('multipart/form-data')
+  async createCourse(
+    @Body() courseDto: CourseDto,
+    @UploadedFile() file?: Express.Multer.File
+  ) {
+    // Passe bien le fichier au service
+    return await this.courseService.createCourse(courseDto, file);
   }
 
   @Get('/all')
@@ -35,6 +41,14 @@ export class CourseController {
     return await this.courseService.getAllCourses();
   }
 
+  @Get('/teacher/:teacherId')
+  @ApiOperation({ summary: 'Get all courses for a teacher' })
+  @ApiParam({ name: 'teacherId', description: 'The ID of the teacher' })
+  @ApiResponse({ status: 200, description: 'List of courses for the teacher' })
+  async getCoursesByTeacher(@Param('teacherId') teacherId: string) {
+    return await this.courseService.getCoursesByTeacher(teacherId);
+  }
+
   @Get('/get/:courseId')
   @ApiOperation({ summary: 'Get a course by ID' })
   @ApiParam({ name: 'courseId', description: 'The ID of the course', example: '64b7f3c2e4b0f5a1d2c3e4f5' })
@@ -42,6 +56,15 @@ export class CourseController {
   @ApiResponse({ status: 404, description: 'Course not found' })
   async getCourseById(@Param('courseId') courseId: string) {
     return await this.courseService.getCourseById(courseId);
+  }
+
+  @Get('/category/:category')
+  @ApiOperation({ summary: 'Get courses by category' })
+  @ApiParam({ name: 'category', description: 'The category of the courses', example: 'piano' })
+  @ApiResponse({ status: 200, description: 'List of courses in the specified category' })
+  @ApiResponse({ status: 404, description: 'No courses found for the specified category' })
+  async getCoursesByCategory(@Param('category') category: string) {
+    return await this.courseService.getCoursesByCategory(category);
   }
 
   @Put('/update/:courseId')

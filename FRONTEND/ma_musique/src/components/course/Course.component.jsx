@@ -12,6 +12,10 @@ import CardActions from "@mui/material/CardActions"
 import Grid from "@mui/material/Grid"
 import InputLabel from "@mui/material/InputLabel"
 import FormControl from "@mui/material/FormControl"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import DialogContent from "@mui/material/DialogContent"
+import DialogActions from "@mui/material/DialogActions"
 
 const useCourses = () => {
   const [courses, setCourses] = useState([]);
@@ -40,8 +44,10 @@ const useNewCourse = () => {
     amount: '',
     level: '',
     media: 'video',
+    category: '',
   });
   const [file, setFile] = useState(null);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,9 +61,14 @@ const useNewCourse = () => {
   return { newCourse, setNewCourse, file, setFile, handleInputChange, handleFileChange };
 };
 
-export default function Course () {
+export default function Course() {
   const { courses, setCourses, loading, setLoading } = useCourses();
   const { newCourse, setNewCourse, file, setFile, handleInputChange, handleFileChange } = useNewCourse();
+  const [open, setOpen] = useState(false);
+
+  // Récupère l'id du teacher depuis le localStorage (à adapter selon ton auth)
+  const teacherData = JSON.parse(localStorage.getItem('teacher') || '{}');
+  const teacherId = teacherData?._id || '';
 
   const handleCreateCourse = async () => {
     setLoading(true);
@@ -67,18 +78,15 @@ export default function Course () {
     formData.append('amount', newCourse.amount);
     formData.append('level', newCourse.level);
     formData.append('media', newCourse.media);
+    formData.append('category', newCourse.category);
+    formData.append('teacher_id', teacherId);
     if (file) formData.append('file', file);
-   // Correction de la ligne 202
-   for (let [key, value] of formData.entries()) {
-    console.log(key, value);
-  }
+    console.log('file', file);
+    console.log('formdata',formData);
+    
+
     try {
-      const response = await axios.post('http://localhost:3000/course/create', formData ,{
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      } );
-      console.log('Course created:', response.data);
+      const response = await axios.post('http://localhost:3000/course/create', formData);
       setCourses((prev) => [...prev, response.data]);
       setNewCourse({
         title: '',
@@ -86,8 +94,10 @@ export default function Course () {
         amount: '',
         level: '',
         media: 'video',
+        category: '',
       });
       setFile(null);
+      setOpen(false); // Ferme le modal après création
     } catch (error) {
       console.error('Error creating course:', error);
     } finally {
@@ -104,19 +114,28 @@ export default function Course () {
     }
   };
 
+  // Couleurs selon le type de média
+  const mediaColors = {
+    video: '#e3f2fd',
+    pdf: '#fce4ec',
+    audio: '#e8f5e9',
+  };
+
   return (
     <Container maxWidth="md">
       <Typography variant="h4" fontWeight="bold" gutterBottom>
         Course Management
       </Typography>
 
-      {/* Section de création */}
-      <Card sx={{ p: 3, mb: 4, boxShadow: 3 }}>
-        <CardContent>
-          <Typography variant="h5" fontWeight="bold" mb={2}>
-            Create New Course
-          </Typography>
+      {/* Bouton pour ouvrir le modal */}
+      <Button variant="contained" color="primary" sx={{ mb: 3 }} onClick={() => setOpen(true)}>
+        Nouveau cours
+      </Button>
 
+      {/* Modal de création de cours */}
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Create New Course</DialogTitle>
+        <DialogContent>
           <TextField
             fullWidth
             label="Course Title"
@@ -147,8 +166,15 @@ export default function Course () {
             value={newCourse.amount}
             onChange={handleInputChange}
           />
-
-          {/* Sélection niveau */}
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Category</InputLabel>
+            <Select name="category" value={newCourse.category} onChange={handleInputChange}>
+              <MenuItem value="piano">Piano</MenuItem>
+              <MenuItem value="flute">Flute</MenuItem>
+              <MenuItem value="violon">Violon</MenuItem>
+              <MenuItem value="baterie">Baterie</MenuItem>
+            </Select>
+          </FormControl>
           <FormControl fullWidth margin="normal">
             <InputLabel>Level</InputLabel>
             <Select name="level" value={newCourse.level} onChange={handleInputChange}>
@@ -157,8 +183,6 @@ export default function Course () {
               <MenuItem value="advanced">Advanced</MenuItem>
             </Select>
           </FormControl>
-
-          {/* Sélection media */}
           <FormControl fullWidth margin="normal">
             <InputLabel>Media Type</InputLabel>
             <Select name="media" value={newCourse.media} onChange={handleInputChange}>
@@ -167,26 +191,20 @@ export default function Course () {
               <MenuItem value="audio">Audio</MenuItem>
             </Select>
           </FormControl>
-
-          {/* Fichier */}
           <Button variant="contained" component="label" fullWidth sx={{ my: 2 }}>
             Upload Media
-            <input type="file" hidden onChange={handleFileChange} />
+            <input type="file" name='file' hidden onChange={handleFileChange} />
           </Button>
-        </CardContent>
-
-        <CardActions>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={handleCreateCourse}
-            disabled={loading}
-          >
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)} color="secondary">
+            Annuler
+          </Button>
+          <Button onClick={handleCreateCourse} color="primary" variant="contained" disabled={loading}>
             {loading ? "Creating Course..." : "Create Course"}
           </Button>
-        </CardActions>
-      </Card>
+        </DialogActions>
+      </Dialog>
 
       {/* Liste des cours */}
       <Typography variant="h5" fontWeight="bold" mb={2}>
@@ -196,7 +214,7 @@ export default function Course () {
       <Grid container spacing={3}>
         {courses.map((course) => (
           <Grid item xs={12} sm={6} md={4} key={course._id}>
-            <Card sx={{ p: 2, boxShadow: 2 }}>
+            <Card sx={{ p: 2, boxShadow: 2, backgroundColor: mediaColors[course.media] || '#fff' }}>
               <CardContent>
                 <Typography variant="h6" fontWeight="bold">
                   {course.title}
@@ -204,9 +222,35 @@ export default function Course () {
                 <Typography variant="body2" color="text.secondary">
                   {course.description}
                 </Typography>
+                {/* Affichage de la vidéo si fileUrl existe */}
+                {course.fileUrl && course.media === "video" && (
+                  <video controls width="100%" style={{ marginTop: 8 }}>
+                    <source src={`http://localhost:3000${course.fileUrl}`} type="video/mp4" />
+                    Votre navigateur ne supporte pas la lecture vidéo.
+                  </video>
+                )}
+                {/* Affichage du PDF si media=pdf */}
+                {course.fileUrl && course.media === "pdf" && (
+                  <a
+                    href={`http://localhost:3000${course.fileUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: "block", marginTop: 8 }}
+                  >
+                    Voir le PDF
+                  </a>
+                )}
+                {/* Affichage de l'audio si media=audio */}
+                {course.fileUrl && course.media === "audio" && (
+                  <audio controls style={{ marginTop: 8, width: "100%" }}>
+                    <source src={`http://localhost:3000${course.fileUrl}`} type="audio/mpeg" />
+                    Votre navigateur ne supporte pas la lecture audio.
+                  </audio>
+                )}
                 <Typography variant="subtitle1" mt={1}>
                   Amount: <b>${course.amount}</b>
                 </Typography>
+                <Typography variant="subtitle1">Category: {course.category}</Typography>
                 <Typography variant="subtitle1">Level: {course.level}</Typography>
                 <Typography variant="subtitle1">Media: {course.media}</Typography>
               </CardContent>
@@ -226,4 +270,4 @@ export default function Course () {
       </Grid>
     </Container>
   );
-};
+}

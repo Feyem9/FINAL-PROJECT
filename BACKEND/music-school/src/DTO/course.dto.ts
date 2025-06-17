@@ -27,12 +27,22 @@ export class CourseDto {
     readonly amount: number;
 
     @ApiProperty({
-        description: 'The difficulty level of the course',
-        example: 'beginner',
+        description: 'The category of the course',
+        example: 'piano',
+        enum: ['piano', 'flute', 'violon', 'baterie'],
     })
     @IsNotEmpty()
     @IsString()
-    readonly level: string;
+    readonly category: 'piano' | 'flute' | 'violon' | 'baterie';
+
+    @ApiProperty({
+        description: 'The difficulty level of the course',
+        example: 'beginner',
+        enum: ['beginner', 'intermediate', 'advanced'],
+    })
+    @IsNotEmpty()
+    @IsString()
+    readonly level: 'beginner' | 'intermediate' | 'advanced';
 
     @ApiProperty({
         description: 'The type of media used in the course',
@@ -49,14 +59,23 @@ export class CourseDto {
     })
     @IsNotEmpty()
     @IsString()
-    readonly teacher_id: string; // Assuming teacher_id is a reference to another document
+    readonly teacher_id: string;
 
     @ApiProperty({
-        description: 'The URL of the course media',
-        example: 'https://example.com/course-media/video.mp4',
+        description: 'The URL or path of the course image (optional)',
+        example: 'https://example.com/course-image.jpg',
+        required: false,
     })
-    
     @IsOptional()
     @IsString()
-    readonly image: string; // Assuming image is a URL to the course media
-} 
+    readonly image?: string;
+
+    @ApiProperty({
+        description: 'The URL or path of the course media file (optional)',
+        example: 'https://example.com/course-media/video.mp4',
+        required: false,
+    })
+    @IsOptional()
+    @IsString()
+    readonly fileUrl?: string;
+}
