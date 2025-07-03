@@ -1,61 +1,104 @@
-// Sidebar.jsx
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { FaHome, FaCalendarAlt, FaBell, FaComments, FaBook, FaUser, FaSignOutAlt, FaLink, FaEdit } from 'react-icons/fa';
-// import { Header } from './Sheader'
-
-
-const navLinks = [
-  { to: "/student/dashboard", icon: <FaHome />, label: "Dashboard" },
-  { to: "/student/calendars", icon: <FaCalendarAlt />, label: "Calendars" },
-  { to: "/student/notificatoin", icon: <FaBell />, label: "Notifications" },
-  { to: "/student/chats", icon: <FaComments />, label: "Messages" },
-  { to: "/student/courses", icon: <FaBook />, label: "Learning Plan" },
-  { to: "/student/note", icon: <FaLink />, label: "Note" },
-  { to: "/student/profile", icon: <FaUser />, label: "Profile" },
-];
+import React, { useState } from 'react';
+import { AiOutlineLogout } from 'react-icons/ai';
+import {
+  FaHome,
+  FaCalendarAlt,
+  FaBell,
+  FaComments,
+  FaBook,
+  FaUser,
+  FaLink,
+  FaBars,
+} from 'react-icons/fa';
+import { Link, useNavigate, Outlet } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+import Sheader from './Sheader'; // ✅ Ton header global
 
 const Sidebar = () => {
-  const location = useLocation();
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { logout } = useAuth0();
+
+  const handleLogout = () => {
+    navigate('/');
+    logout({ returnTo: window.location.origin });
+  };
+
+  function SidebarLink({ to, icon, label }) {
+    return (
+      <Link
+        to={to}
+        className="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#1d3f55] transition"
+        onClick={() => setSidebarOpen(false)} // ferme sur mobile quand on clique
+      >
+        <span className="text-lg">{icon}</span>
+        <span className="text-base">{label}</span>
+      </Link>
+    );
+  }
 
   return (
-    <div className="w-64 bg-gradient-to-b from-blue-600 to-indigo-700 h-full flex flex-col shadow-xl">
-      <div className="p-6 border-b border-blue-500 flex flex-col items-center">
-        <img src="/ChatGPT Image 7 avr. 2025, 12_44_05.png" alt="Logo" className="h-16 w-16 rounded-full border-4 border-white shadow-lg mb-2" />
-        <span className="text-white font-bold text-lg mt-2 tracking-wide">Museschool</span>
-      </div>
-      <nav className="flex-1 px-4 py-6 space-y-2">
-        {navLinks.map(link => (
-          <Link
-            key={link.to}
-            to={link.to}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200
-              ${location.pathname === link.to
-                ? "bg-white text-blue-700 shadow"
-                : "text-blue-100 hover:bg-blue-500 hover:text-white"}
-            `}
-          >
-            <span className="text-xl">{link.icon}</span>
-            <span>{link.label}</span>
-          </Link>
-        ))}
-      </nav>
-      <div className="p-6 border-t border-blue-500">
-        <button
-          className="flex items-center gap-3 w-full px-4 py-3 rounded-lg font-medium text-red-500 bg-white hover:bg-red-50 transition-all duration-200 shadow"
-        >
-          <FaSignOutAlt className="text-lg" />
-          <span>Logout</span>
-        </button>
-      </div>
-      {/* Main content */}
-      <div className="main-content">
-        {/* 🔥 Header global visible sur toutes les pages */}
-        <div className="content-header">
-          {/* <Header /> */}
+    <div className="flex min-h-screen">
+      {/* Overlay mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed z-50 bg-[#05253A] text-white w-64 h-full p-6 transform ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:translate-x-0 transition-transform duration-300 ease-in-out`}
+      >
+        <div className="mb-8 text-center">
+          <img
+            src="/ChatGPT Image 7 avr. 2025, 12_44_05.png"
+            alt="Organization Logo"
+            className="w-20 mx-auto rounded"
+          />
         </div>
-        {/* Pages dynamiques */}        
-      </div>
+
+        <nav className="space-y-4">
+          <SidebarLink to="/student/dashboard" icon={<FaHome />} label="Dashboard" />
+          <SidebarLink to="/student/calendars" icon={<FaCalendarAlt />} label="Calendars" />
+          <SidebarLink to="/student/notificatoin" icon={<FaBell />} label="Notification" />
+          <SidebarLink to="/student/chats" icon={<FaComments />} label="Chats" />
+          <SidebarLink to="/student/courses" icon={<FaBook />} label="Learning Plans" />
+          <SidebarLink to="/student/note" icon={<FaLink />} label="Note" />
+          <SidebarLink to="/student/profile" icon={<FaUser />} label="My Profile" />
+
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-2 bg-white text-[#05253A] px-4 py-2 rounded hover:bg-[#447494] hover:text-white transition"
+          >
+            <AiOutlineLogout className="text-xl" />
+            <span>Logout</span>
+          </button>
+        </nav>
+      </aside>
+
+      {/* Contenu principal */}
+      <main className="flex-1 ml-0 md:ml-64 p-6 bg-[#f1f5f9] overflow-y-auto">
+        {/* Burger + header global */}
+        <div className="flex items-center justify-between mb-4">
+          {/* Burger mobile */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="md:hidden text-2xl text-[#05253A]"
+          >
+            <FaBars />
+          </button>
+
+          {/* ✅ Header global, unique */}
+          {/* <Sheader /> */}
+        </div>
+
+        {/* Les pages enfants */}
+        {/* <Outlet /> */}
+      </main>
     </div>
   );
 };

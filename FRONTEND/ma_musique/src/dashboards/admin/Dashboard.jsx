@@ -152,7 +152,11 @@ export const Dashboard = () => {
 
   return (
     <>
-      <Box display="flex" alignItems="center" gap={2} marginY={2}>
+         <div className="p-4">
+      {/* Filter & Search */}
+      <Box
+        className="flex flex-col md:flex-row gap-4 mb-4"
+      >
         <FormControl fullWidth sx={{ maxWidth: 300 }}>
           <InputLabel id="user-type-label">Select User</InputLabel>
           <Select
@@ -174,28 +178,31 @@ export const Dashboard = () => {
           value={searchTerm}
           onChange={handleSearchChange}
           fullWidth
+          className="w-full"
         />
       </Box>
 
-      <Box display="flex" alignItems="center" gap={4} mb={2}>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Box width={16} height={16} bgcolor="rgba(0, 128, 0, 0.5)" borderRadius={1} />
+      {/* Legend */}
+      <Box className="flex flex-wrap items-center gap-6 mb-4">
+        <Box className="flex items-center gap-2">
+          <Box className="w-4 h-4 bg-green-500/50 rounded" />
           <Typography variant="body2">Étudiants</Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Box width={16} height={16} bgcolor="rgba(255, 165, 0, 0.5)" borderRadius={1} />
+        <Box className="flex items-center gap-2">
+          <Box className="w-4 h-4 bg-orange-400/50 rounded" />
           <Typography variant="body2">Enseignants</Typography>
         </Box>
       </Box>
 
-      <Box mt={4}>
+      {/* Table */}
+      <Box className="mt-4 overflow-x-auto">
         <Typography variant="h6">{userTypeLabel}</Typography>
 
         <TableContainer component={Paper} sx={{ mt: 2 }}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><strong>id</strong></TableCell>
+                <TableCell><strong>ID</strong></TableCell>
                 <TableCell><strong>Name</strong></TableCell>
                 <TableCell><strong>Email</strong></TableCell>
                 <TableCell><strong>Role</strong></TableCell>
@@ -203,15 +210,18 @@ export const Dashboard = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredUsers.map((user, index) => (
-                <TableRow key={user.id} sx={{
-                  backgroundColor:
-                    user.role === 'student'
-                      ? 'rgba(0, 128, 0, 0.3)' // vert pâle
-                      : user.role === 'teacher'
-                        ? 'rgba(255, 165, 0, 0.3)' // orange pâle
-                        : 'transparent',
-                }}>
+              {filteredUsers.map((user) => (
+                <TableRow
+                  key={user._id}
+                  sx={{
+                    backgroundColor:
+                      user.role === 'student'
+                        ? 'rgba(0, 128, 0, 0.1)'
+                        : user.role === 'teacher'
+                          ? 'rgba(255, 165, 0, 0.1)'
+                          : 'transparent',
+                  }}
+                >
                   <TableCell>{user._id}</TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
@@ -223,8 +233,7 @@ export const Dashboard = () => {
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete">
-                      <IconButton key={name} color="error" onClick={() => handleDelete(user._id, user.role)}>
-                        {/* {isDeleting ? "Suppression..." : "Supprimer"} */}
+                      <IconButton color="error" onClick={() => handleDelete(user._id, user.role)}>
                         <DeleteIcon />
                       </IconButton>
                     </Tooltip>
@@ -233,7 +242,7 @@ export const Dashboard = () => {
               ))}
               {filteredUsers.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} align="center">
+                  <TableCell colSpan={5} align="center">
                     No matching users found.
                   </TableCell>
                 </TableRow>
@@ -242,6 +251,7 @@ export const Dashboard = () => {
           </Table>
         </TableContainer>
       </Box>
+    </div>
     </>
   );
 };

@@ -23,6 +23,7 @@ import { Calender, calenderSchema } from './schema/calender.schema';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './roles.guard';
 import { NotificationModule } from './notification/notification/notification.module';
+import { ChatModule } from './chats/chat/chat.module';
 
 
 @Module({
@@ -64,7 +65,7 @@ import { NotificationModule } from './notification/notification/notification.mod
     signOptions: { expiresIn: '1h' },
   }),
   StudentModule,
-    UserModule, CourseModule, AuthModule, DatabaseModule, AdminModule, TeacherModule, StudentModule, CalenderModule, NotificationModule],
+    UserModule, CourseModule, AuthModule, DatabaseModule, AdminModule, TeacherModule, StudentModule, CalenderModule, NotificationModule, ChatModule],
   controllers: [AppController, UserController, CourseController, CalenderController],
   providers: [AppService , AdminService , MailService, CalenderService , // 👉 Ajout du RolesGuard comme guard global
     {
