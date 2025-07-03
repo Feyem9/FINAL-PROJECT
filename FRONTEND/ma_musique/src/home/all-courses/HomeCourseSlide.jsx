@@ -2,12 +2,12 @@ import React from "react";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from "@mui/material/Button";
-import Grid  from "@mui/material/Grid";
+import Grid from "@mui/material/Grid";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/autoplay";
-import { Navigation, Autoplay } from "swiper/modules"; // Importer le module de navigation pour Swiper
+import { Navigation, Autoplay } from "swiper/modules";
 
 // Données des cours
 const courses = [
@@ -34,86 +34,105 @@ const courses = [
 ];
 
 const HomeCourseSlide = () => {
-    return (
-      <Box sx={{ padding: 4 , gap:"10%" }}>
-        <Typography variant="h3" sx={{ textAlign: "center", marginBottom: 4 }}>
-          Ours Course
-        </Typography>
-        <Swiper
-          spaceBetween={30}
-          slidesPerView={1}
-          loop={true}
-          navigation={false} // Activer la navigation
-          autoplay={{ delay: 6000, disableOnInteraction: false }} // Activer l'autoplay avec une pause de 3 secondes
-          modules={[Navigation, Autoplay]} // Activer les modules de navigation et d'autoplay
-        >
-          {courses.map((course, index) => (
-            <SwiperSlide key={index}>
-              <Grid
-                container
-                spacing={2}
-                alignItems="center"
-                sx={{
-                  padding: 2,
-                  backgroundColor: "rgba(255, 255, 255, 0.9)",
-                  borderRadius: 3,
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                {/* Image à gauche */}
-                <Grid item xs={12} md={6}>
-                  <Box
-                    sx={{
+  return (
+    <Box sx={{ px: { xs: 2, md: 10 }, py: { xs: 4, md: 8 } }}>
+      <Typography
+        variant="h3"
+        sx={{
+          textAlign: "center",
+          mb: { xs: 4, md: 6 },
+          fontSize: { xs: "1.8rem", md: "2.5rem" },
+          fontWeight: "bold",
+        }}
+      >
+        Our Courses
+      </Typography>
+
+      <Swiper
+        spaceBetween={30}
+        slidesPerView={1}
+        loop
+        autoplay={{ delay: 6000, disableOnInteraction: false }}
+        modules={[Navigation, Autoplay]}
+      >
+        {courses.map((course, index) => (
+          <SwiperSlide key={index}>
+            <Grid
+              container
+              spacing={4}
+              alignItems="center"
+              sx={{
+                p: { xs: 2, md: 4 },
+                bgcolor: "rgba(255, 255, 255, 0.95)",
+                borderRadius: 3,
+                boxShadow: 3,
+                flexDirection: { xs: "column", md: "row" },
+                textAlign: { xs: "center", md: "left" },
+              }}
+            >
+              {/* Image */}
+              <Grid item xs={12} md={6}>
+                <Box
+                  sx={{
+                    width: "100%",
+                    borderRadius: 2,
+                    overflow: "hidden",
+                    maxHeight: { xs: 250, md: 500 },
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <img
+                    src={course.image}
+                    alt={course.title}
+                    style={{
                       width: "100%",
-                      height: "auto",
-                      borderRadius: 2,
-                      overflow: "hidden",
-                      maxWidth: "100%", // Empêcher l'image d'être trop grande sur un écran large
-                      maxHeight:"500px",
-                      margin: "auto", // Centrer l'image si nécessaire
-                      display:"flex",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      height: "100%",
+                      objectFit: "cover",
                     }}
-                  >
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </Box>
-                </Grid>
-  
-                {/* Texte explicatif à droite */}
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 2 }}>
-                    {course.title}
-                  </Typography>
-                  <Typography variant="body1" sx={{ marginBottom: 2 }}>
-                    {course.description}
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    href={`/courses/${course.title.toLowerCase()}`}
-                    sx={{
-                      bgcolor: "#43A047",
-                      '&:hover': { bgcolor: "#388E3C" },
-                    }}
-                  >
-                    Commencer le Cours
-                  </Button>
-                </Grid>
+                  />
+                </Box>
               </Grid>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </Box>
-    );
-  };
-  
-  export default HomeCourseSlide;
+
+              {/* Texte */}
+              <Grid item xs={12} md={6}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: "bold",
+                    mb: 2,
+                    fontSize: { xs: "1.5rem", md: "2rem" },
+                  }}
+                >
+                  {course.title}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, fontSize: { xs: "0.9rem", md: "1rem" } }}
+                >
+                  {course.description}
+                </Typography>
+                <Button
+                  variant="contained"
+                  href={`/courses/${course.title.toLowerCase()}`}
+                  sx={{
+                    bgcolor: "#43A047",
+                    '&:hover': { bgcolor: "#388E3C" },
+                    px: 3,
+                    py: 1.5,
+                    fontSize: { xs: "0.8rem", md: "1rem" },
+                  }}
+                >
+                  Commencer le Cours
+                </Button>
+              </Grid>
+            </Grid>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </Box>
+  );
+};
+
+export default HomeCourseSlide;
