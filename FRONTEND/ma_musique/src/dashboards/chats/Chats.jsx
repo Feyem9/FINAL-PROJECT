@@ -6,7 +6,11 @@ import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 
 const admin = JSON.parse(localStorage.getItem('admin'));
+console.log('admin' , admin);
+
 const monIdDuUser = admin._id;
+console.log('monidduuser' , monIdDuUser);
+
 
 const socket = io('http://localhost:3000', {
   query: { userId: monIdDuUser },

@@ -28,6 +28,8 @@ const Login = () => {
       localStorage.setItem('userRole', role);
 
       const id = localStorage.getItem('userId');
+      console.log(id);
+      
       if (!id) throw new Error("User ID not found");
 
       const profileUrl = `http://localhost:3000/${role}s/${id}`;
