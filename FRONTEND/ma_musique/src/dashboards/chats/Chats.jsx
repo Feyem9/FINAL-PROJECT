@@ -11,8 +11,10 @@ console.log('admin' , admin);
 
 let monIdDuUser = null;
 
-if (admin) {
-  const monIdDuUser = admin._id;
+if (!admin) {
+  const monIdDuUser = null;
+  console.log(monIdDuUser);
+  
   
 }else{
    console.log('⛔ Pas connecté');
