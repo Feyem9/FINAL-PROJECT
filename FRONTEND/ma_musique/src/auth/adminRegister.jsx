@@ -30,16 +30,6 @@ const AdminRegister = () => {
       });
       console.log("Réponse brute du backend :", response.data);
 
-  
-    //   const { token, admin } = response.data;
-    //   if (admin.role === 'admin') {
-    //     localStorage.setItem('token', token);
-    //     localStorage.setItem('admin', JSON.stringify(admin));
-
-    //     navigate('/admins/login');
-    //   } else {
-    //     setError("Vous n'êtes pas autorisé en tant qu'administrateur.");
-    //   }
     } catch (err) {
       console.log("Erreur reçue :", err.response?.data || err.message);
       setError(err.response?.data?.message || "register échoué. Vérifiez vos identifiants.");

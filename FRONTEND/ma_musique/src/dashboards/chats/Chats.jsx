@@ -6,9 +6,20 @@ import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 
 const admin = JSON.parse(localStorage.getItem('admin'));
+const role = JSON.parse(localStorage.getItem('role'));
 console.log('admin' , admin);
 
-const monIdDuUser = admin._id;
+let monIdDuUser = null;
+
+if (admin) {
+  const monIdDuUser = admin._id;
+  
+}else{
+   console.log('⛔ Pas connecté');
+  // Redirige vers page login ou page d'accueil publique :
+  window.location.href = '/home';
+}
+
 console.log('monidduuser' , monIdDuUser);
 
 
