@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: music-school-backend
+    env: node
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 3000
+
