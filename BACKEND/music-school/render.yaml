@@ -1,0 +1,16 @@
+# render.yaml
+services:
+  - type: web
+    name: mon-backend-nestjs
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    branch: main
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        sync: false   # à ajouter dans le dashboard (meilleur pour les secrets)
+      - key: JWT_SECRET 
