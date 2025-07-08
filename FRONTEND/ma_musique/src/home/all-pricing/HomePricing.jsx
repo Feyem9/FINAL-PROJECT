@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 const plans = [
   {
     title: "Basique",
-    price: "  0€ ,  Gratuit",
+    price: "  0$ ,  Gratuit",
     features: ["Accès à quelques cours", "Support communautaire", "Accès limité aux ressources"],
   },
   {

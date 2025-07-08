@@ -2,18 +2,22 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export const Notification = () => {
+
+      const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [allNotifications, setAllNotifications] = useState([]);
   const [adminNotifications, setAdminNotifications] = useState([]);
   const adminData = localStorage.getItem('admin');
   const id = adminData ? JSON.parse(adminData)._id : null;
 
   useEffect(() => {
-    axios.get('http://localhost:3000/notification/all')
+    axios.get(`${databaseUri}/notification/all`)
       .then(res => setAllNotifications(res.data))
       .catch(err => console.error(err));
 
     if (id) {
-      axios.get(`http://localhost:3000/notification/user/${id}`)
+      axios.get(`${databaseUri}/notification/user/${id}`)
         .then(res => setAdminNotifications(res.data))
         .catch(err => console.error(err));
     }
@@ -21,7 +25,7 @@ export const Notification = () => {
 
   // Fonction pour marquer une notification comme lue ou non lue
   const toggleRead = (notifId, currentRead) => {
-    axios.patch(`http://localhost:3000/notification/${notifId}/read`, { read: !currentRead })
+    axios.patch(`${databaseUri}/notification/${notifId}/read`, { read: !currentRead })
       .then(() => {
         setAdminNotifications(notifs =>
           notifs.map(n =>

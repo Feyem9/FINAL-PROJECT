@@ -5,6 +5,10 @@ import axios from 'axios';
 import interactionPlugin from '@fullcalendar/interaction';
 
 export const Scalender = () => {
+
+      const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -24,7 +28,7 @@ export const Scalender = () => {
   }, []);
 
   const fetchEvents = () => {
-    axios.get('http://localhost:3000/calender/all')
+    axios.get(`${databaseUri}/calender/all`)
       .then((res) => {
         const filteredEvents = res.data.filter(event =>
           event.audience === 'student' ||
@@ -69,7 +73,7 @@ export const Scalender = () => {
     };
 
     if (editingEventId) {
-      axios.put(`http://localhost:3000/calender/update/${editingEventId}`, dataToSend)
+      axios.put(`${databaseUri}/calender/update/${editingEventId}`, dataToSend)
         .then(() => {
           fetchEvents();
           resetForm();
@@ -78,7 +82,7 @@ export const Scalender = () => {
           console.error('Erreur lors de la mise à jour :', err);
         });
     } else {
-      axios.post('http://localhost:3000/calender/create', dataToSend)
+      axios.post(`${databaseUri}/calender/create`, dataToSend)
         .then(() => {
           fetchEvents();
           resetForm();
@@ -91,7 +95,7 @@ export const Scalender = () => {
 
   const handleDelete = () => {
     if (selectedEvent && selectedEvent.creator === student._id) {
-      axios.delete(`http://localhost:3000/calender/delete/${selectedEvent._id}`)
+      axios.delete(`${databaseUri}/calender/delete/${selectedEvent._id}`)
         .then(() => {
           fetchEvents();
           setSelectedEvent(null);

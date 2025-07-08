@@ -3,6 +3,10 @@ import axios from 'axios';
 import './users.css';
 
 export const Users = () => {
+
+      const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [role, setRole] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -43,7 +47,7 @@ export const Users = () => {
         console.log("Level détecté :",level); // ← DEBUG
         userData.instrument = instrument;
         console.log("instrument détecté :",instrument); // ← DEBUG
-        apiUrl = 'http://localhost:3000/students/register';
+        apiUrl = `${databaseUri}/students/register`;
 
         const response = await axios.post(apiUrl, userData);
         console.log(response);
@@ -65,7 +69,7 @@ export const Users = () => {
         formData.append('file', file);
         console.log("file détecté :",file); // ← DEBUG
 
-        apiUrl = 'http://localhost:3000/teachers/register';
+        apiUrl = `${databaseUri}/teachers/register`;
         const response = await axios.post(apiUrl, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',

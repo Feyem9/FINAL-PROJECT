@@ -18,13 +18,16 @@ import DialogContent from "@mui/material/DialogContent"
 import DialogActions from "@mui/material/DialogActions"
 
 const useCourses = () => {
+
+    const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/course/all');
+        const response = await axios.get(`${databaseUri}/course/all`);
         setCourses(response.data);
       } catch (error) {
         console.error('Error fetching courses:', error);
@@ -86,7 +89,7 @@ export default function Course() {
     
 
     try {
-      const response = await axios.post('http://localhost:3000/course/create', formData);
+      const response = await axios.post(`${databaseUri}/course/create`, formData);
       setCourses((prev) => [...prev, response.data]);
       setNewCourse({
         title: '',
@@ -107,7 +110,7 @@ export default function Course() {
 
   const handleDeleteCourse = async (courseId) => {
     try {
-      await axios.delete(`http://localhost:3000/course/delete/${courseId}`);
+      await axios.delete(`${databaseUri}/course/delete/${courseId}`);
       setCourses((prev) => prev.filter(course => course._id !== courseId));
     } catch (error) {
       console.error('Error deleting course:', error);

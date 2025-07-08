@@ -134,6 +134,10 @@ import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
 
 export const Calendars = () => {
+
+      const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [formData, setFormData] = useState({
@@ -148,7 +152,7 @@ export const Calendars = () => {
   
 
   useEffect(() => {
-    axios.get('http://localhost:3000/calender/all')
+    axios.get(`${databaseUri}/calender/all`)
       .then(res => setEvents(res.data))
       .catch(err => console.error("Erreur lors du chargement :", err));
   }, []);
@@ -195,7 +199,7 @@ export const Calendars = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data: savedEvent } = await axios.post('http://localhost:3000/calender/create', {
+      const { data: savedEvent } = await axios.post(`${databaseUri}/calender/create`, {
         ...formData,
         start_date: new Date(formData.start_date).toISOString(),
         end_date: new Date(formData.end_date).toISOString(),

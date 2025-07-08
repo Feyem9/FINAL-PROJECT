@@ -4,6 +4,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 export const Schat = () => {
+
+      const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [teachers, setTeachers] = useState([]);
   const [selectedTeacherId, setSelectedTeacherId] = useState('');
   const [senderId, setSenderId] = useState('');
@@ -17,7 +21,7 @@ export const Schat = () => {
     if (Sid) setSenderId(Sid);
     const fetchTeachers = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/teachers/all');
+        const res = await axios.get(`${databaseUri}/teachers/all`);
         console.log('Liste des enseignants:', res.data);
 
         setTeachers(res.data);

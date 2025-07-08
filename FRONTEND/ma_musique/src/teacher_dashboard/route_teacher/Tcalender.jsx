@@ -5,6 +5,10 @@ import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
 
 export const Tcalender = () => {
+
+  const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [events, setEvents] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
@@ -26,7 +30,7 @@ export const Tcalender = () => {
 
   const fetchEvents = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/calender/all');
+      const res = await axios.get(`${databaseUri}/calender/all`);
       const teacherEvents = res.data.filter(e =>
         e.audience === 'teacher' || e.audience === 'teacher_and_student'
       );
@@ -91,9 +95,9 @@ export const Tcalender = () => {
 
     try {
       if (editingId) {
-        await axios.put(`http://localhost:3000/calender/${editingId}`, payload);
+        await axios.put(`${databaseUri}/calender/${editingId}`, payload);
       } else {
-        await axios.post('http://localhost:3000/calender/create', payload);
+        await axios.post(`${databaseUri}/calender/create`, payload);
       }
       // setShowForm(false);
       // setEditingId(null);
@@ -112,7 +116,7 @@ export const Tcalender = () => {
   const handleDelete = async () => {
     if (editingId) {
       try {
-        await axios.delete(`http://localhost:3000/calender/${editingId}`);
+        await axios.delete(`${databaseUri}/calender/${editingId}`);
         setShowForm(false);
         setEditingId(null);
         fetchEvents();

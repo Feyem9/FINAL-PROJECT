@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import './profiles.css'; // si tu veux ajouter du style
 
 export const Profile = () => {
+
   const { user, logout, isAuthenticated } = useAuth0();
 
   const admin = JSON.parse(localStorage.getItem('admin'));

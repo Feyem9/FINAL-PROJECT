@@ -3,6 +3,10 @@ import { Card, CardContent, Typography, Button, Grid, Chip, CircularProgress, Bo
 import axios from 'axios';
 
 export const Scourse = () => {
+
+      const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +16,7 @@ export const Scourse = () => {
   const [selectedCategory, setSelectedCategory] = useState(studentCategory);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/course/all')
+    axios.get(`${databaseUri}/course/all`)
       .then(res => setCourses(res.data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
@@ -86,14 +90,14 @@ export const Scourse = () => {
                       {/* Affichage de la vidéo si le cours est de type vidéo */}
                       {course.fileUrl && course.media === "video" && (
                         <video controls width="100%" style={{ marginTop: 8 }}>
-                          <source src={`http://localhost:3000${course.fileUrl}`} type="video/mp4" />
+                          <source src={`${databaseUri}${course.fileUrl}`} type="video/mp4" />
                           Votre navigateur ne supporte pas la lecture vidéo.
                         </video>
                       )}
                       {/* Affichage du PDF si media=pdf */}
                       {course.fileUrl && course.media === "pdf" && (
                         <a
-                          href={`http://localhost:3000${course.fileUrl}`}
+                          href={`${databaseUri}${course.fileUrl}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{ display: "block", marginTop: 8 }}
@@ -104,7 +108,7 @@ export const Scourse = () => {
                       {/* Affichage de l'audio si media=audio */}
                       {course.fileUrl && course.media === "audio" && (
                         <audio controls style={{ marginTop: 8, width: "100%" }}>
-                          <source src={`http://localhost:3000${course.fileUrl}`} type="audio/mpeg" />
+                          <source src={`${databaseUri}${course.fileUrl}`} type="audio/mpeg" />
                           Votre navigateur ne supporte pas la lecture audio.
                         </audio>
                       )}

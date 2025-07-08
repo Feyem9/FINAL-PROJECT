@@ -4,6 +4,10 @@ import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const Login = () => {
+
+    const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,7 +22,7 @@ const Login = () => {
       const role = localStorage.getItem('userRole');
       if (!role) throw new Error("User role not specified");
 
-      const loginUrl = `http://localhost:3000/${role}s/login`;
+      const loginUrl = `${databaseUri}/${role}s/login`;
 
       const response = await axios.post(loginUrl, { email, password });
       const token = response.data.token;
@@ -32,7 +36,7 @@ const Login = () => {
       
       if (!id) throw new Error("User ID not found");
 
-      const profileUrl = `http://localhost:3000/${role}s/${id}`;
+      const profileUrl = `${databaseUri}/${role}s/${id}`;
       const me = await axios.get(profileUrl, {
         headers: { Authorization: `Bearer ${token}` },
       });

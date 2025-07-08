@@ -27,6 +27,10 @@ import {
 } from "@mui/material";
 
 export const Dashboard = () => {
+
+      const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [userType, setUserType] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [teachers, setTeachers] = useState([]);
@@ -40,12 +44,12 @@ export const Dashboard = () => {
 
       try {
         const [teachersRes, studentsRes] = await Promise.all([
-          axios.get("http://localhost:3000/teachers/all", {
+          axios.get(`${databaseUri}/teachers/all`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          axios.get("http://localhost:3000/students/all", {
+          axios.get(`${databaseUri}/students/all`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -100,7 +104,6 @@ export const Dashboard = () => {
       return;
     }
 
-    // un formulaire de modification en appelant la route put du backend
   };
 
   const handleDelete = async (userId, userType) => {
@@ -128,8 +131,8 @@ export const Dashboard = () => {
       console.log('id', id);
 
 
-      const studentDeleteUrl = `http://localhost:3000/students/${id}`;
-      const teacherDeleteUrl = `http://localhost:3000/teachers/${id}`;
+      const studentDeleteUrl = `${databaseUri}/students/${id}`;
+      const teacherDeleteUrl = `${databaseUri}/teachers/${id}`;
       if (userType === "student") {
         await axios.delete(studentDeleteUrl);
       } else if (userType === "teacher") {

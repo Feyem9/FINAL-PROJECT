@@ -12,6 +12,10 @@ console.log('admin' , admin);
 let monIdDuUser = null;
 
 if (!admin) {
+
+      const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const monIdDuUser = null;
   console.log(monIdDuUser);
   
@@ -25,7 +29,7 @@ if (!admin) {
 console.log('monidduuser' , monIdDuUser);
 
 
-const socket = io('http://localhost:3000', {
+const socket = io(`${databaseUri}`, {
   query: { userId: monIdDuUser },
 });
 
@@ -87,7 +91,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
 
     try {
       const res = await axios.post(
-        'http://localhost:3000/chat/upload',
+        `${databaseUri}/chat/upload`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );

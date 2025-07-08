@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export const Snotification = () => {
+
+  const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI || 'http://localhost:3000';
+
   const [notifications, setNotifications] = useState([]);
   const studentData = JSON.parse(localStorage.getItem('student'));
   const studentId = studentData?._id;
 
   useEffect(() => {
     if (studentId) {
-      axios.get(`http://localhost:3000/notification/user/${studentId}`)
+      axios.get(`${databaseUri}/notification/user/${studentId}`)
         .then(res => setNotifications(res.data))
         .catch(err => console.error(err));
     }

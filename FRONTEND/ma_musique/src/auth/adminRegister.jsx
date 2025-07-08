@@ -4,6 +4,10 @@ import axios from 'axios';
 import '../auth/adminLogin.css'; // Assurez-vous d'importer le fichier CSS pour le style
 
 const AdminRegister = () => {
+
+    const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -17,7 +21,7 @@ const AdminRegister = () => {
     try {
       console.log("Tentative de connexion avec :",name, email, password, contact, role);
   
-      const response = await axios.post('http://localhost:3000/admins/register', {
+      const response = await axios.post(`${databaseUri}/admins/register`, {
         name,
         email,
         password,

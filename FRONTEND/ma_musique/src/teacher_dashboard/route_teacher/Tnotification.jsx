@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export const Tnotification = () => {
+
+  const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [notifications, setNotifications] = useState([]);
   const teacherData = JSON.parse(localStorage.getItem('teacher'));
   const teacherId = teacherData?._id;
 
   useEffect(() => {
     if (teacherId) {
-      axios.get(`http://localhost:3000/notification/user/${teacherId}`)
+      axios.get(`${databaseUri}/notification/user/${teacherId}`)
         .then(res => setNotifications(res.data))
         .catch(err => console.error(err));
     }

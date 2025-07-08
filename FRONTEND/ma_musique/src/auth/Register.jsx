@@ -321,6 +321,10 @@ import React, { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 
 const Request = () => {
+
+    const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",

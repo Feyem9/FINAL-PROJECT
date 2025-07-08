@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export const Tprofile = () => {
+
+  const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+
+
   const [loading, setLoading] = useState(true);
 
   // ⚠️ Remplace par l'URL correcte de ton backend
@@ -11,7 +15,7 @@ export const Tprofile = () => {
 
 
   // console.log(`User ID received teacher: ${id}`);
-  const API_URL = `http://localhost:3000/teachers/${id}`;
+  const API_URL = `${databaseUri}/teachers/${id}`;
 
   useEffect(() => {
     const fetchTeacher = async () => {
