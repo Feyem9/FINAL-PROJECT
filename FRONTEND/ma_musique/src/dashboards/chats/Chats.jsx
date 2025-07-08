@@ -29,7 +29,7 @@ if (!admin) {
 console.log('monidduuser' , monIdDuUser);
 
 
-const socket = io(`${databaseUri}`, {
+const socket = io('http://localhost:3000', {
   query: { userId: monIdDuUser },
 });
 

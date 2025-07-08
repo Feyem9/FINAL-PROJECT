@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-console.log("✅ BACKEND URL:", process.env.REACT_APP_BACKEND_ONLINE_URI);
+// console.log("✅ BACKEND URL:", process.env.REACT_APP_BACKEND_ONLINE_URI);
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
