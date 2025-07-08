@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
+console.log("✅ BACKEND URL:", process.env.REACT_APP_BACKEND_ONLINE_URI);
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import axios from 'axios';
 
 export const Tcalender = () => {
-// console.log("✅ BACKEND URL:", process.env.REACT_APP_BACKEND_ONLINE_URI);
 
   const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
-//   console.log("BACKEND URL:", databaseUri);
-// if (!databaseUri) {
-//   throw new Error("⚠️ La variable REACT_APP_BACKEND_ONLINE_URI est undefined !");
-// }
+  console.log("BACKEND URL:", databaseUri);
+if (!databaseUri) {
+  throw new Error("⚠️ La variable REACT_APP_BACKEND_ONLINE_URI est undefined !");
+}
 
 
 
