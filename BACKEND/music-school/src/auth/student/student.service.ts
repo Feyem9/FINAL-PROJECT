@@ -8,6 +8,7 @@ import * as bcrypt from 'bcryptjs';
 import { MailerService } from '@nestjs-modules/mailer';
 import { LoginDto } from 'src/DTO/login.dto';
 import { ConfigService } from '@nestjs/config';
+import { log } from 'util';
 
 @Injectable()
 export class StudentService {
@@ -121,6 +122,7 @@ export class StudentService {
         async signUpStudent(studentDto : StudentDto): Promise<{
             student:any}> {
             const {name , email , password , contact , role  , level , instrument} = studentDto;
+            console.log('studentDto : ' , studentDto);
     
             const hashedPassword = await bcrypt.hash(password , 10)
     

@@ -1,329 +1,11 @@
-// import React, { useState } from 'react';
-// import '../auth/authstyles.css';
-// import { useNavigate } from 'react-router-dom';
-// import { NavLink } from 'react-router-dom';
-// import axios from 'axios';
-
-// const Request = () => {
-//   const [name, setName] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [contact, setContact] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [role, setRole] = useState(''); // Par défaut, l'utilisateur est un étudiant
-
-//   // Champs spécifiques selon le rôle choisi
-//   const [studyLevel, setStudyLevel] = useState('');
-//   const [speciality, setSpeciality] = useState('');
-//   const [experience, setExperience] = useState('');
-//   const [instrument, setInstrument] = useState('');
-//   // const [certificate, setCertificate] = useState<File | null>(null);
-//   const [certificate, setCertificate] = useState(null);
-
-//   // const [adminCode, setAdminCode] = useState('');
-
-//   const [error, setError] = useState('');
-//   const navigate = useNavigate();
-
-//   const handleFileUpload = (e) => {
-//     if (e.target.files && e.target.files[0]) {
-//       setCertificate(e.target.files[0]);
-//     }
-//   };
-
-//   const handleSubmit = async (event) => {
-//     event.preventDefault();
-
-//     // if (!certificate) {
-//     //   alert("Please upload a PDF file.");
-//     //   return;
-//     // }
-//     if (role === "teacher" && !certificate) {
-//       setError("Le certificat est requis pour les enseignants.");
-//       return;
-//     }
-
-//     const formData = new FormData();
-//     formData.append("certificate", certificate);
-//     formData.append("experience", experience);
-//     formData.append("certificate", certificate);
-
-//     // try {
-
-//     //   if (response.ok) {
-//     //     alert("File uploaded successfully!");
-//     //   } else {
-//     //     alert("Failed to upload file.");
-//     //   }
-//     // } catch (error) {
-//     //   console.error("Error uploading file:", error);
-//     // }
-//     const userData = { name, email, contact, password, role };
-
-//     // Ajout des champs spécifiques au rôle
-//     if (role === 'student') {
-//       userData.level = studyLevel;
-//       userData.instrument = instrument;
-//     } else if (role === 'teacher') {
-//       userData.speciality = speciality;
-//       userData.experience = experience;
-//       userData.certificate = certificate;
-//     }
- 
-//     // Déterminer l'URL en fonction du rôle
-//     let apiUrl = 'http://localhost:3000/auth/register';
-//     if (role === 'student') {
-//       apiUrl = 'http://localhost:3000/students/register';
-//     } else if (role === 'teacher') {
-//       apiUrl = 'http://localhost:3000/teachers/register';
-//     }
-
-
-//     try {
-
-
-//       const response = await axios.post(apiUrl, userData);
-
-//       console.log('Registration successful:', response.data);
-
-//       if (response.data) {
-//         navigate('/login');
-//       }
-
-//       let user = response.data;
-//       console.log('user data:', user);
-
-
-//       if (role === 'student') {
-//         user = response.data.student;
-//       } else if (role === 'teacher') {
-//         user = response.data.teacher;
-//         console.log('user data teacher:', user);
-        
-//       }
-
-//       if (user && user._id) {
-//         localStorage.setItem('userId', user._id);
-//         localStorage.setItem('userEmail', user.email);
-//         localStorage.setItem('userRole', user.role);
-//         console.log('User data saved:', user);
-//       } else {
-//         throw new Error("User data is invalid");
-//       }
-//     } catch (err) {
-//       setError('Registration failed. Please try again.');
-//       console.error(err);
-//     }
-
-
-//   }
-//   // const handleSubmit = async (event) => {
-//   //   event.preventDefault();
-
-//   //   // Données de base pour tous les rôles
-//   //   const userData = { name, email, contact, password, role };
-
-//   //   // Ajout des champs spécifiques au rôle
-//   //   if (role === 'student') {
-//   //     userData.studyLevel = studyLevel;
-//   //     userData.instrument = instrument;
-//   //   } else if (role === 'teacher') {
-//   //     userData.speciality = speciality;
-//   //     userData.experience = experience;
-
-//   //     if (!certificate) {
-//   //       alert("Please upload a PDF file.");
-//   //       return;
-//   //     }
-
-//   //     // Upload du certificat
-//   //     const formData = new FormData();
-//   //     formData.append("certificate", certificate);
-//   //     formData.append("experience", experience); // Facultatif selon ton backend
-
-//   //     try {
-//   //       const uploadResponse = await axios.post("http://localhost:3000/teachers/upload", formData, {
-//   //         headers: {
-//   //           "Content-Type": "multipart/form-data",
-//   //         },
-//   //       });
-
-//   //       console.log("Upload response:", uploadResponse.data);
-//   //       alert("Certificate uploaded successfully!");
-//   //     } catch (uploadError) {
-//   //       console.error("Upload error:", uploadError);
-//   //       alert("Failed to upload certificate.");
-//   //       return;
-//   //     }
-//   //   }
-
-//   //   // Déterminer l'URL d'enregistrement selon le rôle
-//   //   let apiUrl = 'http://localhost:3000/auth/register';
-//   //   if (role === 'student') {
-//   //     apiUrl = 'http://localhost:3000/students/create';
-//   //   } else if (role === 'teacher') {
-//   //     apiUrl = 'http://localhost:3000/teachers/register';
-//   //   }
-
-//   //   try {
-//   //     const response = await axios.post(apiUrl, userData);
-
-//   //     console.log('Registration successful:', response.data);
-
-//   //     if (response.data) {
-//   //       navigate('/home');
-//   //     }
-
-//   //     const user = response.data;
-
-//   //     if (user && user._id) {
-//   //       localStorage.setItem('userId', user._id);
-//   //       localStorage.setItem('userEmail', user.email);
-//   //       localStorage.setItem('userRole', user.role);
-//   //       console.log('User data saved.');
-//   //     } else {
-//   //       throw new Error("User data is invalid");
-//   //     }
-//   //   } catch (err) {
-//   //     setError('Registration failed. Please try again.');
-//   //     console.error(err);
-//   //   }
-//   // };
-
-
-//   return (
-//     <div className="register">
-//       <div className="form-box">
-//         <form className="form" onSubmit={handleSubmit}>
-//           <span className="title">Register Form</span>
-//           <span className="subtitle">Museschool Form</span>
-//           <div className="form-container">
-//             <input
-//               type="text"
-//               className="input"
-//               placeholder="Full Name"
-//               value={name}
-//               onChange={(e) => setName(e.target.value)}
-//               required
-//             />
-//             <input
-//               type="email"
-//               className="input"
-//               placeholder="Email"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               required
-//             />
-//             <input
-//               type="password"
-//               className="input"
-//               placeholder="Password"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               required
-//             />
-//             <input
-//               type="text"
-//               className="input"
-//               placeholder="Tel Number"
-//               value={contact}
-//               onChange={(e) => setContact(e.target.value)}
-//               required
-//             />
-
-//             {/* Sélecteur de rôle */}
-//             <select className="input" value={role} onChange={(e) => setRole(e.target.value)} required>
-//               <option value="" disabled>Register As A </option>
-//               <option value="student">Student</option>
-//               <option value="teacher">Teacher</option>
-//             </select>
-
-//             {/* Champs dynamiques selon le rôle sélectionné */}
-//             {role === 'student' && (
-
-//               <>
-
-//                 <select
-//                   className="input"
-//                   value={studyLevel}
-//                   onChange={(e) => setStudyLevel(e.target.value)}
-//                   required
-//                 >
-//                   <option value="" disabled>Select Study Level</option>
-//                   <option value="easy">Easy</option>
-//                   <option value="medium">Medium</option>
-//                   <option value="hard">Hard</option>
-//                 </select><select
-//                   className="input"
-//                   value={instrument}
-//                   onChange={(e) => setInstrument(e.target.value)}
-//                   required
-//                 >
-//                   <option value="" disabled>What instrument did you want to learn ?</option>
-//                   <option value="piano">Piano</option>
-//                   <option value="flute">Flute</option>
-//                   <option value="violon">Violon</option>
-//                   <option value="drum kit">Drum kit</option>
-//                 </select></>
-//             )}
-
-//             {role === 'teacher' && (
-//               <>
-//                 <select
-//                   className="input"
-//                   value={speciality}
-//                   onChange={(e) => setSpeciality(e.target.value)}
-//                   required
-//                 >
-//                   <option value="" disabled>What speciality did you want to teach ?</option>
-//                   <option value="piano">Piano</option>
-//                   <option value="flute">Flute</option>
-//                   <option value="violon">Violon</option>
-//                   <option value="drum kit">Drum kit</option>
-//                 </select>
-//                 <input
-//                   type="number"
-//                   className="input"
-//                   placeholder="Years of Experience"
-//                   value={experience}
-//                   onChange={(e) => setExperience(e.target.value)}
-//                   required
-//                 />
-
-//                 <input
-//                   type="file"
-//                   className="input"
-//                   accept=".pdf"
-//                   onChange={(e) => handleFileUpload(e)} // Sauvegarde le fichier PDF dans le state
-//                   required={role === 'teacher'} // ✅ Obligatoire seulement pour les enseignants
-//                 />
-//                 {certificate && (
-//                   <p>Selected file: {certificate.name}</p>
-//                 )}
-//               </>
-//             )}
-
-
-//           </div>
-//           {error && <p className="error">** {error} **</p>}
-//           <button type="submit">Register</button>
-//         </form>
-//         <div className="form-section">
-//           <p>Already have an account? <NavLink to="/login">Login</NavLink></p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Request;
-
 import React, { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
+import axios from 'axios';
+import Login from "./Login";
 
 const Request = () => {
-
-    const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
-
+  // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -331,7 +13,7 @@ const Request = () => {
     contact: "",
     password: "",
     role: "",
-    studyLevel: "",
+    level: "",
     speciality: "",
     experience: "",
     instrument: "",
@@ -359,6 +41,12 @@ const Request = () => {
         setCertificate(null);
         return;
       }
+      // Vérifier la taille du fichier (exemple: max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Le fichier PDF ne peut pas dépasser 5MB.");
+        setCertificate(null);
+        return;
+      }
       setCertificate(file);
     }
   };
@@ -369,14 +57,26 @@ const Request = () => {
       setError("Veuillez remplir tous les champs obligatoires.");
       return false;
     }
-    if (role === "student" && (!formData.studyLevel || !formData.instrument)) {
+
+    // Validation de l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Veuillez entrer une adresse email valide.");
+      return false;
+    }
+
+    // Validation du mot de passe
+    if (password.length < 6) {
+      setError("Le mot de passe doit contenir au moins 6 caractères.");
+      return false;
+    }
+
+    if (role === "student" && (!formData.level || !formData.instrument)) {
       setError("Veuillez sélectionner le niveau d'étude et l'instrument.");
       return false;
     }
     if (role === "teacher" && (!formData.speciality || !formData.experience)) {
-      setError(
-        "Veuillez renseigner votre spécialité et vos années d'expérience."
-      );
+      setError("Veuillez renseigner votre spécialité et vos années d'expérience.");
       return false;
     }
     if (role === "teacher" && !certificate) {
@@ -384,6 +84,40 @@ const Request = () => {
       return false;
     }
     return true;
+  };
+
+  // Fonction pour stocker les données utilisateur dans le localStorage
+  const storeUserData = (userData) => {
+    try {
+      // Stocker les informations de base de l'utilisateur
+      const userInfo = {
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
+        registeredAt: new Date().toISOString(),
+        // Ajouter des données spécifiques selon le rôle
+        ...(userData.role === "student" && {
+          level: userData.level,
+          instrument: userData.instrument
+        }),
+        ...(userData.role === "teacher" && {
+          speciality: userData.speciality,
+          experience: userData.experience
+        })
+      };
+
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      localStorage.setItem('userRole', userData.role);
+      localStorage.setItem('isRegistered', 'true');
+      localStorage.setItem(`${userData.role}Id`, userData.id);
+      console.log('id Données utilisateur stockées dans localStorage:', userData.id);
+
+
+      console.log('Données utilisateur stockées dans localStorage:', userInfo);
+    } catch (error) {
+      console.error('Erreur lors du stockage dans localStorage:', error);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -395,16 +129,122 @@ const Request = () => {
     setSuccessMsg("");
 
     try {
-      // Simulation d'envoi backend
-      await new Promise((r) => setTimeout(r, 1500)); // simulate delay
+      // Vérifier que l'URI du backend est définie
+      if (!databaseUri) {
+        throw new Error("URI du backend non définie. Vérifiez votre variable d'environnement VITE_TESTING_BACKEND_URI.");
+      }
 
-      setSuccessMsg(
-        "Inscription réussie ! Redirection vers la page de connexion..."
-      );
-      setTimeout(() => navigate("/login"), 2000);
+      const submissionData = new FormData();
+      submissionData.append("name", formData.name.trim());
+      submissionData.append("email", formData.email.trim().toLowerCase());
+      submissionData.append("contact", formData.contact.trim());
+      submissionData.append("password", formData.password);
+      submissionData.append("role", formData.role);
+
+      if (formData.role === "student") {
+        submissionData.append("level", formData.level);
+        submissionData.append("instrument", formData.instrument);
+      }
+
+      if (formData.role === "teacher") {
+        submissionData.append("speciality", formData.speciality);
+        submissionData.append("experience", formData.experience);
+        submissionData.append("certificate", certificate);
+      }
+
+      const jsonData = Object.fromEntries(submissionData.entries());
+      const response = await axios.post(`${databaseUri}/${formData.role}s/register`, jsonData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Réponse du backend :", response.data);
+
+      const userRole = formData.role.toLowerCase();
+      const userData = response.data[userRole];
+
+      if (response.status === 201 || response.status === 200) {
+        const userId = userData._id || userData.id;
+        console.log("ID utilisateur récupéré :", userId);
+        // Stocker les données dans le localStorage après inscription réussie
+
+        if (userId) {
+          console.log("ID utilisateur récupéré :", userId);
+          localStorage.setItem(`${userRole}Id`, userId); // Par exemple : "teacherId"
+          localStorage.setItem(userRole, JSON.stringify(userData)); // Stocke toutes les données
+          console.log("Données utilisateur stockées dans localStorage :", userData);
+        } else {
+          console.error("L'ID utilisateur n'a pas été retourné par le serveur.");
+          throw new Error("L'ID utilisateur n'a pas été retourné par le serveur.");
+        }
+
+        const fullUserData = {
+          ...formData,
+          id: userId
+        };
+        console.log('Données utilisateur complètes:', fullUserData);
+
+        storeUserData(fullUserData);
+        setSuccessMsg("Inscription réussie ! Vos données ont été sauvegardées. Redirection vers la page de connexion...");
+        setTimeout(() => navigate("/login"), 2000);
+      }
+
+      for (let pair of submissionData.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+      }
+
     } catch (err) {
-      setError("Échec de l'inscription, veuillez réessayer.");
-      console.error(err);
+      console.error('Erreur complète:', err);
+
+      let errorMessage = "Échec de l'inscription, veuillez réessayer.";
+
+      if (err.code === 'ECONNABORTED') {
+        errorMessage = "Délai d'attente dépassé. Vérifiez votre connexion.";
+      } else if (err.response) {
+        // Le serveur a répondu avec un code d'erreur
+        console.error('Données de la réponse d\'erreur:', err.response.data);
+        console.error('Statut:', err.response.status);
+        console.error('Headers:', err.response.headers);
+
+        switch (err.response.status) {
+          case 400:
+            errorMessage = err.response.data?.message || "Données invalides. Vérifiez vos informations.";
+            break;
+          case 401:
+            errorMessage = "Non autorisé. Vérifiez vos identifiants.";
+            break;
+          case 403:
+            errorMessage = "Accès interdit.";
+            break;
+          case 409:
+            errorMessage = "Un compte avec cet email existe déjà.";
+            break;
+          case 422:
+            errorMessage = "Données non valides. Vérifiez tous les champs.";
+            break;
+          case 500:
+            errorMessage = "Erreur serveur interne. Réessayez plus tard ou contactez l'administrateur.";
+            break;
+          case 502:
+            errorMessage = "Serveur indisponible. Réessayez plus tard.";
+            break;
+          case 503:
+            errorMessage = "Service temporairement indisponible.";
+            break;
+          default:
+            errorMessage = err.response.data?.message || `Erreur ${err.response.status}: ${err.response.statusText}`;
+        }
+      } else if (err.request) {
+        // La requête a été faite mais aucune réponse n'a été reçue
+        console.error('Aucune réponse reçue:', err.request);
+        errorMessage = "Impossible de contacter le serveur. Vérifiez votre connexion internet.";
+      } else {
+        // Erreur lors de la configuration de la requête
+        console.error('Erreur de configuration:', err.message);
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -419,6 +259,13 @@ const Request = () => {
         <p className="text-lg font-semibold mb-8 text-green-800">
           Rejoignez notre famille musicale !
         </p>
+
+        {/* Affichage de l'URI de debug en mode développement */}
+        {process.env.NODE_ENV === 'development' && (
+          <p className="text-xs text-gray-600 mb-4">
+            Backend URI: {databaseUri || 'Non définie'}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-5 text-left">
           <input
@@ -444,7 +291,7 @@ const Request = () => {
           <input
             type="password"
             name="password"
-            placeholder="Mot de passe"
+            placeholder="Mot de passe (min. 6 caractères)"
             value={formData.password}
             onChange={handleInputChange}
             disabled={loading}
@@ -481,8 +328,8 @@ const Request = () => {
           {formData.role === "student" && (
             <>
               <select
-                name="studyLevel"
-                value={formData.studyLevel}
+                name="level"
+                value={formData.level}
                 onChange={handleInputChange}
                 disabled={loading}
                 required
@@ -547,29 +394,38 @@ const Request = () => {
                 className="w-full px-5 py-3 rounded-xl border-2 border-green-300 focus:border-yellow-400 outline-none transition-colors text-green-900 placeholder-green-600"
               />
 
-              <input
-                type="file"
-                accept="application/pdf"
-                onChange={handleFileUpload}
-                disabled={loading}
-                required
-                className="w-full text-green-900 cursor-pointer mt-3"
-              />
-              {certificate && (
-                <p className="text-sm text-green-900 mt-1">
-                  Fichier choisi : {certificate.name}
+              <div className="space-y-2">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileUpload}
+                  disabled={loading}
+                  required
+                  className="w-full text-green-900 cursor-pointer"
+                />
+                <p className="text-sm text-green-700">
+                  Certificat PDF requis (max 5MB)
                 </p>
-              )}
+                {certificate && (
+                  <p className="text-sm text-green-900 font-semibold">
+                    ✓ Fichier choisi : {certificate.name}
+                  </p>
+                )}
+              </div>
             </>
           )}
 
           {error && (
-            <p className="text-red-600 font-semibold mt-3 text-center">{error}</p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-red-600 font-semibold text-center text-sm">{error}</p>
+            </div>
           )}
           {successMsg && (
-            <p className="text-green-700 font-semibold mt-3 text-center">
-              {successMsg}
-            </p>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <p className="text-green-700 font-semibold text-center text-sm">
+                {successMsg}
+              </p>
+            </div>
           )}
 
           <button
@@ -577,7 +433,7 @@ const Request = () => {
             disabled={loading}
             className="mt-6 w-full py-3 rounded-full bg-yellow-400 hover:bg-yellow-500 text-green-900 font-bold text-lg shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Inscription..." : "S'inscrire"}
+            {loading ? "Inscription en cours..." : "S'inscrire"}
           </button>
         </form>
 

@@ -86,18 +86,35 @@ export const Navbar = () => {
         </Box>
 
         {/* Logo */}
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{
-            flexGrow: 1,
-            fontFamily: "'Brush Script MT', cursive",
-            letterSpacing: 1,
-          }}
-          className="text-white"
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}
+          className="gap-2"
         >
-          Museschool
-        </Typography>
+          <img
+            src="/ChatGPT Image 7 avr. 2025, 12_44_05.png"  // remplace par ton fichier
+            alt="Logo Museschool"
+            className="
+              w-10 h-10 sm:w-12 sm:h-12 
+              rounded-full 
+              border-2 border-indigo-500 
+              shadow-md 
+              object-cover 
+              transition-transform duration-300 
+              hover:scale-105 
+            " 
+          />
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              fontFamily: "'Brush Script MT', cursive",
+              letterSpacing: 1,
+            }}
+            className="text-white text-base sm:text-lg"
+          >
+            Museschool
+          </Typography>
+        </Box>
 
         {/* Desktop: Nav Links */}
         <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', sm: 'flex' } }} alignItems="center">

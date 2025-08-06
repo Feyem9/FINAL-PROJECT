@@ -7,21 +7,21 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 
 const blogPosts = [
-  {
-    title: "The Healing Power of Music",
-    date: "February 2025",
-    image: "/blog1H.jpeg",
-    shortContent: "Apprendre un instrument demande de la patience et de la discipline...",
-    fullContent:
-      "Beaucoup de personnes rêvent de jouer d’un instrument, mais abandonnent par manque de motivation ou de méthode. La clé est de pratiquer régulièrement, même quelques minutes par jour. Utiliser des applications d’apprentissage, suivre des cours en ligne et jouer avec d'autres musiciens peut accélérer votre progression. La passion et la persévérance sont les moteurs de l'apprentissage musical !",
+ {
+    "title": "The Healing Power of Music",
+    "date": "February 2025",
+    "image": "/blog1H.jpeg",
+    "shortContent": "Learning an instrument requires patience and discipline...",
+    "fullContent":
+      "Many people dream of playing an instrument but give up due to lack of motivation or method. The key is to practice regularly, even just a few minutes a day. Using learning apps, taking online courses, and playing with other musicians can accelerate your progress. Passion and perseverance are the driving forces behind musical learning!"
   },
   {
-    title: "Mastering the Piano: Tips for Beginners",
-    date: "January 2025",
-    image: "/blog2B.jpeg",
-    shortContent: "La musique influence nos émotions et notre bien-être...",
-    fullContent:
-      "La musique est un langage universel qui traverse les cultures et les générations. Elle nous accompagne dans les moments heureux comme dans les périodes difficiles. De nombreuses études montrent que la musique peut réduire le stress, améliorer la concentration et même renforcer la mémoire. Que vous soyez musicien ou simple amateur, la musique joue un rôle essentiel dans notre quotidien.",
+    "title": "Mastering the Piano: Tips for Beginners",
+    "date": "January 2025",
+    "image": "/blog2B.jpeg",
+    "shortContent": "Music influences our emotions and well-being...",
+    "fullContent":
+      "Music is a universal language that transcends cultures and generations. It accompanies us during happy moments as well as difficult times. Numerous studies show that music can reduce stress, improve concentration, and even strengthen memory. Whether you are a musician or a casual listener, music plays an essential role in our daily lives."
   },
   {
     title: "The Evolution of Jazz Music",

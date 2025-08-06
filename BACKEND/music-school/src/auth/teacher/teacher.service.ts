@@ -21,7 +21,7 @@ export class TeacherService {
     private readonly configService: ConfigService,
     private readonly mailerService: MailerService
 
-  ) {}
+  ) { }
 
   async createTeacher(createTeacherDto: TeacherDto, file?: Express.Multer.File): Promise<{ teacher: Teacher; token: string }> {
     const { name, email, password, contact, role, speciality } = createTeacherDto;
@@ -66,7 +66,7 @@ export class TeacherService {
       text: `Bonjour ${name},
       
 Bienvenue sur notre plateforme éducative. Vous pouvez maintenant vous connecter avec votre adresse e-mail.`,
-html: `<p>Bonjour <strong>${name}</strong>,</p><p>Bienvenue sur Museschool ! Nous sommes ravis de vous compter parmi nous.</p>`
+      html: `<p>Bonjour <strong>${name}</strong>,</p><p>Bienvenue sur Museschool ! Nous sommes ravis de vous compter parmi nous.</p>`
     });
   }
 
@@ -127,7 +127,7 @@ html: `<p>Bonjour <strong>${name}</strong>,</p><p>Bienvenue sur Museschool ! Nou
       { isVerified },
       { new: true }
     ).exec();
-  
+
     if (!teacher) {
       throw new NotFoundException('Teacher not found');
     }
@@ -136,10 +136,10 @@ html: `<p>Bonjour <strong>${name}</strong>,</p><p>Bienvenue sur Museschool ! Nou
       subject: 'Votre compte a été vérifié',
       text: `Bonjour ${teacher.name}, votre compte a été vérifié avec succès. Vous pouvez maintenant accéder à toutes les fonctionnalités.`
     });
-  
+
     return teacher;
   }
-  
+
   async sendPasswordResetEmail(email: string, resetToken: string) {
     await this.mailerService.sendMail({
       to: email,
@@ -148,59 +148,71 @@ html: `<p>Bonjour <strong>${name}</strong>,</p><p>Bienvenue sur Museschool ! Nou
     });
   }
 
-  async signUpTeacher(teacherDto : TeacherDto , file?: Express.Multer.File): Promise<{
-            teacher:any}> {
-            const {name , email , password , contact , role , speciality} = teacherDto;
-    
-            const hashedPassword = await bcrypt.hash(password , 10)
-    
-            const teacher = new this.teacherModel({
-                name,
-                email,
-                password : hashedPassword,
-                contact, 
-                role, 
-                speciality,
-                proofDocument: file ? `/uploads/${file.filename}` : null, // Ajout du fichier justificatif
+  async signUpTeacher(teacherDto: TeacherDto, file?: Express.Multer.File): Promise<{
+    teacher: any
+  }> {
+    const { name, email, password, contact, role, speciality } = teacherDto;
 
-            });
-    
-            await teacher.save()
-    
-    
-            const { password: _, ...userWithoutPassword } = teacher.toObject(); // Supprimer le mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10)
 
-               // Envoyer le message de bienvenu par email
-            await this.sendWelcomeEmail(teacher.email, teacher.name);      
+    const teacher = new this.teacherModel({
+      name,
+      email,
+      password: hashedPassword,
+      contact,
+      role,
+      speciality,
+      proofDocument: file ? `/uploads/${file.filename}` : null, // Ajout du fichier justificatif
 
-    
-            return { 
-                teacher:userWithoutPassword
-            } 
-        }
+    });
 
- async loginTeacher(loginDto: LoginDto) : Promise<{ token: string , teacher:any}> {
-              const{ email , password } = loginDto;
-      
-              const teacher = await this.teacherModel.findOne({ email })
-              console.log('teacher email : ' , teacher.email);
-      
-              if(!teacher){
-                  throw new UnauthorizedException('invalid email or password');
-              }
-      
-              const isPasswordMatched = await bcrypt.compare(password , teacher.password);
-      
-              if(!isPasswordMatched){
-                  throw new UnauthorizedException('invalid email or password');
-              }
-      
-              const token = this.jwtService.sign({ id: teacher._id , email: teacher.email , role: teacher.role} , {secret : this.configService.get<string>('JWT_SECRET_KEY')})
-              console.log('token is  : ' , token);
+    await teacher.save()
 
-              return { token , teacher } 
-          }
+
+    const { password: _, ...userWithoutPassword } = teacher.toObject(); // Supprimer le mot de passe
+
+    // Envoyer le message de bienvenu par email
+    await this.sendWelcomeEmail(teacher.email, teacher.name);
+
+
+    return {
+      teacher: userWithoutPassword
+    }
+  }
+
+  async loginTeacher(loginDto: LoginDto): Promise<{ token: string, teacher: any }> {
+    const { email, password } = loginDto;
+
+    const teacher = await this.teacherModel.findOne({ email })
+    console.log('teacher email : ', teacher.email);
+
+    if (!teacher) {
+      throw new UnauthorizedException('invalid email or password');
+    }
+
+    const isPasswordMatched = await bcrypt.compare(password, teacher.password);
+
+    if (!isPasswordMatched) {
+      throw new UnauthorizedException('invalid email or password');
+    }
+
+    const token = this.jwtService.sign({ id: teacher._id, email: teacher.email, role: teacher.role }, { secret: this.configService.get<string>('JWT_SECRET_KEY') })
+    console.log('token is  : ', token);
+
+    // return { token , teacher } 
+    return {
+      token,
+      teacher: {
+        _id: teacher._id,
+        name: teacher.name,
+        email: teacher.email,
+        role: teacher.role, // ✅ on s'assure que role est bien là
+      }
+    };
+  }
 }
+
+
 
 
 

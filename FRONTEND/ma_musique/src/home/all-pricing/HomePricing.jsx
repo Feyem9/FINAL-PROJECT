@@ -9,21 +9,22 @@ import TextField from '@mui/material/TextField';
 
 const plans = [
   {
-    title: "Basique",
-    price: "  0$ ,  Gratuit",
-    features: ["Accès à quelques cours", "Support communautaire", "Accès limité aux ressources"],
+    "title": "Basic",
+    "price": "0$, Free",
+    "features": ["Access to some courses", "Community support", "Limited access to resources"]
   },
   {
-    title: "Standard",
-    price: "$19.99/mois",
-    features: ["Accès à tous les cours", "Support par email", "Téléchargement des partitions" ,  "Cours illimités"],
+    "title": "Standard",
+    "price": "$19.99/month",
+    "features": ["Access to all courses", "Email support", "Sheet music downloads", "Unlimited lessons"]
   },
   {
-    title: "Premium",
-    price: "$49.99/mois",
-    features: ["Cours en direct avec professeurs", "Support prioritaire", "Accès exclusif aux masterclasses" , "Accès aux événements exclusifs"],
-  },
+    "title": "Premium",
+    "price": "$49.99/month",
+    "features": ["Live lessons with teachers", "Priority support", "Exclusive access to masterclasses", "Access to exclusive events"]
+  }
 ];
+
 
 const HomePricing = () => {
 
@@ -65,15 +66,15 @@ const HomePricing = () => {
         ))}
       </Grid>
       <div style={{ marginTop: "40px" }}>
-        <Typography variant="h5" gutterBottom>Inscrivez-vous à notre newsletter</Typography>
+        <Typography variant="h5" gutterBottom>Subscribe to our newsletter</Typography>
         <TextField 
-          label="Votre email" 
+          label="your email" 
           variant="outlined" 
           value={email} 
           onChange={(e) => setEmail(e.target.value)} 
           style={{ marginRight: "10px" }}
         />
-        <Button variant="contained" onClick={handleSubscribe} sx={{background:"#E65100" , fontWeight:"bolder"}}>S'abonner</Button>
+        <Button variant="contained" onClick={handleSubscribe} sx={{background:"#E65100" , fontWeight:"bolder"}}>Subscribe</Button>
       </div>
 
     </Box>

@@ -5,8 +5,16 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 const Login = () => {
 
-    const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+  // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI || 'http://localhost:3000';
+  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
 
+  // Par sécurité :
+  // const databaseUri = import.meta.env.REACT_APP_BACKEND_ONLINE_URI || process.env.REACT_APP_BACKEND_ONLINE_URI  || 'http://localhost:3000';
+
+  // console.log("✅ URI :", databaseUri);
+
+  // console.log("Database URI:", databaseUri);
+ 
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +28,7 @@ const Login = () => {
     setError('');
     try {
       const role = localStorage.getItem('userRole');
+      
       if (!role) throw new Error("User role not specified");
 
       const loginUrl = `${databaseUri}/${role}s/login`;
@@ -31,9 +40,11 @@ const Login = () => {
       localStorage.setItem('token', token);
       localStorage.setItem('userRole', role);
 
-      const id = localStorage.getItem('userId');
-      console.log(id);
-      
+      const userData = response.data[role];
+
+      const id = userData._id;
+
+
       if (!id) throw new Error("User ID not found");
 
       const profileUrl = `${databaseUri}/${role}s/${id}`;

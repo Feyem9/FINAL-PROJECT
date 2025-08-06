@@ -43,6 +43,8 @@ import { Scalender } from './student_Dashboard/route_student/Scalender';
 import { Snotification } from './student_Dashboard/route_student/Snotification';
 
 
+import { PrivateRoute } from './components/PrivateRoute';
+
 
 function App() {
 
@@ -60,12 +62,15 @@ function App() {
         <Route path="/register" element={<Request />} />
         <Route path="/login" element={<Login />} />
         <Route path='/home' element={<Home />} />
-        <Route path='/course' element={<Course />} />
-        {/* <Route path='/teacher' element={<Teacher />} /> */}
-        {/* <Route path='/student' element={<Student />} /> */}
         <Route path='/blog' element={<Blog />} />
         <Route path='/resource' element={<Resource />} />
         <Route path='/annonce' element={<Annonce />} />
+
+        {/* Routes pas publiques */}
+        <Route element={<PrivateRoute allowedRoles={['admin']} />}>
+          <Route path='/course' element={<Course />} />
+        </Route>
+
         <Route path="/admins/login" element={<AdminLogin />} />
         <Route path="/admins/register" element={<AdminRegister />} />
 
@@ -99,16 +104,17 @@ function App() {
         </Route>
 
         {/* Routes teacher */}
-
-        <Route path="/teacher/*" element={<TeacherDashboard />}>
-          <Route index element={<Navigate to="dashboard" />} />
-          <Route path="dashboard" element={<TdashBoard />} />
-          <Route path="courses" element={<Tcourses />} />
-          <Route path="profile" element={<Tprofile />} />
-          <Route path="note" element={<Tnote />} />
-          <Route path="chats" element={<Tchat />} />
-          <Route path="calendars" element={<Tcalender />} />
-          <Route path="notificatoin" element={<Tnotification />} />
+        <Route element={<PrivateRoute allowedRoles={['admin', 'teacher']} />}>
+          <Route path="/teacher/*" element={<TeacherDashboard />}>
+            <Route index element={<Navigate to="dashboard" />} />
+            <Route path="dashboard" element={<TdashBoard />} />
+            <Route path="courses" element={<Tcourses />} />
+            <Route path="profile" element={<Tprofile />} />
+            <Route path="note" element={<Tnote />} />
+            <Route path="chats" element={<Tchat />} />
+            <Route path="calendars" element={<Tcalender />} />
+            <Route path="notificatoin" element={<Tnotification />} />
+          </Route>
         </Route>
       </Routes>
     </>

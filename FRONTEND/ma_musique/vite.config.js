@@ -7,11 +7,14 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    allowedHosts: ['.ngrok-free.app'],
+    // allowedHosts: ['.ngrok-free.app'],
     hmr: {
-      protocol: 'wss',
-      host: '2796-2c0f-2a80-93d-2310-3561-3733-aa50-a19a.ngrok-free.app',
+      // protocol: 'wss',
+      protocol: 'ws',
+      // host: '2796-2c0f-2a80-93d-2310-3561-3733-aa50-a19a.ngrok-free.app',
+       host: 'localhost',
       port: 5173,
+      hmr: false
     },
   },
 })

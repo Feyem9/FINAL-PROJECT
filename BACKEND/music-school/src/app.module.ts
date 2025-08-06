@@ -24,6 +24,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './roles.guard';
 import { NotificationModule } from './notification/notification/notification.module';
 import { ChatModule } from './chats/chat/chat.module';
+import { AnnonceController } from './annonce/annonce/annonce.controller';
+import { AnnonceModule } from './annonce/annonce/annonce.module';
+import { BlogController } from './music_blog/blog/blog.controller';
+import { BlogModule } from './music_blog/blog/blog.module';
+import { ResourceModule } from './music_resources/resource/resource.module';
 
 
 @Module({
@@ -65,8 +70,8 @@ import { ChatModule } from './chats/chat/chat.module';
     signOptions: { expiresIn: '1h' },
   }),
   StudentModule,
-    UserModule, CourseModule, AuthModule, DatabaseModule, AdminModule, TeacherModule, StudentModule, CalenderModule, NotificationModule, ChatModule],
-  controllers: [AppController, UserController, CourseController, CalenderController],
+    UserModule, CourseModule, AuthModule, DatabaseModule, AdminModule, TeacherModule, StudentModule, CalenderModule, NotificationModule, ChatModule, AnnonceModule, BlogModule, ResourceModule],
+  controllers: [AppController, UserController, CourseController, CalenderController, AnnonceController, BlogController],
   providers: [AppService , AdminService , MailService, CalenderService , // 👉 Ajout du RolesGuard comme guard global
     {
       provide: APP_GUARD,

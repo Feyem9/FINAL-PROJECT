@@ -4,16 +4,16 @@ import Typography from '@mui/material/Typography';
 import { styled } from "@mui/system";
 
 const teachers = [
-  { name: "Alice Dupont", instrument: "Piano", description: "Virtuose du piano avec 20 ans d'expérience.", image: "/prof-piano.jpg" },
-  { name: "Jean Moulin", instrument: "Guitare", description: "Guitariste accompli, spécialisé en jazz et rock.", image: "/prof-guitar.jpg" },
-  { name: "Sophie Martin", instrument: "Violon", description: "Violoniste de renom ayant joué avec les plus grands orchestres.", image: "/prof-violon.jpg" },
-  { name: "Lucas Moreau", instrument: "Flûte", description: "Flûtiste talentueux avec un style unique.", image: "/prof-flute.jpg" },
-  { name: "Emma Bernard", instrument: "Piano", description: "Professeure passionnée et pédagogue hors pair.", image: "/prof2-piano.jpg" },
-  { name: "Paul Lefevre", instrument: "Guitare", description: "Expert en fingerstyle et flamenco.", image: "/prof-guitar.jpg" },
-  { name: "Marie Curie", instrument: "Violon", description: "Lauréate de nombreux concours internationaux.", image: "/prof-violon.jpg" },
-  { name: "Antoine Roux", instrument: "Flûte", description: "Soliste et professeur de flûte passionné.", image: "/prof-flute.jpg" },
-  { name: "Isabelle Fontaine", instrument: "Piano", description: "Professeure de conservatoire avec une grande expérience.", image: "/prof-piano.jpg" },
-  { name: "Thomas Girard", instrument: "Guitare", description: "Spécialiste des guitares classiques et acoustiques.", image: "/prof-guitar.jpg" }
+  { name: "Alice Dupont", instrument: "Piano", description: "Piano virtuoso with 20 years of experience.", image: "/prof-piano.jpg" },
+  { name: "Jean Moulin", instrument: "Guitare", description: "Accomplished guitarist, specialized in jazz and rock.", image: "/prof-guitar.jpg" },
+  { name: "Sophie Martin", instrument: "Violon", description: "Renowned violinist who has played with major orchestras.", image: "/prof-violon.jpg" },
+  { name: "Lucas Moreau", instrument: "Flûte", description: "Talented flutist with a unique style.", image: "/prof-flute.jpg" },
+  { name: "Emma Bernard", instrument: "Piano", description: "Passionate teacher and outstanding pedagogue.", image: "/prof2-piano.jpg" },
+  { name: "Paul Lefevre", instrument: "Guitare", description: "Expert in fingerstyle and flamenco.", image: "/prof-guitar.jpg" },
+  { name: "Marie Curie", instrument: "Violon", description: "Winner of numerous international competitions.", image: "/prof-violon.jpg" },
+  { name: "Antoine Roux", instrument: "Flûte", description: "Soloist and passionate flute teacher.", image: "/prof-flute.jpg" },
+  { name: "Isabelle Fontaine", instrument: "Piano", description: "Conservatory teacher with extensive experience.", image: "/prof-piano.jpg" },
+  { name: "Thomas Girard", instrument: "Guitare", description: "Specialist in classical and acoustic guitars.", image: "/prof-guitar.jpg" }
 ];
 
 const TeacherContainer = styled(Box)({

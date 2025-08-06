@@ -4,7 +4,9 @@ import axios from 'axios';
 
 export const Scourse = () => {
 
-      const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+      // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+          const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+
 
 
   const [courses, setCourses] = useState([]);
