@@ -29,18 +29,21 @@ import { AnnonceModule } from './annonce/annonce/annonce.module';
 import { BlogController } from './music_blog/blog/blog.controller';
 import { BlogModule } from './music_blog/blog/blog.module';
 import { ResourceModule } from './music_resources/resource/resource.module';
+import { NoteController } from './note/note/note.controller';
+import { NoteService } from './note/note/note.service';
+import { NoteModule } from './note/note/note.module';
 
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true, // 👈 Permet d'accéder aux variables dans tous les modules
     envFilePath: '.env', // 👈 Assure-toi que c'est bien défini
-  }), 
+  }),
   // MongooseModule.forRoot('mongodb+srv://feyemlionel:Feyem@blog.oxy0qqt.mongodb.net/music-school'),
-  MongooseModule.forRoot(process.env.MONGO_URI , {
+  MongooseModule.forRoot(process.env.MONGO_URI, {
     serverSelectionTimeoutMS: 5000, // Timeout après 5s
     connectTimeoutMS: 10000, // Timeout pour l'établissement de connexion
-    
+
     retryWrites: true,
   }),
   MongooseModule.forFeature([{ name: Calender.name, schema: calenderSchema }]),
@@ -69,14 +72,27 @@ import { ResourceModule } from './music_resources/resource/resource.module';
     secret: process.env.JWT_SECRET,
     signOptions: { expiresIn: '1h' },
   }),
-  StudentModule,
-    UserModule, CourseModule, AuthModule, DatabaseModule, AdminModule, TeacherModule, StudentModule, CalenderModule, NotificationModule, ChatModule, AnnonceModule, BlogModule, ResourceModule],
+    StudentModule,
+    UserModule,
+    CourseModule,
+    AuthModule,
+    DatabaseModule, 
+    AdminModule, 
+    TeacherModule, 
+    StudentModule, 
+    CalenderModule, 
+    NotificationModule, 
+    ChatModule, 
+    AnnonceModule, 
+    BlogModule, 
+    ResourceModule, 
+    NoteModule],
   controllers: [AppController, UserController, CourseController, CalenderController, AnnonceController, BlogController],
-  providers: [AppService , AdminService , MailService, CalenderService , // 👉 Ajout du RolesGuard comme guard global
+  providers: [AppService, AdminService, MailService, CalenderService, // 👉 Ajout du RolesGuard comme guard global
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
     },],
-  exports:[MailService]
+  exports: [MailService]
 })
 export class AppModule { }

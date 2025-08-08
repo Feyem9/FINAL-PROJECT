@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
-    <header className="w-full flex justify-between items-center px-6 py-4 bg-[#86ff57] text-[#2c3e50] shadow-md h-22">
+    <header className="w-full flex justify-between items-center px-6 py-4 bg-lime-400 rounded-xl p-6 text-center text-[#2c3e50] shadow-md h-22">
       {/* Icône de notification */}
       <Link
         to="/admin/notificatoin"
