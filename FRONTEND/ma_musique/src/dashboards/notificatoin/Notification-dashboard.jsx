@@ -86,7 +86,7 @@ export const Notification = () => {
     const [adminNotifications, setAdminNotifications] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState('all'); // Nouvel état pour le filtre
-    
+
     const adminData = localStorage.getItem('admin');
     const id = adminData ? JSON.parse(adminData)._id : null;
 
@@ -117,15 +117,15 @@ export const Notification = () => {
     const markAllAsRead = () => {
         // Logique pour marquer toutes les notifications non lues comme lues
         const unreadIds = adminNotifications.filter(n => !n.read).map(n => n._id);
-        
+
         // Simuler un appel API pour marquer toutes les notifications comme lues
         axios.patch(`${databaseUri}/notification/markAllAsRead`, { ids: unreadIds })
-             .then(() => {
-                setAdminNotifications(notifs => 
+            .then(() => {
+                setAdminNotifications(notifs =>
                     notifs.map(n => ({ ...n, read: true }))
                 );
-             })
-             .catch(err => console.error(err));
+            })
+            .catch(err => console.error(err));
     };
 
 
@@ -138,9 +138,9 @@ export const Notification = () => {
 
     // Filtrer les notifications basées sur la barre de recherche et le filtre de statut
     const filteredNotifications = adminNotifications.filter(n => {
-        const matchesSearch = n.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              n.message.toLowerCase().includes(searchTerm.toLowerCase());
-        
+        const matchesSearch = n.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            n.message.toLowerCase().includes(searchTerm.toLowerCase());
+
         let matchesFilter = true;
         if (filter === 'unread') {
             matchesFilter = !n.read;
@@ -149,78 +149,111 @@ export const Notification = () => {
         } else if (filter === 'important') {
             matchesFilter = n.important;
         }
-        
+
         return matchesSearch && matchesFilter;
     });
 
     return (
-        <div className="bg-gray-100 min-h-screen">
-            <header className="flex justify-between items-center bg-white p-6 shadow-sm border-b border-gray-200">
-                <h1 className="text-2xl font-bold text-gray-800">Notifications</h1>
-                <div className="flex items-center space-x-4">
-                    <button 
-                        onClick={markAllAsRead}
-                        className="text-sm text-gray-600 hover:text-gray-900"
-                    >
-                        Mark all as read
-                    </button>
-                    <button className="bg-[#3b9e4a] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#348c41]">
-                        Settings
-                    </button>
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen p-6">
+            <div className="max-w-7xl mx-auto">
+                {/* Header Section */}
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-800 mb-2">Notifications</h1>
+                        <p className="text-gray-600">Stay updated with the latest alerts and messages</p>
+                    </div>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={markAllAsRead}
+                            className="px-5 py-2.5 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors font-medium"
+                        >
+                            Mark all as read
+                        </button>
+                        <button className="px-5 py-2.5 rounded-xl text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all font-medium shadow-md hover:shadow-lg">
+                            Settings
+                        </button>
+                    </div>
+                </header>
+
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div className="bg-white rounded-2xl p-6 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-500 text-sm font-medium">Unread</p>
+                                <p className="text-2xl font-bold text-gray-800 mt-1">{unreadCount}</p>
+                            </div>
+                            <div className="p-3 bg-green-100 rounded-full">
+                                <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-500 text-sm font-medium">Read</p>
+                                <p className="text-2xl font-bold text-gray-800 mt-1">{readCount}</p>
+                            </div>
+                            <div className="p-3 bg-blue-100 rounded-full">
+                                <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-500 text-sm font-medium">Important</p>
+                                <p className="text-2xl font-bold text-gray-800 mt-1">{importantCount}</p>
+                            </div>
+                            <div className="p-3 bg-orange-100 rounded-full">
+                                <svg className="w-6 h-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-gray-500 text-sm font-medium">Scheduled</p>
+                                <p className="text-2xl font-bold text-gray-800 mt-1">{scheduledCount}</p>
+                            </div>
+                            <div className="p-3 bg-purple-100 rounded-full">
+                                <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </header>
 
-            <main className="p-6">
-                {/* Section des statistiques */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    {/* Carte des notifications non lues */}
-                    <div onClick={() => setFilter('unread')} className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center cursor-pointer">
-                        <div className="flex items-center text-[#3b9e4a] mb-2">
-                            <i className="fas fa-bell text-3xl mr-2"></i>
-                            <span className="text-3xl font-bold">{unreadCount}</span>
-                        </div>
-                        <span className="text-gray-500 font-medium">Unread</span>
-                    </div>
-
-                    {/* Carte des notifications lues */}
-                    <div onClick={() => setFilter('read')} className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center cursor-pointer">
-                        <div className="flex items-center text-gray-400 mb-2">
-                            <i className="fas fa-check-circle text-3xl mr-2"></i>
-                            <span className="text-3xl font-bold">{readCount}</span>
-                        </div>
-                        <span className="text-gray-500 font-medium">Read</span>
-                    </div>
-
-                    {/* Carte des notifications importantes */}
-                    <div onClick={() => setFilter('important')} className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center cursor-pointer">
-                        <div className="flex items-center text-orange-400 mb-2">
-                            <i className="fas fa-exclamation-circle text-3xl mr-2"></i>
-                            <span className="text-3xl font-bold">{importantCount}</span>
-                        </div>
-                        <span className="text-gray-500 font-medium">Important</span>
-                    </div>
-
-                    {/* Carte des notifications planifiées */}
-                    <div onClick={() => setFilter('scheduled')} className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center cursor-pointer">
-                        <div className="flex items-center text-blue-400 mb-2">
-                            <i className="fas fa-clock text-3xl mr-2"></i>
-                            <span className="text-3xl font-bold">{scheduledCount}</span>
-                        </div>
-                        <span className="text-gray-500 font-medium">Scheduled</span>
-                    </div>
-                </div>
-
-                {/* Section des notifications filtrables */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                    <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
-                        <div className="flex items-center space-x-2 w-full sm:w-auto">
-                            <label htmlFor="filter" className="text-gray-700 font-medium">
-                                <i className="fas fa-filter mr-2"></i>
-                                Filter
-                            </label>
-                            <select 
-                                id="filter" 
-                                className="border rounded-lg p-2 text-sm w-full sm:w-auto"
+                {/* Search and Filter Section */}
+                <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div className="flex flex-wrap gap-4 w-full md:w-auto">
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Search notifications..."
+                                    className="w-full md:w-64 pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    value={searchTerm}
+                                    onChange={e => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            <select
+                                className="px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                 value={filter}
                                 onChange={e => setFilter(e.target.value)}
                             >
@@ -231,49 +264,41 @@ export const Notification = () => {
                                 <option value="scheduled">Scheduled</option>
                             </select>
                         </div>
-                        <div className="relative w-full sm:w-64">
-                            <input
-                                type="text"
-                                placeholder="Search notifications..."
-                                className="w-full border rounded-lg p-2 text-sm pl-10"
-                                value={searchTerm}
-                                onChange={e => setSearchTerm(e.target.value)}
-                            />
-                            <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        </div>
                     </div>
+                </div>
 
-                    {/* Liste des notifications filtrées */}
+                {/* Notifications List */}
+                <div className="bg-white rounded-2xl shadow-sm p-6">
                     <ul className="space-y-4">
                         {filteredNotifications.length === 0 && (
-                            <li className="text-center text-gray-500 py-8">Aucune notification correspondante.</li>
+                            <li className="text-center text-gray-500 py-8">No matching notifications found.</li>
                         )}
                         {filteredNotifications.map(n => (
-                            <li key={n._id} className="border-b last:border-b-0 py-4 flex justify-between items-start">
-                                <div className="flex items-start space-x-3">
-                                    <span className={`h-2 w-2 rounded-full mt-2 ${n.read ? 'bg-gray-400' : 'bg-[#3b9e4a]'}`}></span>
-                                    <div>
-                                        <h3 className="font-bold text-gray-800">{n.title}</h3>
-                                        <p className="text-gray-600">{n.message}</p>
-                                        <div className="mt-2 flex items-center space-x-4 text-xs">
-                                            <button className="text-[#3b9e4a] hover:underline">View Profile</button>
+                            <li key={n._id} className="border-b last:border-b-0 py-4 flex flex-col md:flex-row justify-between items-start gap-4">
+                                <div className="flex items-start space-x-4">
+                                    <span className={`h-3 w-3 rounded-full mt-2 ${n.read ? 'bg-gray-400' : 'bg-green-500'}`}></span>
+                                    <div className="flex-1">
+                                        <h3 className="font-bold text-gray-800 text-lg">{n.title}</h3>
+                                        <p className="text-gray-600 mt-1">{n.message}</p>
+                                        <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
+                                            <button className="text-green-600 hover:underline font-medium">View Profile</button>
                                             <button
                                                 onClick={() => toggleRead(n._id, n.read)}
-                                                className="text-gray-500 hover:underline"
+                                                className="text-gray-500 hover:underline font-medium"
                                             >
                                                 {n.read ? 'Mark as unread' : 'Mark as read'}
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-                                <span className="text-xs text-gray-400">
+                                <span className="text-sm text-gray-400 whitespace-nowrap">
                                     {new Date(n.createdAt).toLocaleString()}
                                 </span>
                             </li>
                         ))}
                     </ul>
                 </div>
-            </main>
+            </div>
         </div>
     );
 };

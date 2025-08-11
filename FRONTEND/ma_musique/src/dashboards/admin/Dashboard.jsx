@@ -28,8 +28,8 @@ import {
 
 export const Dashboard = () => {
 
-      // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
-          const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
 
   const [userType, setUserType] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -122,9 +122,9 @@ export const Dashboard = () => {
     if (!chartData || chartData.length === 0) {
       // Données d'exemple si pas de données de l'API
       const defaultData = [
-        {value: 20, label: 'Jan'}, {value: 35, label: 'Feb'}, {value: 25, label: 'Mar'},
-        {value: 45, label: 'Apr'}, {value: 30, label: 'May'}, {value: 55, label: 'Jun'},
-        {value: 40, label: 'Jul'}, {value: 65, label: 'Aug'}, {value: 50, label: 'Sep'}
+        { value: 20, label: 'Jan' }, { value: 35, label: 'Feb' }, { value: 25, label: 'Mar' },
+        { value: 45, label: 'Apr' }, { value: 30, label: 'May' }, { value: 55, label: 'Jun' },
+        { value: 40, label: 'Jul' }, { value: 65, label: 'Aug' }, { value: 50, label: 'Sep' }
       ];
       return generatePathFromData(defaultData);
     }
@@ -135,7 +135,7 @@ export const Dashboard = () => {
     const width = 600;
     const height = 200;
     const maxValue = Math.max(...data.map(item => item.value || 0));
-    
+
     const points = data.map((item, index) => {
       const x = (index / Math.max(data.length - 1, 1)) * width;
       const y = height - ((item.value || 0) / Math.max(maxValue, 1)) * (height - 40);
@@ -145,7 +145,7 @@ export const Dashboard = () => {
     if (points.length === 0) return { path: "M 0 100", points: [] };
 
     let path = `M ${points[0].x} ${points[0].y}`;
-    
+
     for (let i = 1; i < points.length; i++) {
       const prevPoint = points[i - 1];
       const currentPoint = points[i];
@@ -153,19 +153,19 @@ export const Dashboard = () => {
       const cpy1 = prevPoint.y;
       const cpx2 = currentPoint.x - (currentPoint.x - prevPoint.x) / 3;
       const cpy2 = currentPoint.y;
-      
+
       path += ` C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${currentPoint.x} ${currentPoint.y}`;
     }
-    
+
     return { path, points };
   };
 
   const getChartData = () => {
     if (!chartData || chartData.length === 0) {
       return [
-        {value: 20, label: 'Jan'}, {value: 35, label: 'Feb'}, {value: 25, label: 'Mar'},
-        {value: 45, label: 'Apr'}, {value: 30, label: 'May'}, {value: 55, label: 'Jun'},
-        {value: 40, label: 'Jul'}, {value: 65, label: 'Aug'}, {value: 50, label: 'Sep'}
+        { value: 20, label: 'Jan' }, { value: 35, label: 'Feb' }, { value: 25, label: 'Mar' },
+        { value: 45, label: 'Apr' }, { value: 30, label: 'May' }, { value: 55, label: 'Jun' },
+        { value: 40, label: 'Jul' }, { value: 65, label: 'Aug' }, { value: 50, label: 'Sep' }
       ];
     }
     return chartData;
@@ -175,15 +175,15 @@ export const Dashboard = () => {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    
+
     setMousePosition({ x, y });
 
     const { points } = generatePathFromData(getChartData());
     const threshold = 30;
-    const hoveredPoint = points.find(point => 
+    const hoveredPoint = points.find(point =>
       Math.abs(point.x - x) < threshold && Math.abs(point.y - y) < threshold
     );
-    
+
     setHoveredPoint(hoveredPoint || null);
   };
 
@@ -271,27 +271,30 @@ export const Dashboard = () => {
         </div> */}
 
         {/* Stats Cards */}
-       <div className="grid grid-cols-4 gap-6 mb-8">
-          <div className="bg-lime-400 rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold text-gray-800 mb-2">{students.length}</div>
-            <div className="text-gray-700 font-medium">Students</div>
-            
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+            <div className="text-4xl font-bold text-white mb-2">{students.length}</div>
+            <div className="text-green-100 font-medium">Students</div>
           </div>
-               <div className="bg-lime-400 rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold text-gray-800 mb-2">{teachers.length}</div>
-            <div className="text-gray-700 font-medium">teachers</div>
+
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+            <div className="text-4xl font-bold text-white mb-2">{teachers.length}</div>
+            <div className="text-orange-100 font-medium">Teachers</div>
           </div>
-          <div className="bg-lime-400 rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold text-gray-800 mb-2">{courses.length}</div>
-            <div className="text-gray-700 font-medium">Courses</div>
+
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+            <div className="text-4xl font-bold text-white mb-2">{courses.length}</div>
+            <div className="text-blue-100 font-medium">Courses</div>
           </div>
-          <div className="bg-lime-400 rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold text-gray-800 mb-2">{students.length + teachers.length}</div>
-            <div className="text-gray-700 font-medium">Total Users</div>
+
+          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+            <div className="text-4xl font-bold text-white mb-2">{students.length + teachers.length}</div>
+            <div className="text-purple-100 font-medium">Total Users</div>
           </div>
-          <div className="bg-lime-400 rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold text-gray-800 mb-2">{chats.length}</div>
-            <div className="text-gray-700 font-medium">Chats</div>
+
+          <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+            <div className="text-4xl font-bold text-white mb-2">{chats.length}</div>
+            <div className="text-teal-100 font-medium">Chats</div>
           </div>
         </div>
 
@@ -302,9 +305,9 @@ export const Dashboard = () => {
             <h3 className="text-2xl font-bold text-gray-800 mb-6">Overview</h3>
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <div className="mb-4 relative">
-                <svg 
-                  width="600" 
-                  height="300" 
+                <svg
+                  width="600"
+                  height="300"
                   className="w-full cursor-crosshair"
                   onMouseMove={handleMouseMove}
                   onMouseLeave={handleMouseLeave}
@@ -312,23 +315,23 @@ export const Dashboard = () => {
                   {/* Grid lines */}
                   <defs>
                     <pattern id="grid" width="60" height="30" patternUnits="userSpaceOnUse">
-                      <path d="M 60 0 L 0 0 0 30" fill="none" stroke="#f1f5f9" strokeWidth="1"/>
+                      <path d="M 60 0 L 0 0 0 30" fill="none" stroke="#f1f5f9" strokeWidth="1" />
                     </pattern>
                     <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                       <stop offset="0%" stopColor="#a3e635" stopOpacity="0.3" />
                       <stop offset="100%" stopColor="#a3e635" stopOpacity="0.1" />
                     </linearGradient>
                   </defs>
-                  
+
                   {/* Grid background */}
                   <rect width="600" height="240" fill="url(#grid)" />
-                  
+
                   {/* Area under curve */}
                   <path
                     d={`${generatePath().path} L 600 240 L 0 240 Z`}
                     fill="url(#areaGradient)"
                   />
-                  
+
                   {/* Main curve */}
                   <path
                     d={generatePath().path}
@@ -337,7 +340,7 @@ export const Dashboard = () => {
                     fill="none"
                     className="drop-shadow-sm"
                   />
-                  
+
                   {/* Data points */}
                   {generatePath().points.map((point, index) => (
                     <circle
@@ -354,7 +357,7 @@ export const Dashboard = () => {
                       }}
                     />
                   ))}
-                  
+
                   {/* Hover line */}
                   {hoveredPoint && (
                     <>
@@ -381,10 +384,10 @@ export const Dashboard = () => {
                     </>
                   )}
                 </svg>
-                
+
                 {/* Tooltip */}
                 {hoveredPoint && (
-                  <div 
+                  <div
                     className="absolute bg-gray-800 text-white px-3 py-2 rounded-lg shadow-lg pointer-events-none z-10"
                     style={{
                       left: Math.min(hoveredPoint.x + 10, 500),
@@ -398,7 +401,7 @@ export const Dashboard = () => {
                   </div>
                 )}
               </div>
-              
+
               <div className="flex justify-between text-sm text-gray-500 mt-4 px-2">
                 {getChartLabels().map((label, index) => (
                   <span key={index} className="font-medium">{label}</span>
@@ -409,17 +412,24 @@ export const Dashboard = () => {
 
           {/* Recent Notifications (Sidebar) */}
           <div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-6">Recent Notifications</h3>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-800">Recent Notifications</h3>
+              <button className="text-gray-400 hover:text-gray-600">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
             <div className="space-y-4">
               {notifications.length > 0 ? (
                 notifications.slice(0, 4).map((notification, index) => (
-                  <div key={notification._id || index} className="flex items-start space-x-3 p-4 bg-white rounded-lg shadow-sm">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <div>
+                  <div key={notification._id || index} className="flex items-start space-x-3 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div className="w-3 h-3 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="flex-1">
                       <h4 className="font-semibold text-gray-800 text-sm">{notification.title || 'Notification'}</h4>
                       <p className="text-gray-500 text-xs mt-1">{notification.message || notification.description || 'No description available'}</p>
                       {notification.createdAt && (
-                        <p className="text-gray-400 text-xs mt-1">
+                        <p className="text-gray-400 text-xs mt-2">
                           {new Date(notification.createdAt).toLocaleDateString()}
                         </p>
                       )}
@@ -428,9 +438,9 @@ export const Dashboard = () => {
                 ))
               ) : (
                 Array.from({ length: 4 }).map((_, index) => (
-                  <div key={index} className="flex items-start space-x-3 p-4 bg-white rounded-lg shadow-sm">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <div>
+                  <div key={index} className="flex items-start space-x-3 p-4 bg-white rounded-xl shadow-sm">
+                    <div className="w-3 h-3 bg-gray-300 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="flex-1">
                       <h4 className="font-semibold text-gray-800 text-sm">No notifications</h4>
                       <p className="text-gray-500 text-xs mt-1">No recent notifications available</p>
                     </div>
@@ -444,7 +454,7 @@ export const Dashboard = () => {
         <div className="bg-white rounded-xl shadow-sm p-6 mt-8">
           {/* Filter & Search */}
           <Box className="flex flex-col md:flex-row gap-4 mb-6">
-            <FormControl sx={{ 
+            <FormControl sx={{
               maxWidth: 300,
               '& .MuiOutlinedInput-root': {
                 backgroundColor: '#f8fafc',
@@ -512,27 +522,36 @@ export const Dashboard = () => {
           </Box>
 
           {/* Table Title */}
-          <Typography variant="h6" className="text-2xl font-bold text-gray-800 mb-4">
-            {userTypeLabel}
-          </Typography>
+          <div className="flex items-center justify-between mb-6">
+            <Typography variant="h6" className="text-2xl font-bold text-gray-800">
+              {userTypeLabel}
+            </Typography>
+            <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Add User
+            </button>
+          </div>
 
           {/* Table */}
-          <TableContainer 
-            component={Paper} 
-            sx={{ 
-              borderRadius: '12px',
-              boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+          <TableContainer
+            component={Paper}
+            sx={{
+              borderRadius: '16px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
               border: '1px solid #e2e8f0',
+              overflow: 'hidden',
             }}
           >
             <Table>
               <TableHead>
-                <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-                  <TableCell sx={{ fontWeight: 'bold', color: '#374151', fontSize: '14px' }}>ID</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', color: '#374151', fontSize: '14px' }}>Name</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', color: '#374151', fontSize: '14px' }}>Email</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', color: '#374151', fontSize: '14px' }}>Role</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold', color: '#374151', fontSize: '14px' }}>Actions</TableCell>
+                <TableRow sx={{ backgroundColor: '#f1f5f9' }}>
+                  <TableCell sx={{ fontWeight: '600', color: '#334155', fontSize: '14px', py: '16px' }}>ID</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#334155', fontSize: '14px', py: '16px' }}>Name</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#334155', fontSize: '14px', py: '16px' }}>Email</TableCell>
+                  <TableCell sx={{ fontWeight: '600', color: '#334155', fontSize: '14px', py: '16px' }}>Role</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: '600', color: '#334155', fontSize: '14px', py: '16px' }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -554,10 +573,10 @@ export const Dashboard = () => {
                               ? 'rgba(251, 146, 60, 0.1)'
                               : '#f8fafc',
                       },
-                      borderLeft: user.role === 'student' 
-                        ? '4px solid #84cc16' 
-                        : user.role === 'teacher' 
-                          ? '4px solid #fb923c' 
+                      borderLeft: user.role === 'student'
+                        ? '4px solid #84cc16'
+                        : user.role === 'teacher'
+                          ? '4px solid #fb923c'
                           : 'none',
                     }}
                   >
@@ -565,34 +584,33 @@ export const Dashboard = () => {
                     <TableCell sx={{ color: '#374151', fontSize: '14px', fontWeight: '500' }}>{user.name}</TableCell>
                     <TableCell sx={{ color: '#6b7280', fontSize: '14px' }}>{user.email}</TableCell>
                     <TableCell>
-                      <span 
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          user.role === 'student' 
-                            ? 'bg-lime-100 text-lime-700' 
-                            : 'bg-orange-100 text-orange-700'
-                        }`}
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${user.role === 'student'
+                          ? 'bg-lime-100 text-lime-700'
+                          : 'bg-orange-100 text-orange-700'
+                          }`}
                       >
                         {user.role}
                       </span>
                     </TableCell>
                     <TableCell align="center">
                       <Tooltip title="Edit">
-                        <IconButton 
-                          sx={{ 
+                        <IconButton
+                          sx={{
                             color: '#84cc16',
                             '&:hover': { backgroundColor: 'rgba(132, 204, 22, 0.1)' }
-                          }} 
+                          }}
                           onClick={() => handleEdit(user)}
                         >
                           <EditIcon />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Delete">
-                        <IconButton 
-                          sx={{ 
+                        <IconButton
+                          sx={{
                             color: '#ef4444',
                             '&:hover': { backgroundColor: 'rgba(239, 68, 68, 0.1)' }
-                          }} 
+                          }}
                           onClick={() => handleDelete(user._id, user.role)}
                         >
                           <DeleteIcon />
@@ -621,13 +639,46 @@ export const Dashboard = () => {
 
           {/* Recent Notifications (Bottom Section) */}
           <div className="mt-8">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-gray-800">Recent Notifications</h3>
               <button className="text-gray-400 hover:text-gray-600">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                 </svg>
               </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {notifications.length > 0 ? (
+                notifications.slice(0, 4).map((notification, index) => (
+                  <div key={notification._id || index} className="p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-800 text-sm">{notification.title || 'Notification'}</h4>
+                        <p className="text-gray-500 text-xs mt-1">{notification.message || notification.description || 'No description available'}</p>
+                        {notification.createdAt && (
+                          <p className="text-gray-400 text-xs mt-2">
+                            {new Date(notification.createdAt).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                Array.from({ length: 4 }).map((_, index) => (
+                  <div key={index} className="p-4 bg-white rounded-xl shadow-sm">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-3 h-3 bg-gray-300 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-800 text-sm">No notifications</h4>
+                        <p className="text-gray-500 text-xs mt-1">No recent notifications available</p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

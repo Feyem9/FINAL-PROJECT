@@ -431,7 +431,7 @@ const Request = () => {
           <button
             type="submit"
             disabled={loading}
-            className="mt-6 w-full py-3 rounded-full bg-yellow-400 hover:bg-yellow-500 text-green-900 font-bold text-lg shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-6 w-full py-3 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-medium text-lg shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Inscription en cours..." : "S'inscrire"}
           </button>
