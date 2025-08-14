@@ -9,6 +9,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { LoginDto } from 'src/DTO/login.dto';
 import { ConfigService } from '@nestjs/config';
 import { log } from 'util';
+import { Profile } from 'passport';
+import { ProfileService } from '../profile/profile.service';
 
 @Injectable()
 export class StudentService {
@@ -16,9 +18,10 @@ export class StudentService {
     @InjectModel(Student.name) private studentModel: Model<StudentDocument>,
     private jwtService: JwtService,
     private readonly mailerService: MailerService,
-    private configService: ConfigService,        
-    
-  ) {}
+    private configService: ConfigService,
+    private readonly profile: ProfileService
+
+  ) { }
 
   async createStudent(createStudentDto: StudentDto): Promise<{ student: Student; token: string }> {
     const { name, email, password, contact, level, instrument } = createStudentDto;
@@ -85,7 +88,7 @@ export class StudentService {
     const result = await this.studentModel.findByIdAndDelete(id).exec();
     if (!result) {
       throw new NotFoundException('Student not found');
-    } 
+    }
   }
 
   async sendWelcomeEmail(email: string, name: string): Promise<void> {
@@ -96,7 +99,7 @@ export class StudentService {
       
       Bienvenue sur notre plateforme éducative. Vous pouvez maintenant vous connecter avec votre adresse e-mail.`,
       html: `<p>Bonjour <strong>${name}</strong>,</p><p>Bienvenue sur Museschool ! Nous sommes ravis de vous compter parmi nous.</p>`,
-                context: { name },
+      context: { name },
     });
   }
 
@@ -119,55 +122,66 @@ export class StudentService {
   }
 
 
-        async signUpStudent(studentDto : StudentDto): Promise<{
-            student:any}> {
-            const {name , email , password , contact , role  , level , instrument} = studentDto;
-            console.log('studentDto : ' , studentDto);
-    
-            const hashedPassword = await bcrypt.hash(password , 10)
-    
-            const student = new this.studentModel({
-                name,
-                email,
-                password : hashedPassword,
-                contact, 
-                role,
-                level,
-                instrument
-            });
-    
-            await student.save()
-    
-    
-            const { password: _, ...userWithoutPassword } = student.toObject(); // Supprimer le mot de passe
-    
-            return { 
-                student:userWithoutPassword
-            } 
-        }
-  
-            async loginStudent(loginDto: LoginDto) : Promise<{ token: string , student:any}> {
-                const{ email , password } = loginDto;
-        
-                const student = await this.studentModel.findOne({ email })
-                console.log('student email : ' , student.email);
-        
-                if(!student){
-                    throw new UnauthorizedException('invalid email or password');
-                }
-        
-                const isPasswordMatched = await bcrypt.compare(password , student.password);
-        
-                if(!isPasswordMatched){
-                    throw new UnauthorizedException('invalid email or password');
-                }
-        
-                const token = this.jwtService.sign({ id: student._id , email: student.email , role: student.role} , {secret : this.configService.get<string>('JWT_SECRET_KEY')})
-                console.log('token is  : ' , token);
-                 // Envoyer le token par email
-               await this.sendWelcomeEmail(student.email, student.name);      
-        
-                return { token , student } 
-            }
-  
+  async signUpStudent(studentDto: StudentDto): Promise<{
+    student: any
+  }> {
+    const { name, email, password, contact, role, level, instrument } = studentDto;
+    console.log('studentDto : ', studentDto);
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    const student = new this.studentModel({
+      name,
+      email,
+      password: hashedPassword,
+      contact,
+      role,
+      level,
+      instrument
+    });
+
+    await student.save()
+
+
+    const { password: _, ...userWithoutPassword } = student.toObject(); // Supprimer le mot de passe
+
+    return {
+      student: userWithoutPassword
+    }
+  }
+
+  async loginStudent(loginDto: LoginDto): Promise<{ token: string, student: any }> {
+    const { email, password } = loginDto;
+
+    const student = await this.studentModel.findOne({ email })
+    console.log('student email : ', student.email);
+
+    if (!student) {
+      throw new UnauthorizedException('invalid email or password');
+    }
+
+    const isPasswordMatched = await bcrypt.compare(password, student.password);
+
+    if (!isPasswordMatched) {
+      throw new UnauthorizedException('invalid email or password');
+    }
+
+    const token = this.jwtService.sign({ id: student._id, email: student.email, role: student.role }, { secret: this.configService.get<string>('JWT_SECRET_KEY') })
+    console.log('token is  : ', token);
+    // Envoyer le token par email
+    await this.sendWelcomeEmail(student.email, student.name);
+
+    return { token, student }
+  }
+
+  /**
+   * here i want to add a method to store the student profile image in the database
+   * @param id Student ID
+   * @param imageUrl URL of the profile image
+   * @returns Updated student with the profile image URL
+   */
+  // async updateStudentProfileImage(id: string, imageUrl: string): Promise<Student> {
+  //   return this.profile.updateProfileImage(id, 'student', imageUrl);
+  // }
+
 }

@@ -46,7 +46,7 @@
 //   async findAll() {
 //     return this.studentService.findAll();
 //   }
-   
+
 //   @UseGuards(StudentGuard)
 //   @Get(':id')
 //   @ApiOperation({ summary: 'Get a student by ID' })
@@ -143,10 +143,10 @@ export class StudentController {
       role: string;   // Le rôle de l'utilisateur
       // Autres propriétés de l'utilisateur
     }
-    
+
   }
 
-  
+
   // ✅ Accessible uniquement à l’admin
   @Post('create')
   // @UseGuards(AdminGuard)
@@ -176,7 +176,7 @@ export class StudentController {
   @ApiResponse({ status: 200, description: 'Student details' })
   @ApiResponse({ status: 404, description: 'Student not found' })
   async findById(@Param('id') id: string, @Req() req: Request) {
-      console.log('ID reçu depuis la route :', id); // <== Ajoute ceci
+    console.log('ID reçu depuis la route :', id); // <== Ajoute ceci
 
     const user = req['user'];
 
@@ -215,7 +215,7 @@ export class StudentController {
     await this.studentService.deleteStudent(id);
     return { message: 'Student deleted successfully. Deletion email sent!' };
   }
- 
+
   // ✅ Accessible sans auth
   @Post('/register')
   @ApiOperation({ summary: 'Register a new student' })
@@ -237,4 +237,21 @@ export class StudentController {
     }
     return result;
   }
+
+  // @Post('/profile-image')
+  // @ApiOperation({ summary: 'Update student profile image' })
+  // @ApiResponse({ status: 200, description: 'Profile image updated successfully' })
+  // @ApiResponse({ status: 404, description: 'Student not found' })
+  // async updateProfileImage(
+  //   @Body('imagePath') imagePath: string,
+  // ): Promise<any> {
+  //   const user = Req['user'];
+  //   if (user.role !== 'student') {
+  //     throw new ForbiddenException('Only students can update their profile image');
+  //   }
+  //   return this.studentService.updateStudentProfileImage(
+  //     user.sub, // Utilise l'ID de l'utilisateur authentifié
+  //     imagePath,
+  //   );
+  // }
 }

@@ -6,5 +6,6 @@ export interface User extends Document {
   readonly email: string;
   readonly password: string;
   readonly contact: string;
+  readonly image?: string;
   readonly role: 'admin' | 'teacher' | 'student';
 }

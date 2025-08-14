@@ -32,6 +32,7 @@ import { ResourceModule } from './music_resources/resource/resource.module';
 import { NoteController } from './note/note/note.controller';
 import { NoteService } from './note/note/note.service';
 import { NoteModule } from './note/note/note.module';
+import { ProfileModule } from './auth/profile/profile.module';
 
 
 @Module({
@@ -76,17 +77,18 @@ import { NoteModule } from './note/note/note.module';
     UserModule,
     CourseModule,
     AuthModule,
-    DatabaseModule, 
-    AdminModule, 
-    TeacherModule, 
-    StudentModule, 
-    CalenderModule, 
-    NotificationModule, 
-    ChatModule, 
-    AnnonceModule, 
-    BlogModule, 
-    ResourceModule, 
-    NoteModule],
+    DatabaseModule,
+    AdminModule,
+    TeacherModule,
+    StudentModule,
+    CalenderModule,
+    NotificationModule,
+    ChatModule,
+    AnnonceModule,
+    BlogModule,
+    ResourceModule,
+    NoteModule,
+    ProfileModule],
   controllers: [AppController, UserController, CourseController, CalenderController, AnnonceController, BlogController],
   providers: [AppService, AdminService, MailService, CalenderService, // 👉 Ajout du RolesGuard comme guard global
     {

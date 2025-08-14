@@ -7,6 +7,7 @@ import {
   Delete,
   Param,
   UploadedFile,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -110,4 +111,23 @@ export class CourseController {
       filePath,
     };
   }
+
+  /**
+   * Search YouTube videos based on a query
+   * @param query Search query
+   * @returns List of YouTube videos matching the search query
+   */
+  @Get('/search-youtube')
+  @ApiOperation({ summary: 'Search YouTube videos' })
+  @ApiResponse({ status: 200, description: 'List of YouTube videos matching the search query' })
+  @ApiResponse({ status: 400, description: 'Invalid search query' })
+  @ApiParam({ name: 'query', description: 'Search query for YouTube videos', example: 'piano tutorial' })
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  @ApiConsumes('multipart/form-data')
+
+  async searchYoutubeVideos(@Query('q') query: string) {
+    return this.courseService.getYoutubeVideos(query);
+  }
+
+
 }

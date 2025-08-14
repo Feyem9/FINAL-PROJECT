@@ -39,6 +39,7 @@
 //   );
 // };
 import React, { useState } from 'react';
+import axios from 'axios';
 
 export const Profile = () => {
   const admin = JSON.parse(localStorage.getItem('admin'));
@@ -53,11 +54,58 @@ export const Profile = () => {
     location: 'Yaoundé, Cameroon'
   });
 
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(admin.image || null);
+
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!selectedImage) return;
+
+    const formData = new FormData();
+    formData.append('image', selectedImage);
+
+    try {
+      const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+      const token = localStorage.getItem('adminToken');
+
+      const response = await axios.post(
+        `${databaseUri}/profile/upload-image/${admin._id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      // Update local storage with new image path
+      const updatedAdmin = { ...admin, image: response.data.imagePath };
+      localStorage.setItem('admin', JSON.stringify(updatedAdmin));
+
+      console.log('Image uploaded successfully:', response.data);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
   };
 
   const handleSaveChanges = () => {
@@ -137,14 +185,45 @@ export const Profile = () => {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex flex-col items-center mb-6">
-                <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">
-                  {admin.name?.charAt(0) || 'A'}
+                <div className="relative">
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview.startsWith('/uploads/') ? `http://localhost:3000${imagePreview}` : imagePreview}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full object-cover border-2 border-green-500"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                      {admin.name?.charAt(0) || 'A'}
+                    </div>
+                  )}
+                  <label htmlFor="imageUpload" className="absolute bottom-0 right-0 bg-green-500 rounded-full p-1 cursor-pointer">
+                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </label>
+                  <input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageChange}
+                  />
                 </div>
-                <h2 className="text-xl font-bold text-gray-800">{admin.name}</h2>
+                <h2 className="text-xl font-bold text-gray-800 mt-4">{admin.name}</h2>
                 <p className="text-gray-600">{admin.email}</p>
                 <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">
                   {admin.isSuperAdmin ? 'Super Admin' : admin.role}
                 </span>
+                {selectedImage && (
+                  <button
+                    onClick={handleImageUpload}
+                    className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
+                  >
+                    Save Photo
+                  </button>
+                )}
               </div>
 
               <div className="space-y-4">

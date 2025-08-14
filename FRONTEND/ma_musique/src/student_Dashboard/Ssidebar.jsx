@@ -28,7 +28,7 @@ const Sidebar = () => {
     return (
       <Link
         to={to}
-        className="flex items-center gap-3 px-3 py-2 rounded hover:bg-[#1d3f55] transition"
+        className="flex items-center gap-3 px-3 py-2 rounded hover:bg-amber-600 transition"
         onClick={() => setSidebarOpen(false)} // ferme sur mobile quand on clique
       >
         <span className="text-lg">{icon}</span>
@@ -49,9 +49,8 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed z-50 bg-[#05253A] text-white w-64 h-full p-6 transform ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 transition-transform duration-300 ease-in-out`}
+        className={`fixed z-50 bg-amber-500 text-white w-64 h-full p-6 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0 transition-transform duration-300 ease-in-out`}
       >
         <div className="mb-8 text-center">
           <img
@@ -72,7 +71,7 @@ const Sidebar = () => {
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 bg-white text-[#05253A] px-4 py-2 rounded hover:bg-[#447494] hover:text-white transition"
+            className="w-full flex items-center gap-2 bg-white text-amber-600 px-4 py-2 rounded hover:bg-amber-700 hover:text-white transition"
           >
             <AiOutlineLogout className="text-xl" />
             <span>Logout</span>
@@ -87,7 +86,7 @@ const Sidebar = () => {
           {/* Burger mobile */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="md:hidden text-2xl text-[#05253A]"
+            className="md:hidden text-2xl text-amber-600"
           >
             <FaBars />
           </button>

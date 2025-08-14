@@ -153,12 +153,15 @@ const Request = () => {
       }
 
       const jsonData = Object.fromEntries(submissionData.entries());
+      // console.log("Data to be sent:", jsonData);
+      // console.log('url', `${databaseUri}/${formData.role}s/register`);
+
       const response = await axios.post(`${databaseUri}/${formData.role}s/register`, jsonData, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      console.log("Réponse du backend :", response.data);
+      // console.log("Réponse du backend :", response.data);
 
       const userRole = formData.role.toLowerCase();
       const userData = response.data[userRole];

@@ -37,7 +37,7 @@ const Sidebar = () => {
     return (
       <Link
         to={to}
-        className="flex items-center gap-3 px-3 py-2 rounded hover:bg-blue-700 transition"
+        className="flex items-center gap-3 px-3 py-2 rounded hover:bg-orange-700 transition"
         onClick={() => setSidebarOpen(false)}
       >
         <span className="text-lg">{icon}</span>
@@ -58,9 +58,8 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed z-50 bg-blue-800 text-white w-64 h-full p-6 transform ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 transition-transform duration-300 ease-in-out`}
+        className={`fixed z-50 bg-orange-600 text-white w-64 h-full p-6 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0 transition-transform duration-300 ease-in-out`}
       >
         <div className="mb-8 text-center">
           <img
@@ -76,7 +75,7 @@ const Sidebar = () => {
           ))}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 bg-white text-blue-800 px-4 py-2 rounded hover:bg-blue-700 hover:text-white transition mt-4"
+            className="w-full flex items-center gap-2 bg-white text-orange-600 px-4 py-2 rounded hover:bg-orange-700 hover:text-white transition mt-4"
           >
             <AiOutlineLogout className="text-xl" />
             <span>Logout</span>
@@ -91,7 +90,7 @@ const Sidebar = () => {
           {/* Burger mobile */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="md:hidden text-2xl text-blue-800"
+            className="md:hidden text-2xl text-orange-600"
           >
             <FaBars />
           </button>

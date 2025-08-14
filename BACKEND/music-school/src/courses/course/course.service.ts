@@ -7,11 +7,13 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 import * as fs from 'fs';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectModel(Course.name) private readonly courseModel: Model<courseDocument>,
+    private readonly httpService: HttpService
   ) { }
 
   async createCourse(courseDto: CourseDto, file?: Express.Multer.File): Promise<Course> {
@@ -91,6 +93,32 @@ export class CourseService {
       path: `/uploads/${file.filename}`,
     };
   }
+
+  async getYoutubeVideos(query: string) {
+    const API_KEY = process.env.YOUTUBE_API_KEY;
+    console.log(`Using YouTube API Key: ${API_KEY}`);
+
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=27&q=${encodeURIComponent(query)}&key=${API_KEY}&maxResults=10`;
+    console.log(`YouTube API URL: ${url}`);
+
+
+    try {
+      const response = await this.httpService.axiosRef.get(url);
+      console.log(`YouTube API Response: ${JSON.stringify(response.data.items)}`);
+
+      return response.data.items.map(item => ({
+        title: item.snippet.title,
+        description: item.snippet.description,
+        thumbnail: item.snippet.thumbnails.default.url,
+        videoId: item.id.videoId
+      }));
+
+    } catch (error) {
+      throw new Error('Erreur lors de la récupération des vidéos YouTube');
+    }
+  }
+
+
 }
 
 export const multerOptions = {

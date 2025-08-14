@@ -7,23 +7,25 @@ import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RolesGuard } from '../../role/role.guard';
+import { ProfileModule } from '../profile/profile.module';
 
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Student.name, schema: StudentSchema }]) , 
-  JwtModule.registerAsync({
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    useFactory: (configService: ConfigService) => ({
-      secret: configService.get<string>('JWT_SECRET'),
-      signOptions: { expiresIn: '1h' },
+  imports: [ProfileModule,
+    MongooseModule.forFeature([{ name: Student.name, schema: StudentSchema }]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
     }),
-  }),
-  MailerModule,
-  ConfigModule,
-],
+    MailerModule,
+    ConfigModule,
+  ],
   controllers: [StudentController],
-  providers: [StudentService , RolesGuard],
-  exports: [MongooseModule , StudentService], // 👈 EXPORTER POUR LES AUTRES MODULES
+  providers: [StudentService, RolesGuard],
+  exports: [MongooseModule, StudentService], // 👈 EXPORTER POUR LES AUTRES MODULES
 })
-export class StudentModule {}
+export class StudentModule { }
