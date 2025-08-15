@@ -146,7 +146,7 @@ export const Blog = () => {
     } catch (err) {
       setFormError('Impossible de soumettre le blog');
     }
-
+    
     setCreating(false);
   };
 

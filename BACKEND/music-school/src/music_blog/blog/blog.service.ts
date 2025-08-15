@@ -31,7 +31,7 @@ export class BlogService {
         return await blog.save();
     }
 
-    async getAllBlogs({ page = 1, limit = 10, search = '', tag = '', category = '', published = true }) {
+    async getAllBlogs({ page = 1, limit = 10, search = '', tag = '', category = '', published = undefined }) {
         const query: any = {};
         if (search) query.title = { $regex: search, $options: 'i' };
         if (tag) query.tags = tag;
