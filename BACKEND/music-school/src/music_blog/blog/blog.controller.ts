@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, Req, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CreateBlogDto, UpdateBlogDto } from 'src/DTO/blog.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { log } from 'console';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Blog')
 @Controller('blog')
@@ -9,14 +12,42 @@ export class BlogController {
     constructor(private readonly blogService: BlogService) { }
 
     @Post('/create')
+    @UseGuards(AuthGuard('jwt')) // ✅ Protection + injection de req.user
+    @UseInterceptors(FileInterceptor('image'))
     @ApiOperation({ summary: 'Créer un nouvel article de blog' })
     @ApiBody({ type: CreateBlogDto })
     @ApiResponse({ status: 201, description: 'Blog créé avec succès' })
-    async createBlog(@Body() data: CreateBlogDto, @Req() req) {
-        // Remove 'author' if present to avoid type conflict
-        const { author, ...blogData } = data;
-        return await this.blogService.createBlog(blogData, req.user);
+    @ApiResponse({ status: 403, description: 'Utilisateur non authentifié ou auteur défini manuellement' })
+    @ApiResponse({ status: 400, description: 'Données invalides' })
+    @ApiResponse({ status: 500, description: 'Erreur interne du serveur' })
+    @ApiResponse({ status: 401, description: 'Non autorisé' })
+    @ApiResponse({ status: 404, description: 'Ressource non trouvée' })
+    @ApiResponse({ status: 409, description: 'Conflit de données' })
+    @ApiResponse({ status: 422, description: 'Données non traitables' })
+    @ApiResponse({ status: 429, description: 'Trop de requêtes' })
+    @ApiResponse({ status: 503, description: 'Service indisponible' })
+    @ApiResponse({ status: 504, description: 'Délai d’attente dépassé' })
+    async createBlog(
+        @UploadedFile() file: Express.Multer.File,
+        @Body() data: CreateBlogDto,
+        @Req() req
+    ) {
+
+        try {
+            const { author, ...blogData } = data;
+            console.log('Utilisateur authentifié:', req.user);
+            console.log('Auteur du blog (peut être défini manuellement):', author);
+            console.log('Données du blog (sans auteur):', blogData);
+      
+
+            return await this.blogService.createBlog({ ...blogData, image: file ? file.filename : undefined }, req.user);
+        } catch (error) {
+            console.error('Error creating blog:', error);
+            throw error; // Propagate the error to the global exception filter
+
+        }
     }
+
 
     @Get('/all')
     @ApiOperation({ summary: 'Récupérer tous les blogs avec pagination, recherche, tag, catégorie, publication' })
@@ -28,14 +59,31 @@ export class BlogController {
     @ApiQuery({ name: 'published', required: false, type: Boolean, example: true })
     @ApiResponse({ status: 200, description: 'Liste paginée des blogs' })
     async getAllBlogs(
-        @Query('page') page: number,
-        @Query('limit') limit: number,
+        @Query('page') page: string,
+        @Query('limit') limit: string,
         @Query('search') search: string,
         @Query('tag') tag: string,
         @Query('category') category: string,
-        @Query('published') published: boolean,
+        @Query('published') published: string, // string venant du query
     ) {
-        return await this.blogService.getAllBlogs({ page, limit, search, tag, category, published });
+        try {
+            const pageNumber = parseInt(page) || 1;
+            const limitNumber = parseInt(limit) || 10;
+            const publishedBool = published === 'true' ? true : published === 'false' ? false : undefined;
+
+            return await this.blogService.getAllBlogs({
+                page: pageNumber,
+                limit: limitNumber,
+                search,
+                tag,
+                category,
+                published: publishedBool
+            });
+        } catch (error) {
+            console.error('Error fetching blogs:', error);
+            throw error; // Propagate the error to the global exception filter
+
+        }
     }
 
     @Get('/:id')
@@ -44,17 +92,44 @@ export class BlogController {
     @ApiResponse({ status: 200, description: 'Blog trouvé' })
     @ApiResponse({ status: 404, description: 'Blog non trouvé' })
     async getBlogById(@Param('id') id: string) {
-        return await this.blogService.getBlogById(id);
+        try {
+            return await this.blogService.getBlogById(id);
+        } catch (error) {
+            console.error('Error fetching blog by ID:', error);
+            throw error; // Propagate the error to the global exception filter
+        }
     }
 
     @Put('/:id')
-    @ApiOperation({ summary: 'Mettre à jour un blog' })
+    @UseGuards(AuthGuard('jwt'))
+    @UseInterceptors(FileInterceptor('image'))
     @ApiParam({ name: 'id', description: 'ID du blog', example: '64b7f3c2e4b0f5a1d2c3e4f5' })
     @ApiBody({ type: UpdateBlogDto })
-    @ApiResponse({ status: 200, description: 'Blog mis à jour' })
+    @ApiResponse({ status: 200, description: 'Blog mis à jour avec succès' })
     @ApiResponse({ status: 404, description: 'Blog non trouvé' })
-    async updateBlog(@Param('id') id: string, @Body() data: UpdateBlogDto, @Req() req) {
-        return await this.blogService.updateBlog(id, data, req.user);
+    @ApiResponse({ status: 403, description: 'Accès interdit' })
+    @ApiResponse({ status: 400, description: 'Données invalides' })
+    @ApiResponse({ status: 500, description: 'Erreur interne du serveur' })
+    @ApiResponse({ status: 401, description: 'Non autorisé' })
+    @ApiResponse({ status: 409, description: 'Conflit de données' })
+    @ApiResponse({ status: 422, description: 'Données non traitables' })
+    @ApiResponse({ status: 429, description: 'Trop de requêtes' })
+    @ApiResponse({ status: 503, description: 'Service indisponible' })
+    @ApiOperation({ summary: 'Mettre à jour un blog' })
+    async updateBlog(
+        @Param('id') id: string,
+        @UploadedFile() file: Express.Multer.File,
+        @Body() body: UpdateBlogDto,
+        @Req() req
+    ) {
+        try {
+            console.log('Updating blog with ID:', id);
+            console.log('Request body:', body);
+            return await this.blogService.updateBlog(id, body, req.user, file);
+        } catch (error) {
+            console.error('Error updating blog:', error);
+            throw error; // Propagate the error to the global exception filter
+        }
     }
 
     @Delete('/:id')

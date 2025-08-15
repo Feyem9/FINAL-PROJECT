@@ -16,7 +16,7 @@ export class AuthService {
         private jwtService: JwtService,
         private readonly configService : ConfigService
     ){
-        const jwtSecret = this.configService.get<any | null>('JWT_SECRET_KEY');
+        const jwtSecret = this.configService.get<any | null>('JWT_SECRET');
     console.log('JWT Secret KEY:', jwtSecret); // Vérifie que la variable est bien chargée
     }
 
@@ -62,7 +62,11 @@ export class AuthService {
             throw new UnauthorizedException('invalid email or password');
         }
 
-        const token = this.jwtService.sign({ id: user._id})
+        const token = this.jwtService.sign({
+          _id: user._id,
+          email: user.email,
+          role: user.role
+        })
         console.log('token is  : ' , token);
 
         return { token , user } 

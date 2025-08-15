@@ -50,7 +50,7 @@ export class TeacherService {
     await newTeacher.save();
 
     // Génération du token JWT
-    const payload = { id: newTeacher._id, email: newTeacher.email, role: newTeacher.role };
+    const payload = { _id: newTeacher._id, email: newTeacher.email, role: newTeacher.role };
     const token = this.jwtService.sign(payload);
     await this.sendWelcomeEmail(newTeacher.email, newTeacher.name);
 
@@ -196,7 +196,7 @@ Bienvenue sur notre plateforme éducative. Vous pouvez maintenant vous connecter
       throw new UnauthorizedException('invalid email or password');
     }
 
-    const token = this.jwtService.sign({ id: teacher._id, email: teacher.email, role: teacher.role }, { secret: this.configService.get<string>('JWT_SECRET_KEY') })
+    const token = this.jwtService.sign({ id: teacher._id, email: teacher.email, role: teacher.role }, { secret: this.configService.get<string>('JWT_SECRET') })
     console.log('token is  : ', token);
 
     // return { token , teacher } 

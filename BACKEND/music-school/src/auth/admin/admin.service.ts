@@ -21,7 +21,7 @@ export class AdminService {
     private configService: ConfigService,        
     private mailerService: MailerService
 
-  ) {const jwtSecret = this.configService.get<any | null>('JWT_SECRET_KEY');
+  ) {const jwtSecret = this.configService.get<any | null>('JWT_SECRET');
     console.log('JWT Secret KEY:', jwtSecret); // Vérifie que la variable est bien chargée
     
     // Planifier l'envoi du token toutes les 24 heures
@@ -48,7 +48,7 @@ export class AdminService {
   }
 
   async sendTokenEmail(admin: Admin): Promise<void> {
-    const payload = { id: admin._id, email: admin.email, role: admin.role };
+    const payload = { _id: admin._id, email: admin.email, role: admin.role };
     const token = this.jwtService.sign(payload, {
       expiresIn: '24h',
     });
@@ -156,7 +156,7 @@ export class AdminService {
                   throw new UnauthorizedException('invalid email or password');
               }
       
-              const token = this.jwtService.sign({ id: admin._id , email: admin.email , role: admin.role} , {secret : this.configService.get<string>('JWT_SECRET_KEY') , expiresIn : this.configService.get<string>('JWT_EXPIRE')})
+              const token = this.jwtService.sign({ id: admin._id , email: admin.email , role: admin.role} , {secret : this.configService.get<string>('JWT_SECRET') , expiresIn : this.configService.get<string>('JWT_EXPIRE')})
               console.log('token is  : ' , token);
 
 

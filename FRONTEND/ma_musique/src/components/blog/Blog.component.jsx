@@ -63,9 +63,10 @@ export const Blog = () => {
             ...(category ? { category } : {}),
           },
         });
-        // console.log('Fetched blogs:', response.data);
 
         const data = response.data;
+        console.log('Blogs data:', data);
+        
         setBlogs(data.blogs || []);
         setTotal(data.total || 0);
       } catch (error) {

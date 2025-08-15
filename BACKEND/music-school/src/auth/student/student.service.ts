@@ -49,7 +49,7 @@ export class StudentService {
     await newStudent.save();
 
     // Génération du token JWT
-    const payload = { id: newStudent._id, email: newStudent.email, role: newStudent.role };
+    const payload = { _id: newStudent._id, email: newStudent.email, role: newStudent.role };
     const token = this.jwtService.sign(payload);
     await this.sendWelcomeEmail(email, name);
 
@@ -166,7 +166,7 @@ export class StudentService {
       throw new UnauthorizedException('invalid email or password');
     }
 
-    const token = this.jwtService.sign({ id: student._id, email: student.email, role: student.role }, { secret: this.configService.get<string>('JWT_SECRET_KEY') })
+    const token = this.jwtService.sign({ id: student._id, email: student.email, role: student.role }, { secret: this.configService.get<string>('JWT_SECRET') })
     console.log('token is  : ', token);
     // Envoyer le token par email
     await this.sendWelcomeEmail(student.email, student.name);
