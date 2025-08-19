@@ -6,7 +6,7 @@ export class MusicResource extends Document {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true }) 
   description: string;
 
   @Prop({ required: true, enum: ['sheet_music', 'video', 'audio', 'article'] })

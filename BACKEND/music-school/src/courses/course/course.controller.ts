@@ -7,12 +7,13 @@ import {
   Delete,
   Param,
   UploadedFile,
+  UploadedFiles,
   Query,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { CourseService } from './course.service';
 import { CourseDto } from 'src/DTO/course.dto';
 import { multerOptions } from './course.service'; // adapte le chemin si besoin
@@ -27,17 +28,18 @@ export class CourseController {
   @ApiOperation({ summary: 'Create a new course' })
   @ApiResponse({ status: 201, description: 'Course created successfully', type: CourseDto })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
-  @UseInterceptors(FileInterceptor('file', multerOptions))
+  @UseInterceptors(FilesInterceptor('files', 2, multerOptions))
   @ApiConsumes('multipart/form-data')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async createCourse(
     @Body() courseDto: CourseDto,
-    @UploadedFile() file?: Express.Multer.File
+    @UploadedFiles() files?: Array<Express.Multer.File>
   ) {
     console.log('Create course endpoint hit, dto:', courseDto);
-    console.log('File:', file);
-    // Passe bien le fichier au service
-    return await this.courseService.createCourse(courseDto, file);
+    console.log('Files:', files);
+    // Pass both files to the service
+    const mediaFile = files?.find(file => file.fieldname === 'file');
+    const imageFile = files?.find(file => file.fieldname === 'image');
+    return await this.courseService.createCourse(courseDto, mediaFile, imageFile);
   }
 
   @Get('/all')

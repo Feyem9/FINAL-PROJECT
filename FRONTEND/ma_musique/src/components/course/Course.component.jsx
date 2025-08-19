@@ -1,30 +1,39 @@
-
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-// Les imports MUI ne sont plus nécessaires pour le rendu final
-// import Container from "@mui/material/Container"
-// import TextField from "@mui/material/TextField"
-// import Button from "@mui/material/Button"
-// import Typography from "@mui/material/Typography"
-// import Select from "@mui/material/Select"
-// import MenuItem from "@mui/material/MenuItem"
-// import Card from "@mui/material/Card"
-// import CardContent from "@mui/material/CardContent"
-// import CardActions from "@mui/material/CardActions"
-// import Grid from "@mui/material/Grid"
-// import InputLabel from "@mui/material/InputLabel"
-// import FormControl from "@mui/material/FormControl"
-// import Dialog from "@mui/material/Dialog"
-// import DialogTitle from "@mui/material/DialogTitle"
-// import DialogContent from "@mui/material/DialogContent"
-// import DialogActions from "@mui/material/DialogActions"
 
-// Tes hooks restent inchangés
-const useCourses = () => {
-    const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+export default function Course() {
+    // Define databaseUri in a scope accessible to all functions
+    const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI || 'http://localhost:3000';
+
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [newCourse, setNewCourse] = useState({
+        title: '',
+        description: '',
+        amount: '',
+        level: '',
+        media: 'video',
+        category: '',
+        teacher_id: '',
+    });
+    const [file, setFile] = useState(null);
+    const [image, setImage] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filter, setFilter] = useState('All');
+    const [teacherFilter, setTeacherFilter] = useState('');
+    const [selectedCourse, setSelectedCourse] = useState(null);
+    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'detail'
+    const [error, setError] = useState(null);
+
+    // Récupère l'id du teacher depuis le localStorage (à adapter selon ton auth)
+    const teacherData = JSON.parse(localStorage.getItem('teacher') || '{}');
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    const teacherId = teacherData?._id || '';
+    const userId = userData?._id || '';
+    const userRole = userData?.role || '';
+
+
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -38,77 +47,105 @@ const useCourses = () => {
         fetchCourses();
     }, []);
 
-    return { courses, setCourses, loading, setLoading };
-};
-
-const useNewCourse = () => {
-    const [newCourse, setNewCourse] = useState({
-        title: '',
-        description: '',
-        amount: '',
-        level: '',
-        media: 'video',
-        category: '',
-    });
-    const [file, setFile] = useState(null);
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewCourse((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+        const { name } = e.target;
+        if (name === 'file') {
+            setFile(e.target.files[0]);
+        } else if (name === 'image') {
+            setImage(e.target.files[0]);
+        }
     };
-
-    return { newCourse, setNewCourse, file, setFile, handleInputChange, handleFileChange };
-};
-
-export default function Course() {
-    const { courses, setCourses, loading, setLoading } = useCourses();
-    const { newCourse, setNewCourse, file, setFile, handleInputChange, handleFileChange } = useNewCourse();
-    const [open, setOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filter, setFilter] = useState('All');
-
-    // Récupère l'id du teacher depuis le localStorage (à adapter selon ton auth)
-    const teacherData = JSON.parse(localStorage.getItem('teacher') || '{}');
-    const teacherId = teacherData?._id || '';
 
     const handleCreateCourse = async () => {
         setLoading(true);
+        setError(null);
+
+        // Récupérer l'utilisateur connecté (admin ou teacher)
+        //   const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const teacher = JSON.parse(localStorage.getItem('teacher') || '{}');
+        const admin = JSON.parse(localStorage.getItem('admin') || '{}');
+        console.log('Teacher:', teacher);
+        console.log('Admin:', admin);
+
+        const user = teacher._id ? teacher : admin._id ? admin : null;
+        const userId = user._id;
+        console.log('User ID:', userId);
+        const userRole = user.role; // 'admin' ou 'teacher'
+        console.log('User Role:', userRole);
+
+        if (!userId || !userRole) {
+            setError('Utilisateur non connecté. Veuillez vous reconnecter.');
+            setLoading(false);
+            return;
+        }
+
+        // Validation des champs requis
+        const { title, description, amount: amountRaw, level, media, category } = newCourse;
+        if (!title || !description || !amountRaw || !level || !media || !category) {
+            setError('Veuillez remplir tous les champs obligatoires.');
+            setLoading(false);
+            return;
+        }
+
+        // Conversion amount en nombre
+        const amount = Number(amountRaw);
+        if (isNaN(amount) || amount <= 0) {
+            setError('Veuillez entrer un montant valide supérieur à 0.');
+            setLoading(false);
+            return;
+        }
+
+        // Préparer FormData pour l'envoi
         const formData = new FormData();
-        formData.append('title', newCourse.title);
-        formData.append('description', newCourse.description);
-        formData.append('amount', Number(newCourse.amount)); // Ensure amount is a number
-        formData.append('level', newCourse.level);
-        formData.append('media', newCourse.media);
-        formData.append('category', newCourse.category);
-        formData.append('teacher_id', teacherId);
-        // Add optional fields with default values
-        formData.append('image', '');
-        formData.append('fileUrl', '');
-        if (file) formData.append('file', file);
-        console.log('file', file);
-        console.log('formdata', formData);
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('amount', amount);
+        formData.append('level', level);
+        formData.append('media', media);
+        formData.append('category', category);
+
+        // Champs requis par le nouveau DTO
+        formData.append('user_id', userId);
+        formData.append('role', userRole); // 'teacher' ou 'admin'
+
+
+        // Fichiers
+        if (file) formData.append('files', file);
+        if (image) formData.append('files', image);
 
         try {
-            const response = await axios.post(`${databaseUri}/course/create`, formData);
+            const response = await axios.post(`${databaseUri}/course/create`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
             console.log('Course created:', response.data);
-            
             setCourses((prev) => [...prev, response.data]);
             setNewCourse({
                 title: '',
                 description: '',
                 amount: '',
-                level: '',
+                level: 'beginner',
                 media: 'video',
                 category: '',
             });
             setFile(null);
+            setImage(null);
             setOpen(false);
+
         } catch (error) {
             console.error('Error creating course:', error);
+            console.error('Error response:', error.response);
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            setError(`Erreur lors de la création du cours : ${error.response?.data?.message || error.message}`);
         } finally {
             setLoading(false);
         }
@@ -123,12 +160,161 @@ export default function Course() {
         }
     };
 
+    const handleUpdateCourse = async (courseId, updatedData) => {
+        try {
+            // Préparer l'objet complet avec les champs obligatoires
+            const payload = {
+                title: updatedData.title || '',          // obligatoire
+                description: updatedData.description || '', // obligatoire
+                amount: updatedData.amount || 0,        // obligatoire
+                level: updatedData.level || '',          // obligatoire
+                category: updatedData.category || '',    // obligatoire
+                media: updatedData.media || 'video',     // obligatoire
+                user_id: updatedData.user_id || '',// obligatoire si admin
+                role: updatedData.role || userRole,      // admin/teacher
+            };
+
+            const response = await axios.put(`${databaseUri}/course/update/${courseId}`, payload);
+
+            setCourses((prev) =>
+                prev.map(course => course._id === courseId ? response.data : course)
+            );
+            setSelectedCourse(null);
+        } catch (error) {
+            console.error('Error updating course:', error);
+        }
+    };
+
+
+    const handleViewCourse = (course) => {
+        setSelectedCourse(course);
+        setViewMode('detail');
+    };
+
+    const handleBackToList = () => {
+        setSelectedCourse(null);
+        setViewMode('grid');
+    };
+
     // Ajout de la logique de filtrage et de recherche
     const filteredCourses = courses.filter(course => {
         const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter = filter === 'All' || course.level === filter;
-        return matchesSearch && matchesFilter;
+        const matchesTeacher = !teacherFilter || course.teacher_id === teacherFilter;
+        return matchesSearch && matchesFilter && matchesTeacher;
     });
+
+    // Function to render media based on type
+    const renderMedia = (course) => {
+        if (course.media === 'video') {
+            return (
+                <div className="relative pt-[56.25%]">
+                    <iframe
+                        src={course.fileUrl}
+                        className="absolute top-0 left-0 w-full h-full rounded-xl"
+                        title={course.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    ></iframe>
+                </div>
+            );
+        } else if (course.media === 'pdf') {
+            return (
+                <div className="relative pt-[130%]">
+                    <iframe
+                        src={course.fileUrl}
+                        className="absolute top-0 left-0 w-full h-full rounded-xl"
+                        title={course.title}
+                        frameBorder="0"
+                    ></iframe>
+                </div>
+            );
+        } else if (course.media === 'audio') {
+            return (
+                <div className="w-full">
+                    <audio controls className="w-full">
+                        <source src={course.fileUrl} type="audio/mpeg" />
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            );
+        }
+        return <div>Unsupported media type</div>;
+    };
+
+    // Render course detail view
+    if (viewMode === 'detail' && selectedCourse) {
+        return (
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen p-6">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex items-center mb-6">
+                        <button
+                            onClick={handleBackToList}
+                            className="flex items-center text-green-600 hover:text-green-800 mr-4"
+                        >
+                            <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Back to Courses
+                        </button>
+                        <h1 className="text-3xl font-bold text-gray-800">{selectedCourse.title}</h1>
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div className="lg:col-span-2">
+                                {renderMedia(selectedCourse)}
+                            </div>
+                            <div>
+                                <div className="mb-6">
+                                    <h2 className="text-xl font-bold text-gray-800 mb-2">Course Details</h2>
+                                    <p className="text-gray-600 mb-4">{selectedCourse.description}</p>
+
+                                    <div className="grid grid-cols-2 gap-4 mb-4">
+                                        <div className="bg-gray-50 p-4 rounded-xl">
+                                            <p className="text-sm text-gray-500">Level</p>
+                                            <p className="font-semibold">{selectedCourse.level}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-4 rounded-xl">
+                                            <p className="text-sm text-gray-500">Category</p>
+                                            <p className="font-semibold">{selectedCourse.category}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-4 rounded-xl">
+                                            <p className="text-sm text-gray-500">Price</p>
+                                            <p className="font-semibold">${selectedCourse.amount}</p>
+                                        </div>
+                                        <div className="bg-gray-50 p-4 rounded-xl">
+                                            <p className="text-sm text-gray-500">Media Type</p>
+                                            <p className="font-semibold capitalize">{selectedCourse.media}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex space-x-3">
+                                    <button
+                                        onClick={() => {
+                                            setNewCourse(selectedCourse);
+                                            setOpen(true);
+                                        }}
+                                        className="flex-1 bg-green-100 text-green-800 px-4 py-2 rounded-xl font-medium hover:bg-green-200 transition-colors"
+                                    >
+                                        Edit Course
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteCourse(selectedCourse._id)}
+                                        className="flex-1 bg-red-100 text-red-800 px-4 py-2 rounded-xl font-medium hover:bg-red-200 transition-colors"
+                                    >
+                                        Delete Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen p-6">
@@ -243,15 +429,39 @@ export default function Course() {
                             <option value="violon">Violon</option>
                             <option value="baterie">Baterie</option>
                         </select>
+                        <input
+                            type="text"
+                            placeholder="Filter by teacher ID"
+                            value={teacherFilter}
+                            onChange={e => setTeacherFilter(e.target.value)}
+                            className="w-full md:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        />
                     </div>
                 </div>
+
+                {/* Error message */}
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <strong className="font-bold">Error: </strong>
+                        <span className="block sm:inline">{error}</span>
+                    </div>
+                )}
 
                 {/* Courses Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredCourses.map((course) => (
                         <div key={course._id} className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
                             {/* Course Image */}
-                            <div className="h-48 bg-gradient-to-r from-green-400 to-blue-500 relative">
+                            <div className="h-48 relative">
+                                {course.image ? (
+                                    <img
+                                        src={`${databaseUri}${course.image}`}
+                                        alt={course.title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-gradient-to-r from-green-400 to-blue-500"></div>
+                                )}
                                 <div className="absolute top-4 right-4 bg-white bg-opacity-90 px-3 py-1 rounded-full text-sm font-medium text-gray-800">
                                     {course.level}
                                 </div>
@@ -293,13 +503,18 @@ export default function Course() {
                                 <div className="flex justify-between items-center pt-4 border-t border-gray-100">
                                     <div className="text-lg font-bold text-gray-800">${course.amount || 0}</div>
                                     <div className="flex space-x-2">
-                                        <button className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+                                        <button
+                                            className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+                                            onClick={() => handleViewCourse(course)}
+                                        >
                                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
                                         </button>
-                                        <button className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+                                        <button className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+                                            onClick={() => handleUpdateCourse(course._id)}
+                                        >
                                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
@@ -319,15 +534,29 @@ export default function Course() {
                     ))}
                 </div>
 
-                {/* Modal de création de cours (stylisé avec Tailwind) */}
+                {/* Modal de création / mise à jour de cours (stylisé avec Tailwind) */}
                 {open && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-                        <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-2xl">
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold text-gray-800">Create New Course</h2>
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50 overflow-auto">
+                        <div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-2xl sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
+                            <div className="flex justify-between items-center mb-6 flex-wrap">
+                                <h2 className="text-2xl font-bold text-gray-800">
+                                    {selectedCourse ? "Update Course" : "Create New Course"}
+                                </h2>
                                 <button
-                                    onClick={() => setOpen(false)}
-                                    className="text-gray-500 hover:text-gray-800 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                                    onClick={() => {
+                                        setOpen(false);
+                                        setSelectedCourse(null);
+                                        setNewCourse({
+                                            title: '',
+                                            description: '',
+                                            amount: '',
+                                            level: 'beginner',
+                                            media: 'video',
+                                            category: '',
+                                            teacher_id: '',
+                                        });
+                                    }}
+                                    className="text-gray-500 hover:text-gray-800 p-2 rounded-full hover:bg-gray-100 transition-colors mt-2 sm:mt-0"
                                 >
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -335,8 +564,15 @@ export default function Course() {
                                 </button>
                             </div>
 
+                            {error && (
+                                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                                    <strong className="font-bold">Error: </strong>
+                                    <span className="block sm:inline">{error}</span>
+                                </div>
+                            )}
+
                             <div className="space-y-5">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Course Title</label>
                                         <input
@@ -361,6 +597,20 @@ export default function Course() {
                                     </div>
                                 </div>
 
+                                {userRole === 'admin' && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Teacher ID</label>
+                                        <input
+                                            type="text"
+                                            name="teacher_id"
+                                            placeholder="Enter the teacher's ID"
+                                            value={newCourse.teacher_id}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                                        />
+                                    </div>
+                                )}
+
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Course Description</label>
                                     <textarea
@@ -373,7 +623,8 @@ export default function Course() {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                {/* Category, Level, Media Type, File/Image Upload */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                                         <select
@@ -418,41 +669,71 @@ export default function Course() {
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Upload Media</label>
-                                    <label className="flex flex-col items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-green-400 transition-colors">
-                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <svg className="w-8 h-8 mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                            </svg>
-                                            <p className="mb-2 text-sm text-gray-500">
-                                                <span className="font-semibold">Click to upload</span> or drag and drop
-                                            </p>
-                                            <p className="text-xs text-gray-500">MP4, PDF, MP3 up to 10MB</p>
-                                        </div>
-                                        <input type="file" name="file" className="hidden" onChange={handleFileChange} />
-                                    </label>
+                                {/* Upload Media / Image */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Upload Media</label>
+                                        <label className="flex flex-col items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-green-400 transition-colors">
+                                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                <svg className="w-8 h-8 mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                                </svg>
+                                                <p className="mb-2 text-sm text-gray-500">
+                                                    <span className="font-semibold">Click to upload</span> or drag and drop
+                                                </p>
+                                                <p className="text-xs text-gray-500">MP4, PDF, MP3 up to 10MB</p>
+                                            </div>
+                                            <input type="file" name="file" className="hidden" onChange={handleFileChange} />
+                                        </label>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Upload Course Image (Optional)</label>
+                                        <label className="flex flex-col items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-green-400 transition-colors">
+                                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                <svg className="w-8 h-8 mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                <p className="mb-2 text-sm text-gray-500">
+                                                    <span className="font-semibold">Click to upload</span> or drag and drop
+                                                </p>
+                                                <p className="text-xs text-gray-500">JPG, PNG, GIF up to 5MB</p>
+                                            </div>
+                                            <input type="file" name="image" className="hidden" onChange={handleFileChange} />
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="flex justify-end mt-8 space-x-3">
+                            <div className="flex flex-col sm:flex-row justify-end mt-8 space-y-3 sm:space-y-0 sm:space-x-3">
                                 <button
-                                    onClick={() => setOpen(false)}
+                                    onClick={() => {
+                                        setOpen(false);
+                                        setSelectedCourse(null);
+                                    }}
                                     className="px-5 py-2.5 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors font-medium"
                                 >
                                     Cancel
                                 </button>
                                 <button
-                                    onClick={handleCreateCourse}
+                                    onClick={() => {
+                                        if (selectedCourse) {
+                                            handleUpdateCourse(selectedCourse._id, newCourse);
+                                        } else {
+                                            handleCreateCourse();
+                                        }
+                                    }}
                                     disabled={loading}
                                     className="px-5 py-2.5 rounded-xl text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {loading ? 'Creating...' : 'Create Course'}
+                                    {loading ? (selectedCourse ? 'Updating...' : 'Creating...') : selectedCourse ? 'Update Course' : 'Create Course'}
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
+
+
             </div>
         </div>
     );

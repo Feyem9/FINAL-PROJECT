@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CourseDto } from '../../DTO/course.dto';
@@ -7,31 +7,69 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 import * as fs from 'fs';
-import { HttpService } from '@nestjs/axios'; 
+import { HttpService } from '@nestjs/axios';
+import { User } from 'src/schema/user.schema';
 
 @Injectable()
 export class CourseService {
   constructor(
     @InjectModel(Course.name) private readonly courseModel: Model<courseDocument>,
+    @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Admin') private readonly adminModel: Model<User>, // Assurez-vous que le modèle Admin est correctement importé
     private readonly httpService: HttpService
   ) { }
 
-  async createCourse(courseDto: CourseDto, file?: Express.Multer.File): Promise<Course> {
-    const { title, description, amount, category, level, media, teacher_id, image } = courseDto;
-    const fileUrl = file ? `/uploads/${file.filename}` : undefined;
+  async createCourse(
+    courseDto: CourseDto,
+    mediaFile?: Express.Multer.File,
+    imageFile?: Express.Multer.File,
+  ): Promise<Course> {
+    const { title, description, amount, category, level, user_id, role } = courseDto;
+
+    // Vérifier que l'user existe
+    const user = await this.getUserByRole(user_id, role);
+    if (!user) throw new BadRequestException('Utilisateur inexistant.');
+
+
+    // Vérifier son rôle
+    if (role !== 'teacher' && role !== 'admin') {
+      throw new ForbiddenException('Seuls les enseignants ou administrateurs peuvent créer un cours.');
+    }
+
+    // Préparation des fichiers
+    const fileUrl = mediaFile ? `/uploads/${mediaFile.filename}` : undefined;
+    const image = imageFile ? `/uploads/${imageFile.filename}` : undefined;
+
+    // Création du nouveau cours
     const newCourse = new this.courseModel({
       title,
       description,
       amount,
       category,
       level,
-      media,
-      teacher_id,
+      media: courseDto.media,
+      user_id,
+      role,
       image,
       fileUrl,
     });
+
     return newCourse.save();
   }
+
+
+  async getUserByRole(user_id: string, role: 'teacher' | 'admin') {
+    let user;
+    // Vérifie le rôle et récupère l'utilisateur approprié
+    if (role === 'teacher') {
+      user = await this.userModel.findById(user_id).exec();
+    } else if (role === 'admin') {
+      user = await this.adminModel.findById(user_id).exec();
+    }
+
+    return user;
+  }
+
 
   async getAllCourses(): Promise<Course[]> {
     return this.courseModel.find().exec();

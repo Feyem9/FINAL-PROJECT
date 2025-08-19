@@ -26,11 +26,17 @@ export class Course extends Document{
   @Prop({ required: true, enum: ['video', 'pdf', 'audio']})
   media: 'video' | 'pdf' | 'audio';
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   teacher_id: string; // ID de l'enseignant créateur du cours
 
   @Prop()
   image?: string; // URL ou chemin de l'image (optionnel)
+
+  @Prop({ required: true })
+  user_id: string; // ID de l'utilisateur qui crée le cours (peut être un enseignant ou un admin)
+
+  @Prop({ required: true, enum: ['teacher', 'admin'] })
+  role: string; // Rôle de l'utilisateur qui crée le
 
   @Prop()
   fileUrl?: string; // URL ou chemin du fichier média (optionnel)

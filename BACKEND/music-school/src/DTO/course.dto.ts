@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsOptional, IsIn } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CourseDto {
@@ -54,12 +54,18 @@ export class CourseDto {
     readonly media: 'video' | 'pdf' | 'audio';
 
     @ApiProperty({
-        description: 'The ID of the teacher who created the course',
+        description: 'The ID of the user who created the course',
         example: '64b7f3c2e4b0f5a1d2c3e4f5',
     })
     @IsNotEmpty()
     @IsString()
-    readonly teacher_id: string;
+    readonly user_id: string;
+
+    @ApiProperty({ enum: ['teacher', 'admin'] })
+    @IsOptional()
+    @IsIn(['teacher', 'admin'])
+    readonly role: 'teacher' | 'admin';
+
 
     @ApiProperty({
         description: 'The URL or path of the course image (optional)',
