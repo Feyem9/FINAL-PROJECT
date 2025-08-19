@@ -20,6 +20,9 @@ export class MusicResource extends Document {
 
   @Prop({ required: true })
   instrument: string;
+  
+  @Prop()
+  imageUrl: string;
 }
 
 export const MusicResourceSchema = SchemaFactory.createForClass(MusicResource);

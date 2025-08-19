@@ -3,10 +3,17 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as express from 'express';
 import { join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Create uploads directory if it doesn't exist
+  const uploadDir = join(process.cwd(), 'uploads');
+  if (!existsSync(uploadDir)) {
+    mkdirSync(uploadDir, { recursive: true });
+  }
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 

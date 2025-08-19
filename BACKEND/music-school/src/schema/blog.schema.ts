@@ -15,7 +15,7 @@ export class Blog extends Document {
     @Prop({ type: [String], default: [] })
     tags: string[];
 
-    @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+    @Prop({ type: Types.ObjectId, ref: 'User', required: false })
     author: Types.ObjectId;
 
     @Prop({ type: [String], default: [] })

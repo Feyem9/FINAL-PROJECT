@@ -65,8 +65,7 @@ export const Blog = () => {
         });
 
         const data = response.data;
-        console.log('Blogs data:', data);
-        
+
         setBlogs(data.blogs || []);
         setTotal(data.total || 0);
       } catch (error) {
@@ -112,55 +111,126 @@ export const Blog = () => {
     }));
   };
 
+  // const handleCreateOrEdit = async e => {
+  //   e.preventDefault();
+  //   setCreating(true);
+  //   setFormError('');
+  //   try {
+  //     const formData = new FormData();
+
+  //     formData.append('title', form.title);
+  //     formData.append('content', form.content);
+  //     if (form.image) formData.append('image', form.image);
+  //     if (form.tags) formData.append('tags', JSON.stringify(form.tags.split(',').map(t => t.trim())));
+  //     if (form.categories) formData.append('categories', JSON.stringify(form.categories.split(',').map(c => c.trim())));
+
+  //     const token = localStorage.getItem('token');
+  //     const url = editingBlogId
+  //       ? `${API_URL}/blog/${editingBlogId}`
+  //       : `${API_URL}/blog/create`;
+
+  //     const method = editingBlogId ? 'put' : 'post';
+
+  //     await axios({
+  //       method,
+  //       url,
+  //       data: formData,
+  //       headers: {
+  //         ...(token && { Authorization: `Bearer ${token}` }),
+  //         'Content-Type': 'multipart/form-data'
+  //       }
+  //     });
+  //     console.log('Submitting blog with data:', formData);
+
+  //     setForm({ title: '', content: '', image: null, tags: '', categories: '' });
+  //     setEditingBlogId(null);
+  //   } catch (err) {
+  //     setFormError('Impossible de soumettre le blog');
+  //   }
+
+  //   setCreating(false);
+  // };
+
+  // const handleEditClick = blog => {
+  //   setForm({
+  //     title: blog.title,
+  //     content: blog.content,
+  //     image: null,
+  //     tags: blog.tags ? blog.tags.join(', ') : '',
+  //     categories: blog.categories ? blog.categories.join(', ') : '',
+  //   });
+  //   setEditingBlogId(blog._id);
+  //   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // };
+
   const handleCreateOrEdit = async e => {
-    e.preventDefault();
-    setCreating(true);
-    setFormError('');
-    try {
-      const formData = new FormData();
-      formData.append('title', form.title);
-      formData.append('content', form.content);
-      if (form.image) formData.append('image', form.image);
-      if (form.tags) formData.append('tags', JSON.stringify(form.tags.split(',').map(t => t.trim())));
-      if (form.categories) formData.append('categories', JSON.stringify(form.categories.split(',').map(c => c.trim())));
+  e.preventDefault();
+  console.log("🔵 Début de la soumission du formulaire...");
 
-      const token = localStorage.getItem('token');
-      const url = editingBlogId
-        ? `${API_URL}/blog/${editingBlogId}`
-        : `${API_URL}/blog/create`;
+  setCreating(true);
+  setFormError('');
 
-      const method = editingBlogId ? 'put' : 'post';
+  try {
+    const formData = new FormData();
 
-      await axios({
-        method,
-        url,
-        data: formData,
-        headers: {
-          ...(token && { Authorization: `Bearer ${token}` }),
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+    console.log("📌 Données du formulaire avant envoi :", form);
 
-      setForm({ title: '', content: '', image: null, tags: '', categories: '' });
-      setEditingBlogId(null);
-    } catch (err) {
-      setFormError('Impossible de soumettre le blog');
+    formData.append('title', form.title);
+    formData.append('content', form.content);
+    if (form.image) {
+      console.log("🖼️ Image sélectionnée :", form.image.name);
+      formData.append('image', form.image);
     }
-    
-    setCreating(false);
-  };
+    if (form.tags) {
+      const tagsArray = form.tags.split(',').map(t => t.trim());
+      console.log("🏷️ Tags :", tagsArray);
+      formData.append('tags', JSON.stringify(tagsArray));
+    }
+    if (form.categories) {
+      const categoriesArray = form.categories.split(',').map(c => c.trim());
+      console.log("📂 Catégories :", categoriesArray);
+      formData.append('categories', JSON.stringify(categoriesArray));
+    }
 
-  const handleEditClick = blog => {
-    setForm({
-      title: blog.title,
-      content: blog.content,
-      image: null,
-      tags: blog.tags ? blog.tags.join(', ') : '',
-      categories: blog.categories ? blog.categories.join(', ') : '',
+    const token = localStorage.getItem('token');
+    console.log("🔑 Token récupéré :", token ? "Oui" : "Non");
+
+    const url = editingBlogId
+      ? `${API_URL}/blog/${editingBlogId}`
+      : `${API_URL}/blog/create`;
+
+    const method = editingBlogId ? 'put' : 'post';
+
+    console.log(`📡 Méthode HTTP : ${method.toUpperCase()} | URL : ${url}`);
+
+    // Debug du contenu du FormData (pas directement lisible, donc on l'affiche clé par clé)
+    for (let pair of formData.entries()) {
+      console.log(`➡️ FormData[${pair[0]}] :`, pair[1]);
+    }
+
+    const response = await axios({
+      method,
+      url,
+      data: formData,
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+        'Content-Type': 'multipart/form-data'
+      }
     });
-    setEditingBlogId(blog._id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+
+    console.log("✅ Réponse du serveur :", response.data);
+
+    setForm({ title: '', content: '', image: null, tags: '', categories: '' });
+    setEditingBlogId(null);
+
+  } catch (err) {
+    console.error("❌ Erreur lors de la soumission :", err.response ? err.response.data : err.message);
+    setFormError('Impossible de soumettre le blog');
+  }
+
+  setCreating(false);
+  console.log("🔴 Fin de la soumission du formulaire.");
+};
 
   const handleCommentSubmit = async e => {
     e.preventDefault();
@@ -228,7 +298,14 @@ export const Blog = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-sm font-medium">This Month</p>
-                  <p className="text-2xl font-bold text-gray-800 mt-1">12</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-1">
+                    {blogs.filter(blog => {
+                      const blogDate = new Date(blog.publishedAt || blog.createdAt);
+                      const now = new Date();
+                      return blogDate.getMonth() === now.getMonth() &&
+                             blogDate.getFullYear() === now.getFullYear();
+                    }).length}
+                  </p>
                 </div>
                 <div className="p-3 bg-green-100 rounded-full">
                   <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -242,7 +319,9 @@ export const Blog = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-sm font-medium">Categories</p>
-                  <p className="text-2xl font-bold text-gray-800 mt-1">5</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-1">
+                    {[...new Set(blogs.flatMap(blog => blog.categories || []))].length}
+                  </p>
                 </div>
                 <div className="p-3 bg-blue-100 rounded-full">
                   <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -288,7 +367,6 @@ export const Blog = () => {
                   </Button>
                 </div>
               </div>
-
               <div>
                 <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                   Content

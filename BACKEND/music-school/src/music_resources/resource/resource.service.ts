@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, FilterQuery } from 'mongoose';
+import { join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 import { MusicResource } from '../../schema/resource.schema';
 import { CreateMusicResourceDto, UpdateMusicResourceDto } from '../../DTO/resource.dto';
 
@@ -10,12 +12,18 @@ export class MusicResourcesService {
     @InjectModel(MusicResource.name) private readonly musicResourceModel: Model<MusicResource>,
   ) {}
 
-  async create(createDto: CreateMusicResourceDto): Promise<MusicResource> {
+  async create(createDto: any, image?: Express.Multer.File): Promise<MusicResource> {
     try {
+      // If an image is provided, save it and add the URL to the DTO
+      if (image) {
+        // Add the image URL to the DTO
+        createDto['imageUrl'] = `/uploads/${image.filename}`;
+      }
+      
       const createdResource = new this.musicResourceModel(createDto);
       return await createdResource.save();
     } catch (error) {
-      throw new InternalServerErrorException('Erreur lors de la création de la ressource.');
+      throw new InternalServerErrorException('Erreur lors de la création de la ressource: ' + error.message);
     }
   }
 

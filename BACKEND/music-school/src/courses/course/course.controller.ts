@@ -9,6 +9,8 @@ import {
   UploadedFile,
   Query,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CourseService } from './course.service';
@@ -27,10 +29,13 @@ export class CourseController {
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @UseInterceptors(FileInterceptor('file', multerOptions))
   @ApiConsumes('multipart/form-data')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async createCourse(
     @Body() courseDto: CourseDto,
     @UploadedFile() file?: Express.Multer.File
   ) {
+    console.log('Create course endpoint hit, dto:', courseDto);
+    console.log('File:', file);
     // Passe bien le fichier au service
     return await this.courseService.createCourse(courseDto, file);
   }

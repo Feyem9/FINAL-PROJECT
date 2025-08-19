@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 export const Tcourses = () => {
   const [activeTab, setActiveTab] = useState('all');
@@ -67,19 +68,54 @@ export const Tcourses = () => {
     }));
   };
 
-  const handleCreateCourse = (e) => {
+  const handleCreateCourse = async (e) => {
     e.preventDefault();
-    // In a real app, you would send this to your backend
-    console.log('Creating course:', newCourse);
-    alert('Course created successfully!');
-    setShowCreateForm(false);
-    setNewCourse({
-      title: '',
-      description: '',
-      level: '',
-      category: '',
-      price: '',
-    });
+    const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+    
+    // Get teacher ID from localStorage
+    const teacherData = JSON.parse(localStorage.getItem('teacher') || '{}');
+    const teacherId = teacherData?._id || '';
+    
+    if (!teacherId) {
+      alert('Teacher ID not found. Please log in again.');
+      return;
+    }
+
+    // Create FormData object
+    const formData = new FormData();
+    formData.append('title', newCourse.title);
+    formData.append('description', newCourse.description);
+    formData.append('amount', (newCourse.price)); // Convert price to amount
+    formData.append('level', newCourse.level.toLowerCase()); // Ensure lowercase
+    formData.append('category', newCourse.category.toLowerCase()); // Ensure lowercase
+    formData.append('media', 'video'); // Default media type
+    formData.append('teacher_id', teacherId);
+    formData.append('image', ''); // Optional fields
+    formData.append('fileUrl', '');
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${databaseUri}/course/create`, formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      console.log('Course created:', response.data);
+      alert('Course created successfully!');
+      setShowCreateForm(false);
+      setNewCourse({
+        title: '',
+        description: '',
+        level: '',
+        category: '',
+        price: '',
+      });
+    } catch (error) {
+      console.error('Error creating course:', error);
+      alert('Error creating course: ' + (error.response?.data?.message || error.message));
+    }
   };
 
   const filteredCourses = activeTab === 'all'

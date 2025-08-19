@@ -25,15 +25,15 @@ export class AnnonceController {
     @Post('/create')
     @UseInterceptors(FileInterceptor('image'))
     async createAnnonce(
-        @Body() annonce: Annonce, 
+        @Body() body: any,
         @UploadedFile() file: Express.Multer.File,
         @Req() req
     ) {
         // Si gestion de fichier, ajoute le chemin de l'image à l'annonce
         if (file) {
-            annonce.image = file.path;
+            body.image = `/uploads/${file.filename}`;
         }
-        return await this.annonceService.createAnnonce(annonce, req.user);
+        return await this.annonceService.createAnnonce(body, req.user);
     }
 
     // Récupérer toutes les annonces (avec pagination et recherche)

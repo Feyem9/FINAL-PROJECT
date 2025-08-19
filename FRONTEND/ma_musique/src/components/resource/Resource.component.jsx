@@ -15,6 +15,9 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup
 } from '@mui/material';
 import axios from 'axios';
 import { Navbar } from '../../home/Navbar';
@@ -25,14 +28,17 @@ export const Resource = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [levelFilter, setLevelFilter] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [form, setForm] = useState({
     title: '',
-    content: '',
+    description: '',
+    type: 'sheet_music',
+    url: '',
+    level: 'beginner',
+    instrument: '',
     image: null,
-    tags: '',
-    categories: '',
   });
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -73,19 +79,22 @@ export const Resource = () => {
     setSubmitting(true);
 
     // Validation
-    if (!form.title || !form.content) {
+    if (!form.title || !form.description || !form.url || !form.instrument) {
       setFormError('Veuillez remplir tous les champs obligatoires.');
       setSubmitting(false);
       return;
     }
 
     const formData = new FormData();
-    for (let key in form) {
-      if (key === 'image' && form[key]) {
-        formData.append(key, form[key]);
-      } else if (key !== 'image') {
-        formData.append(key, form[key]);
-      }
+    formData.append('title', form.title);
+    formData.append('description', form.description);
+    formData.append('type', form.type);
+    formData.append('url', form.url);
+    formData.append('level', form.level);
+    formData.append('instrument', form.instrument);
+    
+    if (form.image) {
+      formData.append('image', form.image);
     }
 
     try {
@@ -99,10 +108,12 @@ export const Resource = () => {
       setResources([data, ...resources]);
       setForm({
         title: '',
-        content: '',
+        description: '',
+        type: 'sheet_music',
+        url: '',
+        level: 'beginner',
+        instrument: '',
         image: null,
-        tags: '',
-        categories: '',
       });
     } catch (err) {
       console.error('Erreur lors de la création de la ressource:', err);
@@ -117,12 +128,18 @@ export const Resource = () => {
     .filter(resource => {
       // Search filter
       if (searchTerm && !resource.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !resource.content.toLowerCase().includes(searchTerm.toLowerCase())) {
+        !resource.description.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !resource.instrument.toLowerCase().includes(searchTerm.toLowerCase())) {
         return false;
       }
 
-      // Category filter
-      if (categoryFilter && !resource.categories?.toLowerCase().includes(categoryFilter.toLowerCase())) {
+      // Type filter
+      if (typeFilter && resource.type !== typeFilter) {
+        return false;
+      }
+
+      // Level filter
+      if (levelFilter && resource.level !== levelFilter) {
         return false;
       }
 
@@ -135,6 +152,8 @@ export const Resource = () => {
         return new Date(a.createdAt) - new Date(b.createdAt);
       } else if (sortBy === 'title') {
         return a.title.localeCompare(b.title);
+      } else if (sortBy === 'instrument') {
+        return a.instrument.localeCompare(b.instrument);
       }
       return 0;
     });
@@ -172,14 +191,14 @@ export const Resource = () => {
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Catégories</p>
+                <p className="text-gray-500 text-sm font-medium">Types de ressources</p>
                 <p className="text-2xl font-bold text-gray-800 mt-1">
-                  {[...new Set(resources.flatMap(r => r.categories?.split(',') || []))].length}
+                  {[...new Set(resources.map(r => r.type))].length}
                 </p>
               </div>
               <div className="p-3 bg-green-100 rounded-full">
                 <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                 </svg>
               </div>
             </div>
@@ -188,18 +207,14 @@ export const Resource = () => {
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Cette semaine</p>
+                <p className="text-gray-500 text-sm font-medium">Instruments</p>
                 <p className="text-2xl font-bold text-gray-800 mt-1">
-                  {resources.filter(r => {
-                    const weekAgo = new Date();
-                    weekAgo.setDate(weekAgo.getDate() - 7);
-                    return new Date(r.createdAt) > weekAgo;
-                  }).length}
+                  {[...new Set(resources.map(r => r.instrument))].length}
                 </p>
               </div>
               <div className="p-3 bg-purple-100 rounded-full">
                 <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                 </svg>
               </div>
             </div>
@@ -235,6 +250,58 @@ export const Resource = () => {
                 />
               </div>
               <div>
+                <label htmlFor="instrument" className="block text-sm font-medium text-gray-700 mb-2">
+                  Instrument *
+                </label>
+                <TextField
+                  id="instrument"
+                  label="Instrument concerné"
+                  name="instrument"
+                  fullWidth
+                  required
+                  value={form.instrument}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                Description *
+              </label>
+              <TextField
+                id="description"
+                label="Description de la ressource"
+                name="description"
+                fullWidth
+                required
+                multiline
+                minRows={4}
+                value={form.description}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-2">
+                  URL *
+                </label>
+                <TextField
+                  id="url"
+                  label="Lien vers la ressource"
+                  name="url"
+                  type="url"
+                  fullWidth
+                  required
+                  value={form.url}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                />
+              </div>
+              <div>
                 <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
                   Image
                 </label>
@@ -255,52 +322,40 @@ export const Resource = () => {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-                Contenu *
-              </label>
-              <TextField
-                id="content"
-                label="Description de la ressource"
-                name="content"
-                fullWidth
-                required
-                multiline
-                minRows={4}
-                value={form.content}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div>
-                <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
-                  Tags
-                </label>
-                <TextField
-                  id="tags"
-                  label="Tags (séparés par des virgules)"
-                  name="tags"
-                  fullWidth
-                  value={form.tags}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
+                <FormControl component="fieldset">
+                  <Typography variant="subtitle1" className="text-sm font-medium text-gray-700 mb-2">
+                    Type de ressource *
+                  </Typography>
+                  <RadioGroup
+                    row
+                    name="type"
+                    value={form.type}
+                    onChange={handleChange}
+                  >
+                    <FormControlLabel value="sheet_music" control={<Radio />} label="Partition" />
+                    <FormControlLabel value="video" control={<Radio />} label="Vidéo" />
+                    <FormControlLabel value="audio" control={<Radio />} label="Audio" />
+                    <FormControlLabel value="article" control={<Radio />} label="Article" />
+                  </RadioGroup>
+                </FormControl>
               </div>
+
               <div>
-                <label htmlFor="categories" className="block text-sm font-medium text-gray-700 mb-2">
-                  Catégories
-                </label>
-                <TextField
-                  id="categories"
-                  label="Catégories (séparées par des virgules)"
-                  name="categories"
-                  fullWidth
-                  value={form.categories}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
+                <FormControl fullWidth>
+                  <InputLabel>Niveau</InputLabel>
+                  <Select
+                    name="level"
+                    value={form.level}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <MenuItem value="beginner">Débutant</MenuItem>
+                    <MenuItem value="intermediate">Intermédiaire</MenuItem>
+                    <MenuItem value="advanced">Avancé</MenuItem>
+                  </Select>
+                </FormControl>
               </div>
             </div>
 
@@ -341,12 +396,35 @@ export const Resource = () => {
             />
           </div>
           <div className="flex flex-wrap gap-4 w-full md:w-auto">
-            <TextField
-              label="Filtrer par catégorie"
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full md:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            <FormControl className="w-full md:w-auto">
+              <InputLabel>Type de ressource</InputLabel>
+              <Select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <MenuItem value="">Tous les types</MenuItem>
+                <MenuItem value="sheet_music">Partition</MenuItem>
+                <MenuItem value="video">Vidéo</MenuItem>
+                <MenuItem value="audio">Audio</MenuItem>
+                <MenuItem value="article">Article</MenuItem>
+              </Select>
+            </FormControl>
+            
+            <FormControl className="w-full md:w-auto">
+              <InputLabel>Niveau</InputLabel>
+              <Select
+                value={levelFilter}
+                onChange={(e) => setLevelFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <MenuItem value="">Tous les niveaux</MenuItem>
+                <MenuItem value="beginner">Débutant</MenuItem>
+                <MenuItem value="intermediate">Intermédiaire</MenuItem>
+                <MenuItem value="advanced">Avancé</MenuItem>
+              </Select>
+            </FormControl>
+            
             <FormControl className="w-full md:w-auto">
               <InputLabel>Trier par</InputLabel>
               <Select
@@ -357,6 +435,7 @@ export const Resource = () => {
                 <MenuItem value="newest">Plus récent</MenuItem>
                 <MenuItem value="oldest">Plus ancien</MenuItem>
                 <MenuItem value="title">Titre</MenuItem>
+                <MenuItem value="instrument">Instrument</MenuItem>
               </Select>
             </FormControl>
           </div>
@@ -402,35 +481,59 @@ export const Resource = () => {
                     </div>
                   )}
                   <CardContent className="p-6 flex-grow flex flex-col">
-                    <Typography variant="h6" className="font-bold text-gray-800 text-lg mb-3 line-clamp-2">
-                      {resource.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" className="text-gray-600 mb-4 line-clamp-3 flex-grow">
-                      {resource.content}
-                    </Typography>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {(resource.tags || '').split(',').map((tag, idx) => (
-                        <Chip
-                          key={idx}
-                          label={tag.trim()}
-                          size="small"
-                          className="bg-blue-100 text-blue-800"
-                        />
-                      ))}
+                    <div className="flex justify-between items-start mb-2">
+                      <Typography variant="h6" className="font-bold text-gray-800 text-lg line-clamp-2">
+                        {resource.title}
+                      </Typography>
+                      <Chip 
+                        label={resource.type === 'sheet_music' ? 'Partition' : 
+                               resource.type === 'video' ? 'Vidéo' : 
+                               resource.type === 'audio' ? 'Audio' : 'Article'} 
+                        size="small" 
+                        className={`${
+                          resource.type === 'sheet_music' ? 'bg-blue-100 text-blue-800' : 
+                          resource.type === 'video' ? 'bg-red-100 text-red-800' : 
+                          resource.type === 'audio' ? 'bg-green-100 text-green-800' : 
+                          'bg-purple-100 text-purple-800'
+                        }`} 
+                      />
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {(resource.categories || '').split(',').map((cat, idx) => (
-                        <Chip
-                          key={idx}
-                          label={cat.trim()}
-                          color="secondary"
-                          size="small"
-                          className="bg-purple-100 text-purple-800"
-                        />
-                      ))}
+                    
+                    <Typography variant="body2" color="text.secondary" className="text-gray-600 mb-3 line-clamp-3 flex-grow">
+                      {resource.description}
+                    </Typography>
+                    
+                    <div className="flex items-center justify-between mb-3">
+                      <Chip 
+                        label={resource.instrument} 
+                        size="small" 
+                        className="bg-indigo-100 text-indigo-800" 
+                      />
+                      <Chip 
+                        label={resource.level === 'beginner' ? 'Débutant' : 
+                               resource.level === 'intermediate' ? 'Intermédiaire' : 'Avancé'} 
+                        size="small" 
+                        className={`${
+                          resource.level === 'beginner' ? 'bg-green-100 text-green-800' : 
+                          resource.level === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : 
+                          'bg-red-100 text-red-800'
+                        }`} 
+                      />
                     </div>
-                    <div className="mt-4 text-xs text-gray-500">
-                      Publié le {new Date(resource.createdAt).toLocaleDateString('fr-FR')}
+                    
+                    <div className="mt-auto">
+                      <Button 
+                        variant="outlined" 
+                        size="small" 
+                        href={resource.url} 
+                        target="_blank"
+                        className="w-full mb-2"
+                      >
+                        Accéder à la ressource
+                      </Button>
+                      <div className="text-xs text-gray-500">
+                        Publié le {new Date(resource.createdAt).toLocaleDateString('fr-FR')}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

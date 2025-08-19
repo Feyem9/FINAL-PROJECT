@@ -14,7 +14,7 @@ export class AnnonceService {
     // SECTION 1 : CRUD
     // --------------------------------  
 
-    async createAnnonce(annonce: Annonce, user: any): Promise<annonceDocument> {
+    async createAnnonce(annonce: any, user: any): Promise<annonceDocument> {
         // Gestion des droits : seul un admin ou le créateur peut créer
         if (!user || user.role !== 'admin') {
             throw new ForbiddenException('Vous n\'avez pas les droits pour créer une annonce');

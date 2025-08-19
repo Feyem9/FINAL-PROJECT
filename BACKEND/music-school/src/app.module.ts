@@ -33,6 +33,7 @@ import { NoteController } from './note/note/note.controller';
 import { NoteService } from './note/note/note.service';
 import { NoteModule } from './note/note/note.module';
 import { ProfileModule } from './auth/profile/profile.module';
+import { MulterModule } from '@nestjs/platform-express/multer/multer.module';
 
 
 @Module({
@@ -47,6 +48,9 @@ import { ProfileModule } from './auth/profile/profile.module';
 
     retryWrites: true,
   }),
+  // Dans AppModule
+  MulterModule.register({ dest: './uploads' }),
+
   MongooseModule.forFeature([{ name: Calender.name, schema: calenderSchema }]),
   MailerModule.forRoot({
     transport: {

@@ -10,9 +10,18 @@ export const Annonce = () => {
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [total, setTotal] = useState(0);
+  const [typeFilter, setTypeFilter] = useState('');
 
   // Formulaire de création
-  const [form, setForm] = useState({ titre: '', description: '', image: null });
+  const [form, setForm] = useState({ 
+    title: '', 
+    type: 'event', 
+    description: '', 
+    date: new Date().toISOString().slice(0, 16), 
+    link: '', 
+    image: null, 
+    location: '' 
+  });
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
 
@@ -64,9 +73,13 @@ export const Annonce = () => {
 
     try {
       const formData = new FormData();
-      formData.append('titre', form.titre);
+      formData.append('title', form.title);
+      formData.append('type', form.type);
       formData.append('description', form.description);
+      formData.append('date', form.date);
+      formData.append('link', form.link);
       if (form.image) formData.append('image', form.image);
+      if (form.location) formData.append('location', form.location);
 
       const token = localStorage.getItem('token');
 
@@ -79,13 +92,26 @@ export const Annonce = () => {
 
       const data = res.data;
       setAnnonces(prev => [data, ...prev]);
-      setForm({ titre: '', description: '', image: null });
+      setForm({ 
+        title: '', 
+        type: 'event', 
+        description: '', 
+        date: new Date().toISOString().slice(0, 16), 
+        link: '', 
+        image: null, 
+        location: '' 
+      });
     } catch (err) {
-      setError("Impossible de créer l'annonce");
+      if (err.response?.status === 403) {
+        setError("Vous n'avez pas les droits pour créer une annonce. Veuillez vous connecter en tant qu'administrateur.");
+      } else {
+        setError("Impossible de créer l'annonce: " + (err.response?.data?.message || err.message));
+      }
     }
 
     setCreating(false);
   };
+  
   return (
     <div>
       <Navbar />
@@ -119,7 +145,12 @@ export const Annonce = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-sm font-medium">This Month</p>
-                  <p className="text-2xl font-bold text-gray-800 mt-1">8</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-1">{annonces.filter(a => {
+                    const annonceDate = new Date(a.date);
+                    const now = new Date();
+                    return annonceDate.getMonth() === now.getMonth() &&
+                           annonceDate.getFullYear() === now.getFullYear();
+                  }).length}</p>
                 </div>
                 <div className="p-3 bg-green-100 rounded-full">
                   <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,7 +164,7 @@ export const Annonce = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-500 text-sm font-medium">Categories</p>
-                  <p className="text-2xl font-bold text-gray-800 mt-1">4</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-1">{[...new Set(annonces.map(a => a.type))].length}</p>
                 </div>
                 <div className="p-3 bg-purple-100 rounded-full">
                   <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -150,38 +181,89 @@ export const Annonce = () => {
             <form onSubmit={handleCreate} encType="multipart/form-data" className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label htmlFor="titre" className="block text-sm font-medium text-gray-700 mb-2">
-                    Title
+                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                    Title *
                   </label>
                   <input
                     type="text"
-                    id="titre"
-                    name="titre"
+                    id="title"
+                    name="title"
                     placeholder="Enter announcement title"
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-                    value={form.titre}
+                    value={form.title}
                     onChange={handleFormChange}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                    Image
+                  <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
+                    Type *
+                  </label>
+                  <select
+                    id="type"
+                    name="type"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                    value={form.type}
+                    onChange={handleFormChange}
+                    required
+                  >
+                    <option value="event">Event</option>
+                    <option value="training">Training</option>
+                    <option value="sale">Sale</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
+                    Date *
                   </label>
                   <input
-                    type="file"
-                    id="image"
-                    name="image"
-                    accept="image/*"
+                    type="datetime-local"
+                    id="date"
+                    name="date"
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                    value={form.date}
                     onChange={handleFormChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="link" className="block text-sm font-medium text-gray-700 mb-2">
+                    Link *
+                  </label>
+                  <input
+                    type="url"
+                    id="link"
+                    name="link"
+                    placeholder="https://example.com"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                    value={form.link}
+                    onChange={handleFormChange}
+                    required
                   />
                 </div>
               </div>
 
               <div>
+                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  placeholder="Enter location (optional)"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                  value={form.location}
+                  onChange={handleFormChange}
+                />
+              </div>
+
+              <div>
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
+                  Description *
                 </label>
                 <textarea
                   id="description"
@@ -192,6 +274,20 @@ export const Annonce = () => {
                   value={form.description}
                   onChange={handleFormChange}
                   required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+                  Image
+                </label>
+                <input
+                  type="file"
+                  id="image"
+                  name="image"
+                  accept="image/*"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                  onChange={handleFormChange}
                 />
               </div>
 
@@ -233,11 +329,15 @@ export const Annonce = () => {
               />
             </div>
             <div className="flex flex-wrap gap-4 w-full md:w-auto">
-              <select className="w-full md:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                <option value="">All Categories</option>
-                <option value="school">School News</option>
-                <option value="events">Events</option>
-                <option value="updates">Updates</option>
+              <select 
+                className="w-full md:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+              >
+                <option value="">All Types</option>
+                <option value="event">Event</option>
+                <option value="training">Training</option>
+                <option value="sale">Sale</option>
               </select>
               <select className="w-full md:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 <option value="">Sort By</option>
@@ -275,28 +375,30 @@ export const Annonce = () => {
                     <div className="h-48 overflow-hidden">
                       <img
                         src={`${API_URL}/${annonce.image}`}
-                        alt={annonce.titre}
+                        alt={annonce.title}
                         className="w-full h-full object-cover"
                       />
                     </div>
                   )}
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-3">
-                      <h2 className="font-bold text-gray-800 text-lg line-clamp-1">{annonce.titre}</h2>
-                      <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                        New
+                      <h2 className="font-bold text-gray-800 text-lg line-clamp-1">{annonce.title}</h2>
+                      <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
+                        annonce.type === 'event' ? 'bg-blue-100 text-blue-800' : 
+                        annonce.type === 'training' ? 'bg-green-100 text-green-800' : 
+                        'bg-purple-100 text-purple-800'
+                      }`}>
+                        {annonce.type.charAt(0).toUpperCase() + annonce.type.slice(1)}
                       </span>
                     </div>
                     <p className="text-gray-600 text-sm mb-4 line-clamp-3">{annonce.description}</p>
                     <div className="flex justify-between items-center text-xs text-gray-500">
                       <span>
-                        {annonce.createdAt
-                          ? new Date(annonce.createdAt).toLocaleDateString()
-                          : ''}
+                        {annonce.date ? new Date(annonce.date).toLocaleDateString() : ''}
                       </span>
-                      {annonce.createdBy && (
+                      {annonce.location && (
                         <span>
-                          By {annonce.createdBy.name || 'Administration'}
+                          {annonce.location}
                         </span>
                       )}
                     </div>
@@ -334,22 +436,7 @@ export const Annonce = () => {
           </div>
         </div>
       </div>
-      <div className="bg-gray-50 py-6 mt-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-600 text-sm">© 2023 School Announcements. All rights reserved.</p>
-        </div>
-      </div>
-      <div className="bg-gray-50 py-6 mt-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-600 text-sm">Powered by School Management System</p>
-        </div>
-      </div>
-      <div className="bg-gray-50 py-6 mt-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-600 text-sm">For more information, visit our website.</p>
-        </div>
       <Footer />
     </div>
-  </div>
   );
 };
