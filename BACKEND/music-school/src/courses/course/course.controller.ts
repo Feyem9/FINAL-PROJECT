@@ -75,13 +75,23 @@ export class CourseController {
     return await this.courseService.getCoursesByCategory(category);
   }
 
+
   @Put('/update/:courseId')
   @ApiOperation({ summary: 'Update a course by ID' })
   @ApiParam({ name: 'courseId', description: 'The ID of the course', example: '64b7f3c2e4b0f5a1d2c3e4f5' })
-  @ApiResponse({ status: 200, description: 'Course updated successfully' })
+  @ApiResponse({ status: 200, description: 'Course updated successfully', type: CourseDto })
   @ApiResponse({ status: 404, description: 'Course not found' })
-  async updateCourse(@Param('courseId') courseId: string, @Body() courseDto: CourseDto) {
-    return await this.courseService.updateCourse(courseId, courseDto);
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FilesInterceptor('files', 2, multerOptions))
+  async updateCourse(
+    @Param('courseId') courseId: string,
+    @Body() courseDto: CourseDto,
+    @UploadedFiles() files?: Array<Express.Multer.File>,
+  ) {
+    const mediaFile = files?.[0];
+    const imageFile = files?.[1];
+
+    return await this.courseService.updateCourse(courseId, courseDto, mediaFile, imageFile);
   }
 
   @Delete('/delete/:courseId')

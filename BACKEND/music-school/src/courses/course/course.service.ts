@@ -96,11 +96,24 @@ export class CourseService {
     return courses;
   }
 
-  async updateCourse(courseId: string, courseDto: CourseDto): Promise<Course> {
-    const updatedCourse = await this.courseModel.findByIdAndUpdate(courseId, courseDto, { new: true }).exec();
+  async updateCourse(
+    courseId: string,
+    courseDto: CourseDto,
+    mediaFile?: Express.Multer.File,
+    imageFile?: Express.Multer.File,
+  ): Promise<Course> {
+    const updateData: any = {
+      ...courseDto,
+    };
+
+    if (mediaFile) updateData.media = `/uploads/${mediaFile.filename}`;
+    if (imageFile) updateData.image = `/uploads/${imageFile.filename}`;
+
+    const updatedCourse = await this.courseModel.findByIdAndUpdate(courseId, updateData, { new: true }).exec();
     if (!updatedCourse) {
       throw new NotFoundException(`Course with ID ${courseId} not found`);
     }
+
     return updatedCourse;
   }
 
