@@ -26,6 +26,7 @@
 //     const [searchTerm, setSearchTerm] = useState('');
 //     const [filter, setFilter] = useState('All');
 //     const [teacherFilter, setTeacherFilter] = useState('');
+//     const [categoryFilter, setCategoryFilter] = useState('');
 //     const [selectedCourse, setSelectedCourse] = useState(null);
 //     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'detail'
 //     const [error, setError] = useState(null);
@@ -33,20 +34,21 @@
 //     // Récupère l'id du teacher depuis le localStorage (à adapter selon ton auth)
 //     const teacherData = JSON.parse(localStorage.getItem('teacher') || '{}');
 //     const userData = JSON.parse(localStorage.getItem('user') || '{}');
+//     const adminData = JSON.parse(localStorage.getItem('admin') || '{}');
 //     const teacherId = teacherData?._id || '';
 //     const userId = userData?._id || '';
-//     const userRole = userData?.role || '';
-
-
+//     const userRole = userData?.role || teacherData?.role || adminData?.role || '';
 
 //     useEffect(() => {
 //         if (id) {
-//             axios.get(`http://localhost:3000/courses/${id}`)
+//             axios.get(`${databaseUri}/course/${id}`)
 //                 .then(res => setSelectedCourse(res.data))
 //                 .catch(err => console.error(err));
 //         }
+//     }, [id, databaseUri]);
 
-//         if (selectedCourse) {
+//     useEffect(() => {
+//         if (selectedCourse && open) {
 //             setNewCourse({
 //                 title: selectedCourse.title || '',
 //                 description: selectedCourse.description || '',
@@ -57,16 +59,24 @@
 //                 teacher_id: selectedCourse.teacher_id || '',
 //             });
 //         }
+//     }, [selectedCourse, open]);
+
+//     useEffect(() => {
 //         const fetchCourses = async () => {
 //             try {
 //                 const response = await axios.get(`${databaseUri}/course/all`);
 //                 setCourses(response.data);
+
+//                 response.data.forEach(course => {
+//                     console.log('Course:', course.title, 'fileUrl:', course.fileUrl);
+//                 });
+
 //             } catch (error) {
 //                 console.error('Error fetching courses:', error);
 //             }
 //         };
 //         fetchCourses();
-//     }, [selectedCourse, id, databaseUri]);
+//     }, [databaseUri]);
 
 //     const handleInputChange = (e) => {
 //         const { name, value } = e.target;
@@ -82,24 +92,41 @@
 //         }
 //     };
 
+//     const resetForm = () => {
+//         setNewCourse({
+//             title: '',
+//             description: '',
+//             amount: '',
+//             level: 'beginner',
+//             media: 'video',
+//             category: '',
+//             teacher_id: '',
+//         });
+//         setFile(null);
+//         setImage(null);
+//         setSelectedCourse(null);
+//         setError(null);
+//     };
+
 //     const handleCreateCourse = async () => {
-//         setLoading(true);
+//         setLoading(false);
 //         setError(null);
 
 //         // Récupérer l'utilisateur connecté (admin ou teacher)
-//         //   const user = JSON.parse(localStorage.getItem('user') || '{}');
 //         const teacher = JSON.parse(localStorage.getItem('teacher') || '{}');
 //         const admin = JSON.parse(localStorage.getItem('admin') || '{}');
+//         const user = JSON.parse(localStorage.getItem('user') || '{}');
 //         console.log('Teacher:', teacher);
 //         console.log('Admin:', admin);
+//         console.log('User:', user);
 
-//         const user = teacher._id ? teacher : admin._id ? admin : null;
-//         const userId = user._id;
-//         console.log('User ID:', userId);
-//         const userRole = user.role; // 'admin' ou 'teacher'
-//         console.log('User Role:', userRole);
+//         const currentUser = teacher._id ? teacher : admin._id ? admin : user._id ? user : null;
+//         const currentUserId = currentUser?._id;
+//         console.log('User ID:', currentUserId);
+//         const currentUserRole = currentUser?.role; // 'admin' ou 'teacher'
+//         console.log('User Role:', currentUserRole);
 
-//         if (!userId || !userRole) {
+//         if (!currentUserId || !currentUserRole) {
 //             setError('Utilisateur non connecté. Veuillez vous reconnecter.');
 //             setLoading(false);
 //             return;
@@ -131,13 +158,12 @@
 //         formData.append('category', category);
 
 //         // Champs requis par le nouveau DTO
-//         formData.append('user_id', userId);
-//         formData.append('role', userRole); // 'teacher' ou 'admin'
-
+//         formData.append('user_id', currentUserId);
+//         formData.append('role', currentUserRole); // 'teacher' ou 'admin'
 
 //         // Fichiers
-//         if (file) formData.append('files', file);
-//         if (image) formData.append('files', image);
+//         if (file) formData.append('mediaFile', file);
+//         if (image) formData.append('imageFile', image);
 
 //         try {
 //             const response = await axios.post(`${databaseUri}/course/create`, formData, {
@@ -148,16 +174,7 @@
 
 //             console.log('Course created:', response.data);
 //             setCourses((prev) => [...prev, response.data]);
-//             setNewCourse({
-//                 title: '',
-//                 description: '',
-//                 amount: '',
-//                 level: 'beginner',
-//                 media: 'video',
-//                 category: '',
-//             });
-//             setFile(null);
-//             setImage(null);
+//             resetForm();
 //             setOpen(false);
 
 //         } catch (error) {
@@ -181,16 +198,73 @@
 //         }
 //     };
 
-//     const handleUpdateCourse = async (courseId, updatedData) => {
-//         console.log('Updating course:', courseId, updatedData);
+//     const handleUpdateCourse = async (courseId) => {
+//         setLoading(true);
+//         setError(null);
+
+//         // Récupérer l'utilisateur connecté (admin ou teacher)
+//         const teacher = JSON.parse(localStorage.getItem('teacher') || '{}');
+//         const admin = JSON.parse(localStorage.getItem('admin') || '{}');
+//         const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+//         const currentUser = teacher._id ? teacher : admin._id ? admin : user._id ? user : null;
+//         const currentUserId = currentUser?._id;
+//         const currentUserRole = currentUser?.role;
+
+//         if (!currentUserId || !currentUserRole) {
+//             setError('Utilisateur non connecté. Veuillez vous reconnecter.');
+//             setLoading(false);
+//             return;
+//         }
+
+//         // Validation des champs requis
+//         const { title, description, amount: amountRaw, level, media, category } = newCourse;
+//         if (!title || !description || !amountRaw || !level || !media || !category) {
+//             setError('Veuillez remplir tous les champs obligatoires.');
+//             setLoading(false);
+//             return;
+//         }
+
+//         // Conversion amount en nombre
+//         const amount = Number(amountRaw);
+//         if (isNaN(amount) || amount <= 0) {
+//             setError('Veuillez entrer un montant valide supérieur à 0.');
+//             setLoading(false);
+//             return;
+//         }
+
+//         // Préparer FormData pour l'envoi
+//         const formData = new FormData();
+//         formData.append('title', title);
+//         formData.append('description', description);
+//         formData.append('amount', amount);
+//         formData.append('level', level);
+//         formData.append('media', media);
+//         formData.append('category', category);
+//         formData.append('user_id', currentUserId);
+//         formData.append('role', currentUserRole);
+
+//         // Fichiers
+//         if (file) formData.append('files', file);
+//         if (image) formData.append('files', image);
+
 //         try {
-//             const response = await axios.put(`${databaseUri}/course/update/${courseId}`, updatedData);
+//             const response = await axios.put(`${databaseUri}/course/update/${courseId}`, formData, {
+//                 headers: {
+//                     'Content-Type': 'multipart/form-data',
+//                 },
+//             });
 //             setCourses((prev) =>
 //                 prev.map(course => course._id === courseId ? response.data : course)
 //             );
 //             setSelectedCourse(response.data);
+//             resetForm();
+//             setOpen(false);
 //         } catch (error) {
 //             console.error('Error updating course:', error);
+//             setError(`Erreur lors de la mise à jour : ${error.response?.data?.message || error.message}`);
+//         } finally {
+//             setLoading(false);
 //         }
 //     };
 
@@ -209,11 +283,15 @@
 //         const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
 //         const matchesFilter = filter === 'All' || course.level === filter;
 //         const matchesTeacher = !teacherFilter || course.teacher_id === teacherFilter;
-//         return matchesSearch && matchesFilter && matchesTeacher;
+//         const matchesCategory = !categoryFilter || course.category === categoryFilter;
+//         return matchesSearch && matchesFilter && matchesTeacher && matchesCategory;
 //     });
 
 //     // Function to render media based on type
 //     const renderMedia = (course) => {
+//         if (!course.fileUrl) {
+//             return <div className="text-red-500">No media file available</div>;
+//         }
 //         if (course.media === 'video') {
 //             return (
 //                 <div className="relative pt-[56.25%]">
@@ -302,7 +380,7 @@
 //                                 <div className="flex space-x-3">
 //                                     <button
 //                                         onClick={() => {
-//                                             setNewCourse(selectedCourse);
+//                                             setSelectedCourse(selectedCourse);
 //                                             setOpen(true);
 //                                         }}
 //                                         className="flex-1 bg-green-100 text-green-800 px-4 py-2 rounded-xl font-medium hover:bg-green-200 transition-colors"
@@ -334,7 +412,10 @@
 //                         <p className="text-gray-600">Manage your music courses and learning materials</p>
 //                     </div>
 //                     <button
-//                         onClick={() => setOpen(true)}
+//                         onClick={() => {
+//                             resetForm();
+//                             setOpen(true);
+//                         }}
 //                         className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
 //                     >
 //                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -430,7 +511,11 @@
 //                             <option value="intermediate">Intermediate</option>
 //                             <option value="advanced">Advanced</option>
 //                         </select>
-//                         <select className="w-full md:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+//                         <select
+//                             value={categoryFilter}
+//                             onChange={e => setCategoryFilter(e.target.value)}
+//                             className="w-full md:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+//                         >
 //                             <option value="">All Categories</option>
 //                             <option value="piano">Piano</option>
 //                             <option value="flute">Flute</option>
@@ -520,9 +605,10 @@
 //                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
 //                                             </svg>
 //                                         </button>
-//                                         <button className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+//                                         <button
+//                                             className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
 //                                             onClick={() => {
-//                                                 setNewCourse(selectedCourse);
+//                                                 setSelectedCourse(course);
 //                                                 setOpen(true);
 //                                             }}
 //                                         >
@@ -556,16 +642,7 @@
 //                                 <button
 //                                     onClick={() => {
 //                                         setOpen(false);
-//                                         setSelectedCourse(null);
-//                                         setNewCourse({
-//                                             title: '',
-//                                             description: '',
-//                                             amount: '',
-//                                             level: 'beginner',
-//                                             media: 'video',
-//                                             category: '',
-//                                             teacher_id: '',
-//                                         });
+//                                         resetForm();
 //                                     }}
 //                                     className="text-gray-500 hover:text-gray-800 p-2 rounded-full hover:bg-gray-100 transition-colors mt-2 sm:mt-0"
 //                                 >
@@ -720,16 +797,17 @@
 //                                 <button
 //                                     onClick={() => {
 //                                         setOpen(false);
-//                                         setSelectedCourse(null);
+//                                         resetForm();
 //                                     }}
 //                                     className="px-5 py-2.5 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors font-medium"
 //                                 >
 //                                     Cancel
 //                                 </button>
+
 //                                 <button
 //                                     onClick={() => {
 //                                         if (selectedCourse) {
-//                                             handleUpdateCourse(selectedCourse._id, newCourse);
+//                                             handleUpdateCourse(selectedCourse._id);
 //                                         } else {
 //                                             handleCreateCourse();
 //                                         }
@@ -743,7 +821,6 @@
 //                         </div>
 //                     </div>
 //                 )}
-
 
 //             </div>
 //         </div>
@@ -856,7 +933,7 @@ export default function Course() {
     };
 
     const handleCreateCourse = async () => {
-        setLoading(true);
+        setLoading(false);
         setError(null);
 
         // Récupérer l'utilisateur connecté (admin ou teacher)
@@ -909,8 +986,8 @@ export default function Course() {
         formData.append('role', currentUserRole); // 'teacher' ou 'admin'
 
         // Fichiers
-        if (file) formData.append('files', file);
-        if (image) formData.append('files', image);
+        if (file) formData.append('mediaFile', file);
+        if (image) formData.append('imageFile', image);
 
         try {
             const response = await axios.post(`${databaseUri}/course/create`, formData, {
@@ -1036,41 +1113,136 @@ export default function Course() {
 
     // Function to render media based on type
     const renderMedia = (course) => {
+        // Construire l'URL correcte du fichier
+        const fileUrl = course.fileUrl ? 
+            (course.fileUrl.startsWith('http') ? course.fileUrl : `${databaseUri}${course.fileUrl}`) : 
+            null;
+
+        console.log('Course:', course);
+        console.log('File URL:', fileUrl);
+
+        if (!fileUrl) {
+            return (
+                <div className="flex items-center justify-center h-64 bg-gray-100 rounded-xl">
+                    <div className="text-center text-gray-500">
+                        <svg className="w-16 h-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p>No file available for this course</p>
+                    </div>
+                </div>
+            );
+        }
+
         if (course.media === 'video') {
             return (
-                <div className="relative pt-[56.25%]">
-                    <iframe
-                        src={course.fileUrl}
-                        className="absolute top-0 left-0 w-full h-full rounded-xl"
-                        title={course.title}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                    ></iframe>
+                <div className="space-y-4">
+                    {/* Essayer d'abord avec une balise video native */}
+                    <div className="relative pt-[56.25%]">
+                        <video
+                            controls
+                            className="absolute top-0 left-0 w-full h-full rounded-xl"
+                            title={course.title}
+                        >
+                            <source src={fileUrl} type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    
+                    {/* Bouton de téléchargement de secours */}
+                    <div className="flex justify-center">
+                        <a
+                            href={fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Watch Video
+                        </a>
+                    </div>
                 </div>
             );
         } else if (course.media === 'pdf') {
             return (
-                <div className="relative pt-[130%]">
-                    <iframe
-                        src={course.fileUrl}
-                        className="absolute top-0 left-0 w-full h-full rounded-xl"
-                        title={course.title}
-                        frameBorder="0"
-                    ></iframe>
+                <div className="space-y-4">
+                    {/* Essayer d'abord avec iframe puis fallback */}
+                    <div className="relative pt-[130%]">
+                        <iframe
+                            src={`${fileUrl}#toolbar=1&navpanes=1&scrollbar=1`}
+                            className="absolute top-0 left-0 w-full h-full rounded-xl border"
+                            title={course.title}
+                            frameBorder="0"
+                            onError={() => {
+                                console.log('PDF iframe failed to load');
+                            }}
+                        ></iframe>
+                    </div>
+                    
+                    {/* Boutons d'action pour le PDF */}
+                    <div className="flex justify-center space-x-4">
+                        <a
+                            href={fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            View PDF
+                        </a>
+                        <a
+                            href={fileUrl}
+                            download
+                            className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Download PDF
+                        </a>
+                    </div>
                 </div>
             );
         } else if (course.media === 'audio') {
             return (
-                <div className="w-full">
-                    <audio controls className="w-full">
-                        <source src={course.fileUrl} type="audio/mpeg" />
-                        Your browser does not support the audio element.
-                    </audio>
+                <div className="space-y-4">
+                    <div className="w-full p-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl">
+                        <audio controls className="w-full">
+                            <source src={fileUrl} type="audio/mpeg" />
+                            <source src={fileUrl} type="audio/wav" />
+                            <source src={fileUrl} type="audio/ogg" />
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                    
+                    {/* Bouton de téléchargement */}
+                    <div className="flex justify-center">
+                        <a
+                            href={fileUrl}
+                            download
+                            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                        >
+                            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Download Audio
+                        </a>
+                    </div>
                 </div>
             );
         }
-        return <div>Unsupported media type</div>;
+        return (
+            <div className="flex items-center justify-center h-64 bg-gray-100 rounded-xl">
+                <div className="text-center text-gray-500">
+                    <p>Unsupported media type: {course.media}</p>
+                </div>
+            </div>
+        );
     };
 
     // Render course detail view
@@ -1547,7 +1719,6 @@ export default function Course() {
                                 >
                                     Cancel
                                 </button>
-                                
                                 <button
                                     onClick={() => {
                                         if (selectedCourse) {
