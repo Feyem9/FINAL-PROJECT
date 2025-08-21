@@ -148,7 +148,7 @@ export class CourseService {
       filename: file.filename,
       path: `/uploads/${file.filename}`,
     };
-  }
+  }  
 
   async getYoutubeVideos(query: string) {
     const API_KEY = process.env.YOUTUBE_API_KEY;
