@@ -28,7 +28,6 @@ export class CourseController {
   @ApiOperation({ summary: 'Create a new course' })
   @ApiResponse({ status: 201, description: 'Course created successfully', type: CourseDto })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
-  // @UseInterceptors(FilesInterceptor('files', 2, multerOptions))
   @UseInterceptors(FileFieldsInterceptor([
   { name: 'mediaFile', maxCount: 1 },
   { name: 'imageFile', maxCount: 1 },
@@ -40,9 +39,7 @@ export class CourseController {
   ) {
     console.log('Create course endpoint hit, dto:', courseDto);
     console.log('Files:', files);
-    // // Pass both files to the service
-    // const mediaFile = files?.find(file => file.fieldname === 'file');
-    // const imageFile = files?.find(file => file.fieldname === 'image');
+
     const mediaFile = files.mediaFile?.[0];
     const imageFile = files.imageFile?.[0];
     return await this.courseService.createCourse(courseDto, mediaFile, imageFile);

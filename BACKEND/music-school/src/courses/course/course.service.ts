@@ -15,6 +15,7 @@ export class CourseService {
   constructor(
     @InjectModel(Course.name) private readonly courseModel: Model<courseDocument>,
     @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Teacher') private readonly teacherModel: Model<User>, // Assurez-vous que le modèle Teacher est correctement importé
     @InjectModel('Admin') private readonly adminModel: Model<User>, // Assurez-vous que le modèle Admin est correctement importé
     private readonly httpService: HttpService
   ) { }
@@ -28,6 +29,8 @@ export class CourseService {
 
     // Vérifier que l'user existe
     const user = await this.getUserByRole(user_id, role);
+    console.log('user is', user);
+
     if (!user) throw new BadRequestException('Utilisateur inexistant.');
 
 
@@ -62,9 +65,11 @@ export class CourseService {
     let user;
     // Vérifie le rôle et récupère l'utilisateur approprié
     if (role === 'teacher') {
-      user = await this.userModel.findById(user_id).exec();
+      user = await this.teacherModel.findById(user_id).exec();
+      console.log('user is 1', user);
     } else if (role === 'admin') {
       user = await this.adminModel.findById(user_id).exec();
+      console.log('user is 2', user);
     }
 
     return user;

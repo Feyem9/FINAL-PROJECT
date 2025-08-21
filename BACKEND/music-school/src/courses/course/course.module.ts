@@ -11,6 +11,7 @@ import { User, userSchema } from 'src/schema/user.schema';
     MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: userSchema }]),
     MongooseModule.forFeature([{ name: 'Admin', schema: userSchema }]),
+    MongooseModule.forFeature([{ name: 'Teacher', schema: userSchema }]),
   ],
   controllers: [CourseController],
   providers: [CourseService],
