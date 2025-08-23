@@ -8,11 +8,14 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RolesGuard } from '../../role/role.guard';
 import { ProfileModule } from '../profile/profile.module';
+import { Course, courseSchema } from 'src/schema/course.schema';
+import { CourseModule } from 'src/courses/course/course.module';
 
 
 @Module({
-  imports: [ProfileModule,
+  imports: [ProfileModule,CourseModule,
     MongooseModule.forFeature([{ name: Student.name, schema: StudentSchema }]),
+    MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

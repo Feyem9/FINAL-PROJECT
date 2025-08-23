@@ -118,7 +118,8 @@ import {
   NotFoundException,
   UseGuards,
   Req,
-  ForbiddenException
+  ForbiddenException,
+  BadRequestException
 } from '@nestjs/common';
 import { Request } from 'express';
 import { StudentService } from './student.service';
@@ -129,12 +130,15 @@ import { StudentGuard } from './student.guard';
 import { AdminGuard } from '../admin/admin.guard';
 import { MailerService } from '@nestjs-modules/mailer';
 import { JwtService } from '@nestjs/jwt';
+import { Course } from 'src/schema/course.schema';
+import { CourseService } from 'src/courses/course/course.service';
 
 @ApiTags('Student')
 @Controller('students')
 export class StudentController {
   constructor(
     private readonly studentService: StudentService,
+    private readonly courseService: CourseService,
     private readonly mailerService: MailerService,
     private readonly jwtService: JwtService,
   ) {
@@ -179,11 +183,6 @@ export class StudentController {
     console.log('ID reçu depuis la route :', id); // <== Ajoute ceci
 
     const user = req['user'];
-
-    // Si student, il ne peut voir que son propre profil
-    // if (user.role === 'student' && user.sub !== id) {
-    //   throw new ForbiddenException('Access denied: you can only access your own profile');
-    // }
 
     const student = await this.studentService.findById(id);
     if (!student) throw new NotFoundException('Student not found');
@@ -254,4 +253,47 @@ export class StudentController {
   //     imagePath,
   //   );
   // }
+
+  @Get('/:id/enrolled-courses')
+  @ApiOperation({ summary: 'Get enrolled courses for a student' })
+  @ApiResponse({ status: 200, description: 'List of enrolled courses' })
+  @ApiResponse({ status: 404, description: 'Student not found' })
+  async getEnrolledCourses(@Param('id') id: string): Promise<Course[]> {
+    return this.studentService.getEnrolledCourses(id);
+  }
+
+  @Post('/enroll-course/:studentId/:courseId')
+  @ApiOperation({ summary: 'Enroll a student in a course' })
+  @ApiResponse({ status: 200, description: 'Enrollment successful' })
+  @ApiResponse({ status: 404, description: 'Student or course not found' })
+  @ApiResponse({ status: 400, description: 'Student already enrolled' })
+  async enrollInCourse(
+    @Param('studentId') studentId: string,
+    @Param('courseId') courseId: string,
+  ): Promise<{ success: boolean; message: string; enrolledCourses: Course[] }> {
+    try {
+      const student = await this.studentService.findById(studentId);
+      if (!student) {
+        throw new NotFoundException('Student not found');
+      }
+
+      const course = await this.courseService.getCourseById(courseId);
+      if (!course) {
+        throw new NotFoundException('Course not found');
+      }
+
+      const enrolledCourses = await this.studentService.enrollInCourse(studentId, courseId);
+
+      return {
+        success: true,
+        message: 'Enrollment successful',
+        enrolledCourses
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException(error.message);
+    }
+  }
 }

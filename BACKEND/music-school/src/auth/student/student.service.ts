@@ -11,11 +11,13 @@ import { ConfigService } from '@nestjs/config';
 import { log } from 'util';
 import { Profile } from 'passport';
 import { ProfileService } from '../profile/profile.service';
+import { Course } from 'src/schema/course.schema';
 
 @Injectable()
 export class StudentService {
   constructor(
     @InjectModel(Student.name) private studentModel: Model<StudentDocument>,
+    @InjectModel(Course.name) private courseModel: Model<Course>,
     private jwtService: JwtService,
     private readonly mailerService: MailerService,
     private configService: ConfigService,
@@ -174,6 +176,8 @@ export class StudentService {
     return { token, student }
   }
 
+
+
   /**
    * here i want to add a method to store the student profile image in the database
    * @param id Student ID
@@ -184,4 +188,71 @@ export class StudentService {
   //   return this.profile.updateProfileImage(id, 'student', imageUrl);
   // }
 
+
+  async getEnrolledCourses(id: string): Promise<Course[]> {
+    const student = await this.findById(id);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    const courses = await this.courseModel.find({ _id: { $in: student.enrolledCourses } }).exec();
+    // if (!courses || courses.length === 0) {
+    //   throw new NotFoundException('No enrolled courses found for this student');
+    // }
+    return courses || [];
+  }
+  async enrollInCourse(studentId: string, courseId: string): Promise<Course[]> {
+    const student = await this.findById(studentId);
+    console.log('student is:', student?.name);
+    console.log('course id:', courseId);
+
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    // Vérifier si déjà inscrit
+    if (student.enrolledCourses.includes(courseId)) {
+      throw new Error('Student already enrolled in this course');
+    }
+
+    const course = await this.courseModel.findById(courseId);
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    // Ajouter le cours à la liste
+    student.enrolledCourses.push(courseId);
+    await student.save();
+
+    try {
+      // Envoyer l'e-mail de confirmation
+      // await this.mailerService.sendMail({
+      //   to: student.email,
+      //   subject: 'Inscription au cours réussie',
+      //   template: 'enrollment',
+      //   context: {
+      //     name: student.name,
+      //     courseTitle: course.title,
+      //     enrollmentDate: new Date().toLocaleDateString('fr-FR'),
+      //   },
+      // });
+      await this.mailerService.sendMail({
+        to: student.email,
+        subject: 'Inscription au cours réussie',
+        html: `<h2>Bonjour ${student.name}</h2><p>Inscrit au cours : ${course.title}</p>`,
+      });
+      console.log(`Email sent successfully to ${student.email}`);
+    } catch (emailError) {
+      console.error('Email sending failed:', emailError);
+      throw new Error('Inscription réussie, mais l\'envoi de l\'email a échoué.');
+      // L'inscription continue même si l'email échoue
+    }
+
+    // Récupérer et retourner la liste complète des cours inscrits
+    const updatedCourses = await this.courseModel.find({
+      _id: { $in: student.enrolledCourses }
+    });
+
+    return updatedCourses;
+  }
 }
