@@ -262,10 +262,10 @@ export const Scourse = () => {
       );
     }
 
-    const fileUrl = `${databaseUri}${course.mediaFile}`;
+    const fileUrl = `${databaseUri}${course.fileUrl}`;
     console.log(fileUrl);
     
-    const imageUrl = `${databaseUri}${course.imageFile}`;
+    const imageUrl = `${databaseUri}${course.image}`;
     console.log(imageUrl);
 
     return (
@@ -1008,6 +1008,7 @@ export const Scourse = () => {
             setShowCourseViewer(false);
             setSelectedCourse(null);
           }}
+          databaseUri="http://localhost:3000"
         />
       )}
     </div>
