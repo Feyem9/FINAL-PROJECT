@@ -34,7 +34,8 @@ import { NoteService } from './note/note/note.service';
 import { NoteModule } from './note/note/note.module';
 import { ProfileModule } from './auth/profile/profile.module';
 import { MulterModule } from '@nestjs/platform-express/multer/multer.module';
-
+import { ProfileImageController } from './auth/profile/profile-images/profile-image/profile-image.controller';
+import { ProfileImageModule } from './auth/profile/profile-images/profile-image/profile-image.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -92,8 +93,10 @@ import { MulterModule } from '@nestjs/platform-express/multer/multer.module';
     BlogModule,
     ResourceModule,
     NoteModule,
-    ProfileModule],
-  controllers: [AppController, UserController, CourseController, CalenderController, AnnonceController, BlogController],
+    ProfileModule,
+    ProfileImageModule
+  ],
+  controllers: [AppController, UserController, CourseController, CalenderController, AnnonceController, BlogController, ProfileImageController],
   providers: [AppService, AdminService, MailService, CalenderService, // 👉 Ajout du RolesGuard comme guard global
     {
       provide: APP_GUARD,

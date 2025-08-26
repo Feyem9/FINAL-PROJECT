@@ -10,12 +10,15 @@ import { RolesGuard } from '../../role/role.guard';
 import { ProfileModule } from '../profile/profile.module';
 import { Course, courseSchema } from 'src/schema/course.schema';
 import { CourseModule } from 'src/courses/course/course.module';
+import { ProfileImage, ProfileImageSchema } from 'src/schema/profileImage.schema';
+import { ProfileImageModule } from '../profile/profile-images/profile-image/profile-image.module';
 
 
 @Module({
-  imports: [ProfileModule,CourseModule,
+  imports: [ProfileModule,CourseModule,ProfileImageModule,
     MongooseModule.forFeature([{ name: Student.name, schema: StudentSchema }]),
     MongooseModule.forFeature([{ name: Course.name, schema: courseSchema }]),
+    MongooseModule.forFeature([{ name: ProfileImage.name, schema: ProfileImageSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

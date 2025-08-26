@@ -12,6 +12,7 @@ import * as path from 'path';
 import { TeacherDto } from 'src/DTO/teacherDto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { LoginDto } from 'src/DTO/login.dto';
+import { ProfileImageService } from '../profile/profile-images/profile-image/profile-image.service';
 
 @Injectable()
 export class TeacherService {
@@ -19,7 +20,8 @@ export class TeacherService {
     @InjectModel(Teacher.name) private teacherModel: Model<TeacherDocument>,
     private jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly mailerService: MailerService
+    private readonly mailerService: MailerService,
+    private readonly profileImageService: ProfileImageService
 
   ) { }
 
@@ -210,6 +212,79 @@ Bienvenue sur notre plateforme éducative. Vous pouvez maintenant vous connecter
       }
     };
   }
+
+   async getUserLocationByGPS(lat: number, lon: number) {
+      try {
+        // Use Nominatim reverse geocoding to get location details from GPS coordinates
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log('GPS Location data:', data);
+  
+        return {
+          city: data.address?.city || data.address?.town || data.address?.village || 'Inconnue',
+          region: data.address?.state || 'Inconnue',
+          country: data.address?.country || 'Inconnu',
+          latitude: lat,
+          longitude: lon,
+          isGPS: true
+        };
+      } catch (error) {
+        throw new NotFoundException('Impossible de récupérer la localisation depuis les coordonnées GPS');
+      }
+    }
+
+async uploadProfileImage(file: Express.Multer.File, userId: string): Promise<any> {
+  try {
+    console.log('🔧 Service uploadProfileImage appelé:', {
+      userId,
+      filename: file.filename,
+      originalname: file.originalname
+    });
+
+    // Vérifier que le teacher existe
+    const teacher = await this.teacherModel.findById(userId);
+    if (!teacher) {
+      throw new Error('Teacher not found');
+    }
+
+    // Construire l'URL relative de l'image
+    const imageUrl = `/uploads/profile-images/${file.filename}`;
+    
+    // Appeler le service d'upload d'image de profil
+    const profileImage = await this.profileImageService.uploadProfileImage(
+      userId,                    // userId (string)
+      'teacher',                // userType (fixe pour teacher)
+      imageUrl,                 // imageUrl (string)
+      file.originalname,        // fileName (string)
+      file.size,               // fileSize (number)
+      file.mimetype,           // mimeType (string)
+    );
+
+    // Mettre à jour le teacher avec la nouvelle image
+    const updatedTeacher = await this.teacherModel.findByIdAndUpdate(
+      userId,
+      { 
+        profileImage: imageUrl,
+        image: imageUrl // Pour compatibilité
+      },
+      { new: true }
+    );
+
+    console.log('✅ Upload terminé avec succès');
+
+    return {
+      imageUrl: imageUrl,
+      profileImage: profileImage,
+      teacher: updatedTeacher
+    };
+    
+  } catch (error) {
+    console.error('❌ Erreur dans uploadProfileImage service:', error);
+    throw error;
+  }
+}
+
 }
 
 

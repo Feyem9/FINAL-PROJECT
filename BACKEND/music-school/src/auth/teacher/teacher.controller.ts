@@ -11,6 +11,8 @@ import {
   UploadedFile,
   UseInterceptors,
   Patch,
+  Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { TeacherService } from './teacher.service';
 import { TeacherDto } from 'src/DTO/teacherDto';
@@ -54,7 +56,7 @@ export class TeacherController {
     return result;
   }
 
-    // @UseGuards(TeacherGuard)
+  // @UseGuards(TeacherGuard)
   @Get('/all')
   @ApiOperation({ summary: 'Get all teachers' })
   @ApiResponse({ status: 200, description: 'List of all teachers' })
@@ -145,4 +147,75 @@ export class TeacherController {
     }
     return result;
   }
+
+  @Get('gps-location')
+  async getGpsLocation(
+    @Req() req: Request,
+    @Param('lat') lat: number,
+    @Param('lon') lon: number
+  ) {
+    // This endpoint is for GPS-based location detection
+    // The frontend should use the browser's Geolocation API to get real GPS coordinates
+    // and send them to this endpoint
+    console.log(`Received GPS coordinates: ${lat}, ${lon}`);
+
+    return await this.teacherService.getUserLocationByGPS(lat, lon);
+  }
+
+
+// Dans votre TeacherController, mettez à jour la méthode uploadProfileImage:
+
+@Post(':id/upload-profile-image')
+@UseInterceptors(FileInterceptor('file', multerOptions)) // Correspond au frontend
+@ApiOperation({ summary: 'Upload a profile image for a teacher' })
+@ApiResponse({ status: 200, description: 'Profile image uploaded successfully' })
+@ApiResponse({ status: 404, description: 'Teacher not found' })
+async uploadProfileImage(
+  @Param('id') id: string,
+  @UploadedFile() file: Express.Multer.File
+) {
+  try {
+    if (!file) {
+      throw new BadRequestException('Aucun fichier reçu');
+    }
+    
+    console.log('📁 Fichier reçu pour teacher:', {
+      teacherId: id,
+      originalname: file.originalname,
+      filename: file.filename,
+      size: file.size,
+      mimetype: file.mimetype
+    });
+
+    // Vérifier que le teacher existe
+    const teacher = await this.teacherService.findById(id);
+    if (!teacher) {
+      throw new NotFoundException('Teacher not found');
+    }
+
+    // Uploader via le service teacher (qui utilise ProfileImageService)
+    const result = await this.teacherService.uploadProfileImage(file, id);
+    
+    console.log('✅ Upload teacher terminé:', result);
+
+    // Construire l'URL complète pour le frontend
+    const filename = file.filename;
+    const fullImageUrl = `/profile-images/file/${filename}`;
+
+    // Structure de réponse cohérente
+    return {
+      success: true,
+      message: 'Profile image uploaded successfully',
+      data: {
+        imageUrl: result.imageUrl || `/uploads/${filename}`,
+        fullImageUrl: fullImageUrl, // URL complète pour accès direct
+        profileImage: result.profileImage,
+        teacher: result.teacher || null
+      }
+    };
+  } catch (error) {
+    console.error('❌ Erreur upload teacher controller:', error);
+    throw error;
+  }
+}
 }

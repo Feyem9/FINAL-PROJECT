@@ -7,10 +7,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService , ConfigModule} from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { RolesGuard } from 'src/roles.guard';
+import { ProfileImageModule } from '../profile/profile-images/profile-image/profile-image.module';
+import { ProfileImageSchema } from 'src/schema/profileImage.schema';
 
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Teacher.name, schema: TeacherSchema }]) , 
+  imports: [MongooseModule.forFeature([{ name: Teacher.name, schema: TeacherSchema },
+    { name: 'ProfileImage', schema: ProfileImageSchema }
+  ],), ProfileImageModule, 
   JwtModule.registerAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
