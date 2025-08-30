@@ -84,7 +84,7 @@ export class AdminController {
   }
 
   @UseGuards(AdminGuard)
-  @Put(':id')
+  @Put('/:id')
   @ApiOperation({ summary: 'Update an admin by ID' })
   @ApiParam({ name: 'id', description: 'The ID of the admin', example: '64b7f3c2e4b0f5a1d2c3e4f5' })
   @ApiResponse({ status: 200, description: 'Admin updated successfully' })

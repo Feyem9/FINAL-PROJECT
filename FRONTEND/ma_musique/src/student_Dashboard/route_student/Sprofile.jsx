@@ -3,18 +3,19 @@ import axios from 'axios';
 
 export const Sprofile = () => {
   // Get student data from localStorage
-  const student = JSON.parse(localStorage.getItem('student'));
-  if (!student) return <p>Étudiant non connecté.</p>;
+  const [studentData , setStudentData] = useState(JSON.parse(localStorage.getItem('student')));
+  if (!studentData) return <p>Étudiant non connecté.</p>;
 
   // Correction: Utilisez student pour initialiser les états
   const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(student.image || null);
+  const [imagePreview, setImagePreview] = useState(studentData.image || null);
   const [formData, setFormData] = useState({
-    name: student.name || '',
-    email: student.email || '',
-    contact: student.contact || '',
-    level: student.level || '',
-    instrument: student.instrument || '',
+    name: studentData.name || '',
+    email: studentData.email || '',
+    contact: studentData.contact || '',
+    level: studentData.level || '',
+    instrument: studentData.instrument || '',
+    password : studentData.password || '',
     // La localisation est gérée séparément
   });
   const [activeTab, setActiveTab] = useState('profile');
@@ -180,21 +181,32 @@ const imageUrl = response.data?.data?.imageUrl ||
     setSuccess(null);
 
     try {
-      const response = await axios.patch(`${databaseUri}/students/${student._id}`, formData);
+      const studentId = studentData._id;
+      const token = localStorage.getItem('token');
+      console.log(token);
+      console.log(studentId)
+      const response = await axios.put(`${databaseUri}/students/${studentId}`, formData,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log('Response data:', response.data);
 
       // Met à jour le localStorage avec les données de la réponse du serveur
-      const updatedStudent = { ...student, ...response.data };
+      const updatedStudent = { ...studentData, ...response.data };
       localStorage.setItem('student', JSON.stringify(updatedStudent));
 
       // Met à jour le formulaire pour refléter les nouvelles données
+      setStudentData(updatedStudent);
       setFormData(response.data);
-
       setSuccess('Profil mis à jour avec succès!');
-      setTimeout(() => setSuccess(null), 3000);
 
     } catch (err) {
       console.error('Error updating profile:', err);
       setError('Failed to update profile. Please try again.');
+      throw new Error('Failed to update profile', { cause: err });
+      setTimeout(() => setSuccess(null), 3000);
+
     } finally {
       setLoading(false);
     }
@@ -314,8 +326,8 @@ const imageUrl = response.data?.data?.imageUrl ||
                   </div>
                 </div>
               )}
-              <h2 className="text-lg font-bold text-gray-800 mt-4">{student.name || 'Student'}</h2>
-              <p className="text-gray-600 text-sm">{student.email || 'student@example.com'}</p>
+              <h2 className="text-lg font-bold text-gray-800 mt-4">{studentData.name || 'Student'}</h2>
+              <p className="text-gray-600 text-sm">{studentData.email || 'student@example.com'}</p>
               {selectedImage && !uploading && (
                 <button
                   onClick={handleImageUpload}
@@ -450,6 +462,15 @@ const imageUrl = response.data?.data?.imageUrl ||
                   />
                 </div>
                 <div>
+                  <label className="block text-gray-600 text-sm mb-1">Password</label>
+                  <input
+                    type="text"
+                    name="password"
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+                <div>
                   <label className="block text-gray-600 text-sm mb-1">Instrument</label>
                   <input
                     type="text"
@@ -461,12 +482,12 @@ const imageUrl = response.data?.data?.imageUrl ||
                 </div>
                 <div>
                   <label className="block text-gray-600 text-sm mb-1">Role</label>
-                  <p className="font-medium text-gray-800 capitalize">{student.role || 'student'}</p>
+                  <p className="font-medium text-gray-800 capitalize">{studentData.role || 'student'}</p>
                 </div>
                 <div>
                   <label className="block text-gray-600 text-sm mb-1">Member Since</label>
                   <p className="font-medium text-gray-800">
-                    {student.createdAt ? new Date(student.createdAt).toLocaleDateString() : 'Not available'}
+                    {studentData.createdAt ? new Date(studentData.createdAt).toLocaleDateString() : 'Not available'}
                   </p>
                 </div>
                 <div className="flex justify-between">

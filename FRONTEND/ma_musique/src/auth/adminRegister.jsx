@@ -5,7 +5,7 @@ import '../auth/adminLogin.css'; // Assurez-vous d'importer le fichier CSS pour 
 
 const AdminRegister = () => {
 
-    const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
+    const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   const [email, setEmail] = useState('');

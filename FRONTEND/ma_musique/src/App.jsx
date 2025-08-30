@@ -41,6 +41,8 @@ import { Snote } from './student_Dashboard/route_student/Snote';
 import { Schat } from './student_Dashboard/route_student/Schat';
 import { Scalender } from './student_Dashboard/route_student/Scalender';
 import { Snotification } from './student_Dashboard/route_student/Snotification';
+import {Cart} from './carts/cart';
+import { Checkout } from './checkout/checkout';
 
 
 import { PrivateRoute } from './components/PrivateRoute';
@@ -65,6 +67,9 @@ function App() {
         <Route path='/blog' element={<Blog />} />
         <Route path='/resource' element={<Resource />} />
         <Route path='/annonce' element={<Annonce />} />
+        <Route path='/cart' element={<Cart />} />
+        <Route path='/checkout' element={<Checkout />} />
+
 
         {/* Routes pas publiques */}
         <Route element={<PrivateRoute allowedRoles={['admin']} />}>

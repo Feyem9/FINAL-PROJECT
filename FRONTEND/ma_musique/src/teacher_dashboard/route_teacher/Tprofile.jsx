@@ -12,6 +12,7 @@ export const Tprofile = () => {
     email: teacherData.email || '',
     contact: teacherData.contact || '',
     speciality: teacherData.speciality || '',
+    password: teacherData.password || '',
   });
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
@@ -232,15 +233,33 @@ export const Tprofile = () => {
     }
   };
   const handleSaveChanges = () => {
-    // In a real implementation, you would send this to your backend
-    // For now, we'll just update localStorage
-    const updatedTeacher = { ...teacherData, ...formData };
-    localStorage.setItem('teacher', JSON.stringify(updatedTeacher));
-    setTeacherData(updatedTeacher);
+    // Logic pour enregistrer les changements du formulaire
+    try {
+      const teacherId = teacherData._id;
+      const token = localStorage.getItem('token');
+      console.log(token);
+      console.log(teacherId);
+      const response = axios.put(`${databaseUri}/teachers/${teacherId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log(response.data);
+
+      const updatedTeacher = { ...teacherData, ...formData };
+      localStorage.setItem('teacher', JSON.stringify(updatedTeacher));
+      setTeacherData(updatedTeacher);
+      setSuccess('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setError('Failed to update profile');
+      setTimeout(() => setError(null), 3000);
+    }
+
 
     setIsEditing(false);
-    setSuccess('Profile updated successfully!');
-    setTimeout(() => setSuccess(null), 3000);
+
+
   };
 
   const handleCancelEdit = () => {
@@ -494,6 +513,8 @@ export const Tprofile = () => {
                 )}
               </div>
 
+              
+
               <div>
                 <label className="block text-gray-600 text-sm mb-1">Phone Number</label>
                 {isEditing ? (
@@ -525,6 +546,20 @@ export const Tprofile = () => {
               </div>
 
               <div>
+                <label className="block text-gray-600 text-sm mb-1">Password</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="password"
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                ) : (
+                  <p className="font-medium text-gray-800">{'Not provided'}</p>
+                )}
+              </div>
+
+              <div>
                 <label className="block text-gray-600 text-sm mb-1">Role</label>
                 <p className="font-medium text-gray-800 capitalize">{teacherData.role || 'teacher'}</p>
               </div>
@@ -535,6 +570,7 @@ export const Tprofile = () => {
                   {teacherData.createdAt ? new Date(teacherData.createdAt).toLocaleDateString() : 'Not available'}
                 </p>
               </div>
+              
 
               {location && (
                 <div className="md:col-span-2">
@@ -572,6 +608,7 @@ export const Tprofile = () => {
                   </div>
                 </div>
               )}
+              
             </div>
           </div>
 

@@ -38,39 +38,6 @@ export const multerOptions = {
 export class ProfileController {
     constructor(private readonly profileService: ProfileService) { }
 
-    // @Post('upload-image/:userId')
-    // @UseGuards(RolesGuard)
-    // @Roles(Role.ADMIN, Role.TEACHER, Role.STUDENT)
-    // @UseInterceptors(FileInterceptor('image', multerOptions))
-    // async uploadProfileImage(
-    //     @Param('userId') userId: string,
-    //     @UploadedFile() file: Express.Multer.File,
-    //     @Req() req: any,
-    // ) {
-    //     // Check if user is updating their own profile or admin updating any profile
-    //     const user = req.user;
-    //     if (user.role !== 'admin' && user.sub !== userId) {
-    //         throw new Error('Access denied: you can only update your own profile');
-    //     }
-
-    //     if (!file) {
-    //         throw new Error('No file provided');
-    //     }
-
-    //     const imagePath = `/uploads/${file.filename}`;
-    //     const updatedUser = await this.profileService.updateProfileImage(
-    //         userId,
-    //         user.role,
-    //         imagePath,
-    //     );
-
-    //     return {
-    //         message: 'Profile image uploaded successfully',
-    //         imagePath: imagePath,
-    //         user: updatedUser,
-    //     };
-    // }
-
     @Get('location')
     async getLocation(@Req() req: Request) {
         // This endpoint is for IP-based location detection

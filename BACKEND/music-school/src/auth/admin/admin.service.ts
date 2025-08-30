@@ -18,19 +18,20 @@ export class AdminService {
   constructor(
     @InjectModel(Admin.name) private adminModel: Model<AdminDocument>,
     private jwtService: JwtService,
-    private configService: ConfigService,        
+    private configService: ConfigService,
     private mailerService: MailerService
 
-  ) {const jwtSecret = this.configService.get<any | null>('JWT_SECRET');
+  ) {
+    const jwtSecret = this.configService.get<any | null>('JWT_SECRET');
     console.log('JWT Secret KEY:', jwtSecret); // Vérifie que la variable est bien chargée
-    
+
     // Planifier l'envoi du token toutes les 24 heures
     cron.schedule('0 0 * * *', async () => {
-      await this.sendDailyToken();  
+      await this.sendDailyToken();
     });
   }
 
-  
+
   async createAdmin(createAdminDto: UserDto): Promise<Admin> {
     if (createAdminDto.role !== 'admin') {
       throw new BadRequestException('Ce service est uniquement pour créer des administrateurs.');
@@ -85,21 +86,29 @@ export class AdminService {
   }
 
 
-  async updateAdmin(id: string, updateAdminDto: Partial<UserDto>): Promise<Admin> {
-    if (updateAdminDto.role && updateAdminDto.role !== 'admin') {
-      throw new BadRequestException('Impossible de changer le rôle de l’administrateur.');
-    }
-  
-    const updatedAdmin = await this.adminModel.findByIdAndUpdate(id, updateAdminDto, {
-      new: true,
-    }).exec();
-  
-    if (!updatedAdmin) {
-      throw new NotFoundException('Admin not found');
-    }
-  
-    return updatedAdmin;
+async updateAdmin(id: string, updateAdminDto: Partial<UserDto>): Promise<Admin> {
+  const { role, password } = updateAdminDto;
+
+  if (role && role !== 'admin') {
+    throw new BadRequestException('Impossible de changer le rôle de l’administrateur.');
   }
+
+  // Si un nouveau mot de passe est fourni, on le hache
+  if (password) {
+    const salt = await bcrypt.genSalt(10);
+    updateAdminDto.password = await bcrypt.hash(password, salt);
+  }
+
+  const updatedAdmin = await this.adminModel.findByIdAndUpdate(id, updateAdminDto, {
+    new: true,
+  }).exec();
+
+  if (!updatedAdmin) {
+    throw new NotFoundException('Admin not found');
+  }
+
+  return updatedAdmin;
+}
 
   async deleteAdmin(id: string): Promise<void> {
     const result = await this.adminModel.findByIdAndDelete(id).exec();
@@ -108,74 +117,75 @@ export class AdminService {
     }
   }
 
-      async signUpAdmin(adminDto : AdminDto): Promise<{
-          admin:any}> {
-          const {name , email , password , contact , role} = adminDto;
-  
-          const hashedPassword = await bcrypt.hash(password , 10)
+  async signUpAdmin(adminDto: AdminDto): Promise<{
+    admin: any
+  }> {
+    const { name, email, password, contact, role } = adminDto;
 
-          if (adminDto.role !== 'admin') {
-            throw new BadRequestException('Ce service est uniquement pour créer des administrateurs.');
-          }
-      
-          if (adminDto.email !== 'feyemlionel@gmail.com') {
-            throw new BadRequestException('Seul le fondateur peut être administrateur !');
-          }
-  
-          const admin = new this.adminModel({
-              name,
-              email,
-              password : hashedPassword,
-              contact, 
-              role
-          });
-  
-          await admin.save()
-  
-  
-          const { password: _, ...userWithoutPassword } = admin.toObject(); // Supprimer le mot de passe
-  
-          return { 
-              admin:userWithoutPassword
-          } 
-      }
+    const hashedPassword = await bcrypt.hash(password, 10)
 
-          async loginAdmin(loginDto: LoginDto) : Promise<{ token: string , admin:any}> {
-              const{ email , password } = loginDto;
-      
-              const admin = await this.adminModel.findOne({ email })
-              console.log('admin email : ' , admin.email);
-      
-              if(!admin){
-                  throw new UnauthorizedException('invalid email or password');
-              }
-      
-              const isPasswordMatched = await bcrypt.compare(password , admin.password);
-      
-              if(!isPasswordMatched){
-                  throw new UnauthorizedException('invalid email or password');
-              }
-      
-              const token = this.jwtService.sign({ id: admin._id , email: admin.email , role: admin.role} , {secret : this.configService.get<string>('JWT_SECRET') , expiresIn : this.configService.get<string>('JWT_EXPIRE')})
-              console.log('token is  : ' , token);
+    if (adminDto.role !== 'admin') {
+      throw new BadRequestException('Ce service est uniquement pour créer des administrateurs.');
+    }
+
+    if (adminDto.email !== 'feyemlionel@gmail.com') {
+      throw new BadRequestException('Seul le fondateur peut être administrateur !');
+    }
+
+    const admin = new this.adminModel({
+      name,
+      email,
+      password: hashedPassword,
+      contact,
+      role
+    });
+
+    await admin.save()
 
 
-                // Envoyer le token par email
-                await this.sendLoginToken(admin, token);
-      
-              return { token , admin } 
-          }
+    const { password: _, ...userWithoutPassword } = admin.toObject(); // Supprimer le mot de passe
 
-          async sendLoginToken(admin: Admin, token: string): Promise<void> {
-            await this.mailerService.sendMail({
-              to: admin.email,
-              subject: 'Votre nouveau token de connexion',
-              text: `Bonjour ${admin.name}, voici votre nouveau token pour vous connecter : ${token}`,
-              html: `<p>Bonjour <strong>${admin.name}</strong>,</p>
+    return {
+      admin: userWithoutPassword
+    }
+  }
+
+  async loginAdmin(loginDto: LoginDto): Promise<{ token: string, admin: any }> {
+    const { email, password } = loginDto;
+
+    const admin = await this.adminModel.findOne({ email })
+    console.log('admin email : ', admin.email);
+
+    if (!admin) {
+      throw new UnauthorizedException('invalid email or password');
+    }
+
+    const isPasswordMatched = await bcrypt.compare(password, admin.password);
+
+    if (!isPasswordMatched) {
+      throw new UnauthorizedException('invalid email or password');
+    }
+
+    const token = this.jwtService.sign({ id: admin._id, email: admin.email, role: admin.role }, { secret: this.configService.get<string>('JWT_SECRET'), expiresIn: this.configService.get<string>('JWT_EXPIRE') })
+    console.log('token is  : ', token);
+
+
+    // Envoyer le token par email
+    await this.sendLoginToken(admin, token);
+
+    return { token, admin }
+  }
+
+  async sendLoginToken(admin: Admin, token: string): Promise<void> {
+    await this.mailerService.sendMail({
+      to: admin.email,
+      subject: 'Votre nouveau token de connexion',
+      text: `Bonjour ${admin.name}, voici votre nouveau token pour vous connecter : ${token}`,
+      html: `<p>Bonjour <strong>${admin.name}</strong>,</p>
                      <p>Voici votre nouveau token pour vous connecter :</p>
                      <p><strong>${token}</strong></p>
                      <p>Ce token est valide pendant 24 heures.</p>`
-            });
-          }
+    });
+  }
 
 }

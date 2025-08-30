@@ -22,6 +22,8 @@ import SchoolIcon from '@mui/icons-material/School';
 import BookIcon from '@mui/icons-material/Book';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
 import FolderIcon from '@mui/icons-material/Folder';
+import { Link } from "react-router-dom";
+
 
 const Search = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -297,13 +299,15 @@ export const Navbar = () => {
             </NavLink>
           </Button>
           <IconButton
+            component={Link}
+            to="/cart"
             edge="end"
             aria-label="cart"
             color="inherit"
             sx={{
-              borderRadius: '8px',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)'
+              borderRadius: "8px",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.1)"
               }
             }}
           >

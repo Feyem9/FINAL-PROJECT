@@ -67,7 +67,7 @@ export class AdminGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<any>();
     const authHeader = request.headers?.authorization;
 
-    console.log("voici le token de l'admin", authHeader);
+    // console.log("voici le token de l'admin", authHeader);
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException('Pas de token ou token mal formé');
@@ -76,7 +76,9 @@ export class AdminGuard implements CanActivate {
     try {
       const token = authHeader.split(' ')[1];
       const decoded = this.jwtService.verify(token, {
-        secret: this.configService.get<string>('JWT_SECRET_KEY'),
+        secret: this.configService.get<string>('JWT_SECRET'),
+
+        // secret: this.configService.get<string>('JWT_SECRET_KEY'),
       });
 
       console.log(decoded);
@@ -87,7 +89,7 @@ export class AdminGuard implements CanActivate {
           'Accès refusé : seuls les administrateurs autorisés peuvent accéder',
         );
       }
-
+      console.log(request.user);
       request.user = decoded; // Injecte l'utilisateur dans la requête
       return true;
 

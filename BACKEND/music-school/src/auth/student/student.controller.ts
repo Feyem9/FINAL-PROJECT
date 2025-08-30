@@ -131,23 +131,6 @@ export class StudentController {
     return result;
   }
 
-  // @Post('/profile-image')
-  // @ApiOperation({ summary: 'Update student profile image' })
-  // @ApiResponse({ status: 200, description: 'Profile image updated successfully' })
-  // @ApiResponse({ status: 404, description: 'Student not found' })
-  // async updateProfileImage(
-  //   @Body('imagePath') imagePath: string,
-  // ): Promise<any> {
-  //   const user = Req['user'];
-  //   if (user.role !== 'student') {
-  //     throw new ForbiddenException('Only students can update their profile image');
-  //   }
-  //   return this.studentService.updateStudentProfileImage(
-  //     user.sub, // Utilise l'ID de l'utilisateur authentifié
-  //     imagePath,
-  //   );
-  // }
-
   @Get('/:id/enrolled-courses')
   @ApiOperation({ summary: 'Get enrolled courses for a student' })
   @ApiResponse({ status: 200, description: 'List of enrolled courses' })

@@ -36,6 +36,10 @@ import { ProfileModule } from './auth/profile/profile.module';
 import { MulterModule } from '@nestjs/platform-express/multer/multer.module';
 import { ProfileImageController } from './auth/profile/profile-images/profile-image/profile-image.controller';
 import { ProfileImageModule } from './auth/profile/profile-images/profile-image/profile-image.module';
+import { CartController } from './carts/cart/cart.controller';
+import { CartService } from './carts/cart/cart.service';
+import { CartModule } from './carts/cart/cart.module';
+import { TransactionModule } from './transactions/transaction/transaction.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -94,7 +98,9 @@ import { ProfileImageModule } from './auth/profile/profile-images/profile-image/
     ResourceModule,
     NoteModule,
     ProfileModule,
-    ProfileImageModule
+    ProfileImageModule,
+    CartModule,
+    TransactionModule
   ],
   controllers: [AppController, UserController, CourseController, CalenderController, AnnonceController, BlogController, ProfileImageController],
   providers: [AppService, AdminService, MailService, CalenderService, // 👉 Ajout du RolesGuard comme guard global

@@ -9,6 +9,7 @@ export const Profile = () => {
     name: admin.name || '',
     email: admin.email || '',
     contact: admin.contact || '',
+    password: admin.password || '',
     // Assurez-vous que l'emplacement est initialisé, sinon il peut être undefined
     location: admin.location || 'Inconnue',
   });
@@ -173,8 +174,18 @@ export const Profile = () => {
     // Logic pour enregistrer les changements du formulaire
     try {
       const adminId = adminData._id;
-      const response = await axios.put(`${databaseUri}/admins/${adminId}`, formData);
+      const token = localStorage.getItem('token');
+      console.log(token);
+      console.log(adminId);
+      const response = await axios.put(`${databaseUri}/admins/${adminId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data);
+
       const updatedAdmin = { ...adminData, ...formData };
+      console.log('Admin mis à jour:', updatedAdmin);
       localStorage.setItem('admin', JSON.stringify(updatedAdmin));
       setAdminData(updatedAdmin);
       setSuccess('Profil mis à jour avec succès!');
@@ -501,19 +512,20 @@ export const Profile = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
                   />
                 </div>
+
                 <div>
-                  <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                    Location
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                    Password
                   </label>
                   <input
-                    id="location"
+                    id="password"
                     type="text"
-                    name="location"
-                    value={formData.location}
+                    name="password"
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
                   />
                 </div>
+
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
                 <p className="text-gray-600 text-sm">
@@ -541,11 +553,11 @@ export const Profile = () => {
               <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl">
                   <div>
-                    <h3 className="font-medium text-gray-800">Change Password</h3>
-                    <p className="text-gray-600 text-sm">Update your password regularly for better security</p>
+                    <h3 className="font-medium text-gray-800">Dark mode</h3>
+                    <p className="text-gray-600 text-sm">Enable dark mode for a more comfortable viewing experience at night.</p>
                   </div>
                   <button className="px-4 py-2 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors font-medium text-sm">
-                    Change
+                    Enable
                   </button>
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl">
@@ -561,6 +573,24 @@ export const Profile = () => {
                   <div>
                     <h3 className="font-medium text-gray-800">Active Sessions</h3>
                     <p className="text-gray-600 text-sm">Manage devices that are currently logged in</p>
+                  </div>
+                  <button className="px-4 py-2 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors font-medium text-sm">
+                    View
+                  </button>
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl">
+                  <div>
+                    <h3 className="font-medium text-gray-800">Transaction History</h3>
+                    <p className="text-gray-600 text-sm">View your past transactions and activities</p>
+                  </div>
+                  <button className="px-4 py-2 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors font-medium text-sm">
+                    View
+                  </button>
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl">
+                  <div>
+                    <h3 className="font-medium text-gray-800">Connection History</h3>
+                    <p className="text-gray-600 text-sm">View your past login attempts and locations</p>
                   </div>
                   <button className="px-4 py-2 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors font-medium text-sm">
                     View
