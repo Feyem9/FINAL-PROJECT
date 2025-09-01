@@ -13,17 +13,16 @@ export const Note = () => {
   const [editingNote, setEditingNote] = useState(null);
 
   // Simulation de l'utilisateur connecté pour l'exemple
-      const admin = JSON.parse(localStorage.getItem('admin') || '{}');
-    const adminId = admin._id;
-    // console.log(adminId);
-    
+  const admin = JSON.parse(localStorage.getItem('admin') || '{}');
+  const adminId = admin._id;
+
+
   const authorId = localStorage.getItem('userId') || adminId;
-  
+
 
   const fetchNotes = async () => {
-    
+
     try {
-      // console.log(authorId);
       setLoading(true);
       const response = await fetch(`${databaseUri}/notes/all`, {
         headers: {
@@ -233,7 +232,12 @@ export const Note = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-500 text-sm font-medium">This Week</p>
-                <p className="text-2xl font-bold text-gray-800 mt-1">12</p>
+                <p className="text-2xl font-bold text-gray-800 mt-1">{notes.filter(note => {
+                    const noteDate = new Date(note.createdAt);
+                    const oneWeekAgo = new Date();
+                    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                    return noteDate >= oneWeekAgo;
+                  }).length}</p>
               </div>
               <div className="p-3 bg-green-100 rounded-full">
                 <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

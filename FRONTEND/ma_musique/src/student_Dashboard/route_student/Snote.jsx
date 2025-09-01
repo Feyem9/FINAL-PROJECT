@@ -16,28 +16,31 @@ export const Snote = () => {
   const studentData = JSON.parse(localStorage.getItem('student'));
   const studentId = studentData?._id;
 
-  const fetchNotes = async () => {
-    try {
-      console.log('Fetching notes for student:', studentId);
-      setLoading(true);
-      const response = await axios.get(`${databaseUri}/notes/all`, {
-        headers: {
-          'x-author-id': studentId,
-        },
-      });
+ const fetchNotes = async () => {
+  try {
+    console.log('Fetching notes for student:', studentId);
+    setLoading(true);
 
-      if (!response.ok && response.status !== 404) {
-        throw new Error(`Failed to fetch notes: ${response.status}`);
-      }
+    const response = await axios.get(`${databaseUri}/notes/all`, {
+      headers: {
+        'x-author-id': studentId,
+      },
+    });
 
-      setNotes(response.data || []);
-    } catch (err) {
+    // axios ne passe ici que si status = 2xx
+    setNotes(response.data || []);
+  } catch (err) {
+    if (err.response?.status === 404) {
+      setNotes([]); // pas de notes trouvées
+    } else {
       setError('Failed to fetch notes.');
       console.error(err);
-    } finally {
-      setLoading(false);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     if (studentId) {
