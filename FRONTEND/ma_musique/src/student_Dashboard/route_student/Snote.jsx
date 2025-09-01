@@ -18,6 +18,7 @@ export const Snote = () => {
 
   const fetchNotes = async () => {
     try {
+      console.log('Fetching notes for student:', studentId);
       setLoading(true);
       const response = await axios.get(`${databaseUri}/notes/all`, {
         headers: {

@@ -1,15 +1,15 @@
-import { 
-  Body, 
-  Controller, 
-  Delete, 
-  Get, 
-  Param, 
-  Patch, 
-  Post, 
-  Query,
-  HttpStatus,
-  HttpCode,
-  HttpException
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    HttpStatus,
+    HttpCode,
+    HttpException
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { TransactionService } from './transaction.service';
@@ -19,7 +19,7 @@ import { Transaction } from 'src/schema/transaction.schema';
 @ApiTags('transactions')
 @Controller('transactions')
 export class TransactionController {
-    constructor(private readonly transactionService: TransactionService) {}
+    constructor(private readonly transactionService: TransactionService) { }
 
     @Post()
     @ApiOperation({ summary: 'Create a new transaction' })
@@ -116,5 +116,11 @@ export class TransactionController {
         } catch (error) {
             throw new HttpException('Checkout failed', HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Post("notify")
+    notify(@Body() body: any) {
+        console.log("Notification Payunit:", body);
+        return { received: true };
     }
 }

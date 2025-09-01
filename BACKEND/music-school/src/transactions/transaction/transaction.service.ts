@@ -173,7 +173,7 @@ export class TransactionService {
         const mode: "test" | "live" = modeEnv === "live" ? "live" : "test";
 
         const client = new PayunitClient({
-            baseURL: process.env.PAYUNIT_BASE_URL, // facultatif
+            baseURL: process.env.PAYUNIT_BASE_URL, // facultatif    
             apiKey: process.env.PAYUNIT_X_API_KEY,
             apiUsername: process.env.PAYUNIT_API_USER_NAME,
             apiPassword: process.env.PAYUNIT_API_PASSWORD,

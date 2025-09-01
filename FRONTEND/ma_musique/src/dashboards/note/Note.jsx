@@ -13,10 +13,17 @@ export const Note = () => {
   const [editingNote, setEditingNote] = useState(null);
 
   // Simulation de l'utilisateur connecté pour l'exemple
-  const authorId = localStorage.getItem('userId') || 'defaultUserId';
+      const admin = JSON.parse(localStorage.getItem('admin') || '{}');
+    const adminId = admin._id;
+    // console.log(adminId);
+    
+  const authorId = localStorage.getItem('userId') || adminId;
+  
 
   const fetchNotes = async () => {
+    
     try {
+      // console.log(authorId);
       setLoading(true);
       const response = await fetch(`${databaseUri}/notes/all`, {
         headers: {
@@ -68,7 +75,10 @@ export const Note = () => {
 
   const handleSubmitNote = async (e) => {
     e.preventDefault();
-    const authorId = localStorage.getItem('userId') || 'defaultUserId';
+    const admin = JSON.parse(localStorage.getItem('admin') || '{}');
+    const adminId = admin._id;
+    const authorId = localStorage.getItem('userId') || adminId;
+    console.log('Submitting note:', { ...newNote, authorId });
 
     if (!newNote.title.trim() || !newNote.content.trim()) {
       setError('Title and content are required.');
