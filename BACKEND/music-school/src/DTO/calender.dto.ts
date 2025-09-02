@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsOptional } from "class-validator";
+import { IsNotEmpty, IsString, IsOptional, IsDateString, IsDate } from "class-validator";
 
 export class CalenderDto {
 
@@ -25,7 +25,7 @@ export class CalenderDto {
         example: '22-05-2025 12:30:00 utc',
     })
     @IsNotEmpty()
-    @IsString()
+    @IsDate()
     readonly start_date: Date;
 
     @ApiProperty({
@@ -33,7 +33,7 @@ export class CalenderDto {
         example: '22-05-2025 15:00:00 utc',
     })
     @IsNotEmpty()
-    @IsString()
+    @IsDate()
     readonly end_date: Date;
 
     @ApiProperty({

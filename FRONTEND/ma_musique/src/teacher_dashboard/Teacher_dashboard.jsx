@@ -8,7 +8,7 @@ const TeacherSidebar = ({ isOpen, toggleSidebar }) => {
     { name: 'Dashboard', path: '/teacher/dashboard' },
     { name: 'Courses', path: '/teacher/courses' },
     { name: 'Calendar', path: '/teacher/calendars' },
-    { name: 'Students', path: '/teacher/students' },
+    { name: 'Notification', path: '/teacher/notification' },
     { name: 'Messages', path: '/teacher/chats' },
     { name: 'Notes', path: '/teacher/note' },
     { name: 'Profile', path: '/teacher/profile' },

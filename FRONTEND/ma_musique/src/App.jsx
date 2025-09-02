@@ -118,7 +118,7 @@ function App() {
             <Route path="note" element={<Tnote />} />
             <Route path="chats" element={<Tchat />} />
             <Route path="calendars" element={<Tcalender />} />
-            <Route path="notificatoin" element={<Tnotification />} />
+            <Route path="notification" element={<Tnotification />} />
           </Route>
         </Route>
       </Routes>

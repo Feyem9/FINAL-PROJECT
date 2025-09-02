@@ -26,4 +26,42 @@ export class ChatService {
       ],
     }).sort({ createdAt: 1 });
   }
+
+  async markAsRead(messageId: string, userId: string): Promise<void> {
+  await this.chatModel.findByIdAndUpdate(messageId, {
+    $addToSet: { readBy: userId }
+  });
+}
+
+async getUnreadCount(userId: string): Promise<number> {
+  return this.chatModel.countDocuments({
+    receiverId: userId,
+    readBy: { $ne: userId }
+  });
+}
+
+async searchMessages(senderId: string, receiverId: string, query: string): Promise<Chat[]> {
+  return this.chatModel.find({
+    $and: [
+      {
+        $or: [
+          { senderId: senderId, receiverId: receiverId },
+          { senderId: receiverId, receiverId: senderId },
+        ],
+      },
+      {
+        message: { $regex: query, $options: 'i' }
+      }
+    ]
+  }).sort({ createdAt: -1 }).limit(10);
+}
+
+async deleteMessage(messageId: string, userId: string): Promise<boolean> {
+  const result = await this.chatModel.findOneAndUpdate(
+    { _id: messageId, senderId: userId },
+    { $set: { deleted: true, deletedAt: new Date() } }
+  );
+  return !!result;
+}
+
 }

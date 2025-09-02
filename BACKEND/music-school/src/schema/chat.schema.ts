@@ -7,7 +7,7 @@ export type ChatDocument = Chat & Document;
 export class Chat {
   @Prop()
   id: string;
-  
+
   @Prop({ required: true })
   senderId: string;
 
@@ -19,6 +19,38 @@ export class Chat {
 
   @Prop({ default: false })
   isRead: boolean;
+
+  @Prop({ required: false })
+  readBy: String;
+
+  @Prop({ default: false, required: false })
+  edited: Boolean;
+
+  @Prop({ required: false })
+  editedAt: Date;
+
+  @Prop({ required: false })
+  deleted: Boolean;
+
+  @Prop({ required: false })
+  deletedAt: Date;
+
+  @Prop({ required: false })
+  replyTo: String; // ID du message auquel on répond
+
+  @Prop({ required: false })
+  reactions: [{
+    userId: String,
+    type: String, // emoji ou type de réaction
+    createdAt: Date;
+  }]
+
+  @Prop({ required: false , type: Object })
+  metadata: {
+    fileSize: Number,
+    mimeType: String,
+    originalName: String
+  }
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);

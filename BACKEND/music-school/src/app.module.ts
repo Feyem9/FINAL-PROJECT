@@ -40,6 +40,7 @@ import { CartController } from './carts/cart/cart.controller';
 import { CartService } from './carts/cart/cart.service';
 import { CartModule } from './carts/cart/cart.module';
 import { TransactionModule } from './transactions/transaction/transaction.module';
+import { UserStatusService } from './chats/user-status/user-status.service';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -107,7 +108,7 @@ import { TransactionModule } from './transactions/transaction/transaction.module
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
-    },],
+    }, UserStatusService,],
   exports: [MailService]
 })
 export class AppModule { }

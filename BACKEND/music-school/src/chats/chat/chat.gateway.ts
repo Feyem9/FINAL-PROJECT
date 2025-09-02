@@ -11,7 +11,10 @@ import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 import { ChatDto } from '../../DTO/chat.dto';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({ cors:{    origin: 'http://localhost:5173', // ou l'URL de ton frontend
+    methods: ['GET', 'POST'],
+    credentials: true,
+}})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
@@ -60,5 +63,28 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     console.log(`💬 Message envoyé dans la room ${room}`);
     return message;
+  }
+
+  @SubscribeMessage('typing')
+  handleTyping(client: Socket, data: { senderId: string; receiverId: string }) {
+    const room = this.generateRoomName(data.senderId, data.receiverId);
+    client.to(room).emit('userTyping', data);
+  }
+
+  @SubscribeMessage('stopTyping')
+  handleStopTyping(client: Socket, data: { senderId: string; receiverId: string }) {
+    const room = this.generateRoomName(data.senderId, data.receiverId);
+    client.to(room).emit('userStoppedTyping', data);
+  }
+
+  @SubscribeMessage('markAsRead')
+  async handleMarkAsRead(client: Socket, data: { messageId: string; userId: string }) {
+    await this.chatService.markAsRead(data.messageId, data.userId);
+    client.emit('messageRead', data);
+  }
+
+  // Fonction utilitaire pour générer le nom de room
+  private generateRoomName(user1: string, user2: string): string {
+    return [user1, user2].sort().join('-');
   }
 }

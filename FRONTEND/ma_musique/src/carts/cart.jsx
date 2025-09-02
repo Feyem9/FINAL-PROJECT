@@ -135,10 +135,11 @@ export const Cart = () => {
 
       const data = await res.json();
       console.log("Checkout response:", data);
+      console.log(data.redirect)
 
-      if (data?.transaction?.url) {
+      if (data?.redirect) {
         // Rediriger l’utilisateur vers la page PayUnit
-        window.location.href = data.transaction.url;
+        window.location.href = data.redirect;
       } else {
         alert("Erreur: Pas d’URL de paiement retournée.");
       }
