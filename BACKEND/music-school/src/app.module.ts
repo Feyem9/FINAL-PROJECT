@@ -47,8 +47,8 @@ import { UserStatusService } from './chats/user-status/user-status.service';
     isGlobal: true, // 👈 Permet d'accéder aux variables dans tous les modules
     envFilePath: '.env', // 👈 Assure-toi que c'est bien défini
   }),
-  MongooseModule.forRoot('MONGO_URI=mongodb+srv://feyemlionel:Feyem@blog.oxy0qqt.mongodb.net/music-school?retryWrites=true&w=majority', {
-    // MongooseModule.forRoot(process.env.MONGO_URI, {
+  // MongooseModule.forRoot('MONGO_URI=mongodb+srv://feyemlionel:Feyem@blog.oxy0qqt.mongodb.net/music-school?retryWrites=true&w=majority'),
+  MongooseModule.forRoot(process.env.MONGO_URI, {
     serverSelectionTimeoutMS: 5000, // Timeout après 5s
     connectTimeoutMS: 10000, // Timeout pour l'établissement de connexion
 
