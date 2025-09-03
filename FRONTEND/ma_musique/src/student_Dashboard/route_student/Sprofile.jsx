@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const Sprofile = () => {
   // Get student data from localStorage
-  const [studentData , setStudentData] = useState(JSON.parse(localStorage.getItem('student')));
+  const [studentData, setStudentData] = useState(JSON.parse(localStorage.getItem('student')));
   if (!studentData) return <p>Étudiant non connecté.</p>;
 
   // Correction: Utilisez student pour initialiser les états
@@ -15,7 +15,7 @@ export const Sprofile = () => {
     contact: studentData.contact || '',
     level: studentData.level || '',
     instrument: studentData.instrument || '',
-    password : studentData.password || '',
+    password: studentData.password || '',
     // La localisation est gérée séparément
   });
   const [activeTab, setActiveTab] = useState('profile');
@@ -136,12 +136,12 @@ export const Sprofile = () => {
         }
       );
 
-  // Extraction robuste de l'URL d'image pour s'adapter à plusieurs formats de réponse du serveur
-const imageUrl = response.data?.data?.imageUrl ||
-                 response.data?.imageUrl ||
-                 response.data?.profileImage?.imageUrl ||
-                 response.data?.result?.imageUrl ||
-                 response.data?.profileImage; // Gardez le cas original en dernier recours
+      // Extraction robuste de l'URL d'image pour s'adapter à plusieurs formats de réponse du serveur
+      const imageUrl = response.data?.data?.imageUrl ||
+        response.data?.imageUrl ||
+        response.data?.profileImage?.imageUrl ||
+        response.data?.result?.imageUrl ||
+        response.data?.profileImage; // Gardez le cas original en dernier recours
 
       // Met à jour les données dans le localStorage
       const updatedStudent = { ...student, image: imageUrl };
@@ -185,7 +185,7 @@ const imageUrl = response.data?.data?.imageUrl ||
       const token = localStorage.getItem('token');
       console.log(token);
       console.log(studentId)
-      const response = await axios.put(`${databaseUri}/students/${studentId}`, formData,{
+      const response = await axios.put(`${databaseUri}/students/${studentId}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -290,7 +290,7 @@ const imageUrl = response.data?.data?.imageUrl ||
                   </div>
                 ) : (
                   <div className="w-24 h-24 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                    {student.name?.charAt(0) || 'S'}
+                    {studentData.name?.charAt(0) || 'S'}
                   </div>
                 )}
                 <label htmlFor="imageUpload" className="absolute bottom-0 right-0 bg-amber-500 rounded-full p-2 cursor-pointer shadow-lg">
