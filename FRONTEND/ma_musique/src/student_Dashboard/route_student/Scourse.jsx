@@ -1,5 +1,8 @@
 import React, { useState, useEffect, use } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 // Charger les cours inscrits au montage du composant
 // useEffect(() => {
 
@@ -54,9 +57,7 @@ export const Scourse = () => {
         });
         if (Array.isArray(response.data)) {
           setEnrolledCourses(response.data);
-          console.log(`📚 ${response.data.length} cours chargés avec succès`);
         } else {
-          console.warn('⚠️ Response n\'est pas un array:', response.data);
           setEnrolledCourses([]);
         }
 
@@ -267,6 +268,7 @@ export const Scourse = () => {
     
     const imageUrl = `${databaseUri}${course.image}`;
     console.log(imageUrl);
+
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -652,6 +654,40 @@ export const Scourse = () => {
     fetchYoutubeVideos('music');
   }, []);
 
+ const handleAddToCart = async (course) => {
+  try {
+    if (!course || !course._id) {
+      toast.error('Informations du cours manquantes');
+      return;
+    }
+
+    const student = JSON.parse(localStorage.getItem('student'));
+    if (!student || !student._id) {
+      toast.error('Vous devez être connecté pour ajouter un cours au panier');
+      return;
+    }
+
+    console.log(`Ajout du cours "${course.title}" au panier...`);
+
+    const response = await axios.post(`${databaseUri}/course/add-to-cart`, {
+      courseId: course._id,
+      userId: student._id
+    });
+
+    if (response.data.success) {
+      toast.success(`Cours "${course.title}" ajouté au panier`);
+    } else {
+      toast.warning(response.data.message || 'Ajout au panier avec avertissement');
+    }
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout au panier:', error);
+    toast.error('Impossible d\'ajouter ce cours au panier');
+  }
+};
+
+  // Version basique améliorée
+
+
   // Filter courses based on search term
   const filteredEnrolledCourses = enrolledCourses.filter(course =>
     (levelFilter ? course.level === levelFilter : true) &&
@@ -853,6 +889,33 @@ export const Scourse = () => {
                       <div className="flex gap-2 mb-2">
                         <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">{course.level}</span>
                         <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">{course.category}</span>
+                      </div>
+
+                      <div>
+                       <button
+  onClick={() => handleAddToCart(course)}
+  className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M5 6h14l-1.3 8.5a2 2 0 0 1-2 1.7H9a2 2 0 0 1-2-1.7L5 6Z" />
+    <path d="M8.5 6l2.2-3h2.6L15.5 6" />
+    <circle cx="9" cy="20" r="1.6" fill="currentColor" />
+    <circle cx="16" cy="20" r="1.6" fill="currentColor" />
+    <circle cx="19" cy="5" r="3.2" fill="currentColor" opacity="0.12" />
+    <path d="M19 3.8v2.4M17.8 5h2.4" />
+  </svg>
+</button>
+
                       </div>
 
                       <p className="text-gray-600 text-sm mb-2">{course.description}</p>

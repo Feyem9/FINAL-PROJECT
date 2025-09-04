@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CourseDto } from '../../DTO/course.dto';
@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { HttpService } from '@nestjs/axios';
 import { User } from 'src/schema/user.schema';
+import { log } from 'util';
 
 @Injectable()
 export class CourseService {
@@ -17,6 +18,7 @@ export class CourseService {
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Teacher') private readonly teacherModel: Model<User>, // Assurez-vous que le modèle Teacher est correctement importé
     @InjectModel('Admin') private readonly adminModel: Model<User>, // Assurez-vous que le modèle Admin est correctement importé
+    @InjectModel('Cart') private readonly cartModel: Model<any>, // Modèle pour le panier
     private readonly httpService: HttpService
   ) { }
 
@@ -148,7 +150,7 @@ export class CourseService {
       filename: file.filename,
       path: `/uploads/${file.filename}`,
     };
-  }  
+  }
 
   async getYoutubeVideos(query: string) {
     const API_KEY = process.env.YOUTUBE_API_KEY;
@@ -174,6 +176,244 @@ export class CourseService {
     }
   }
 
+
+  async addToCart(
+  courseId: string,
+  userId: string,
+  title: string,
+  description: string,
+  image: string,
+  amount: number,
+  quantity: number = 1
+): Promise<any> {
+  try {
+    console.log(`Adding course ${courseId} to cart for user ${userId}`);
+
+    const course = await this.courseModel.findById(courseId).exec();
+    console.log(`Found course: ${JSON.stringify(course)}`);
+
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${courseId} not found`);
+    }
+const { title, description, image, amount } = course;
+    // 1. Validation des paramètres
+    if (!courseId || !userId) {
+      throw new BadRequestException('Course ID and User ID are required');
+    }
+    if (!title || !description || !image || !amount) {
+      throw new BadRequestException('Course details are required');
+    }
+
+//     // 2. Recherche ou création du panier
+    let cart = await this.cartModel.findOne({ userId }).exec();
+
+    if (!cart) {
+      console.log(`Creating new cart for user ${userId}`);
+      cart = new this.cartModel({
+        userId,
+        courses: [],
+        image,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+
+    if (!cart.courses) {
+      cart.courses = [];
+    }
+
+cart.courses.push({
+  courseId: course._id,
+  courseName: course.title,
+  courseDescription: course.description,
+  courseImage: course.image,
+  price: course.amount,
+  quantity: 1
+});
+
+cart.updatedAt = new Date();
+
+// // 6. Sauvegarde et retour
+const savedCart = await cart.save();
+
+return {
+  success: true,
+  message: `Course "${course.title}" added to cart successfully`,
+  cart: savedCart,
+  courseAdded: {
+    id: course._id,
+    title: course.title,
+    price: course.amount,
+    image: course.image,
+    quantity: 1
+  }
+};
+
+  } catch (error) {
+    console.error(`Error adding course to cart: ${error.message}`);
+
+    if (
+      error instanceof NotFoundException ||
+      error instanceof ConflictException ||
+      error instanceof BadRequestException
+    ) {
+      throw error;
+    }
+
+    throw new InternalServerErrorException('Failed to add course to cart');
+  }
+}
+
+
+  // Méthode utilitaire pour créer un panier si nécessaire
+  private async createCartIfNotExists(userId: string): Promise<any> {
+    let cart = await this.cartModel.findOne({ userId }).exec();
+
+    if (!cart) {
+      cart = new this.cartModel({
+        userId,
+        courses: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      await cart.save();
+      console.log(`New cart created for user ${userId}`);
+    }
+
+    return cart;
+  }
+
+  // Méthode alternative plus modulaire
+  async addToCartV2(courseId: string, userId: string): Promise<any> {
+    // Validation
+    this.validateInputs(courseId, userId);
+
+    // Récupération des données
+    const [course, cart] = await Promise.all([
+      this.findCourseById(courseId),
+      this.createCartIfNotExists(userId)
+    ]);
+
+    // Vérification des doublons
+    this.checkDuplicateCourse(cart, courseId, course.title);
+
+    // Ajout et sauvegarde
+    return await this.addCourseToCart(cart, course);
+  }
+
+  private validateInputs(courseId: string, userId: string): void {
+    if (!courseId?.trim()) {
+      throw new BadRequestException('Course ID is required and cannot be empty');
+    }
+    if (!userId?.trim()) {
+      throw new BadRequestException('User ID is required and cannot be empty');
+    }
+  }
+
+  private async findCourseById(courseId: string): Promise<any> {
+    const course = await this.courseModel.findById(courseId).exec();
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${courseId} not found`);
+    }
+    return course;
+  }
+
+  private checkDuplicateCourse(cart: any, courseId: string, courseTitle: string): void {
+    const isDuplicate = cart.courses.some(
+      (existingCourse: any) => existingCourse._id.toString() === courseId
+    );
+
+    if (isDuplicate) {
+      throw new ConflictException(`Course "${courseTitle}" is already in your cart`);
+    }
+  }
+
+  private async addCourseToCart(cart: any, course: any): Promise<any> {
+    cart.courses.push(course);
+    cart.updatedAt = new Date();
+
+    const savedCart = await cart.save();
+
+    return {
+      success: true,
+      message: `Course "${course.title}" added to cart successfully`,
+      cart: {
+        id: savedCart._id,
+        userId: savedCart.userId,
+        coursesCount: savedCart.courses.length,
+        totalamount: this.calculateCartTotal(savedCart.courses)
+      },
+      courseAdded: {
+        id: course._id,
+        title: course.title,
+        amount: course.amount,
+        instructor: course.instructor
+      }
+    };
+  }
+
+  private calculateCartTotal(courses: any[]): number {
+    return courses.reduce((total, course) => total + (course.amount || 0), 0);
+  }
+
+  // Version avec transaction pour la cohérence des données
+  async addToCartWithTransaction(courseId: string, userId: string): Promise<any> {
+    const session = await this.cartModel.db.startSession();
+
+    try {
+      session.startTransaction();
+
+      // Validation
+      this.validateInputs(courseId, userId);
+
+      // Vérification du cours
+      const course = await this.courseModel.findById(courseId).session(session).exec();
+      if (!course) {
+        throw new NotFoundException(`Course with ID ${courseId} not found`);
+      }
+
+      // Recherche ou création du panier
+      let cart = await this.cartModel.findOne({ userId }).session(session).exec();
+
+      if (!cart) {
+        cart = new this.cartModel({
+          userId,
+          courses: [],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+      }
+
+      // Vérification des doublons
+      const isDuplicate = cart.courses.some(
+        (existingCourse: any) => existingCourse._id.toString() === courseId
+      );
+
+      if (isDuplicate) {
+        throw new ConflictException(`Course "${course.title}" is already in your cart`);
+      }
+
+      // Ajout du cours
+      cart.courses.push(course);
+      cart.updatedAt = new Date();
+
+      const savedCart = await cart.save({ session });
+
+      await session.commitTransaction();
+
+      return {
+        success: true,
+        message: `Course "${course.title}" added to cart successfully`,
+        cart: savedCart
+      };
+
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
 
 }
 

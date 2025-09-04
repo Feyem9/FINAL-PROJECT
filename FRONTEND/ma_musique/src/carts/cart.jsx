@@ -148,13 +148,30 @@ export const Cart = () => {
       alert("Échec du paiement");
     }
   };
+
+  const startPayment = async () => {
+  try {
+    const response = await fetch("http://localhost:3001/transaction/checkout", {
+      method: "POST",
+    });
+    const data = await response.json();
+
+    if (data.redirectUrl) {
+      window.location.href = data.redirectUrl; // Redirection PayUnit
+    } else {
+      console.error("Pas de lien de redirection reçu !");
+    }
+  } catch (err) {
+    console.error("Erreur lors du paiement :", err);
+  }
+};
   
   return (
     <div className="max-w-6xl mx-auto p-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Panier d'Achat</h1>
 
       {/* Add Item Form */}
-      <div className="bg-gray-50 p-8 rounded-lg mb-8">
+      {/* <div className="bg-gray-50 p-8 rounded-lg mb-8">
         <h3 className="text-xl font-semibold text-gray-800 mb-6">Ajouter un cours</h3>
         <div className="space-y-4">
           <input
@@ -210,7 +227,7 @@ export const Cart = () => {
             Ajouter au Panier
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Cart Items */}
       <div className="mb-8">
@@ -285,7 +302,7 @@ export const Cart = () => {
               Vider le Panier
             </button>
             <button
-              // onClick={proceedToCheckout}
+              // onClick={startPayment}
               onClick={checkout}
               className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors duration-200"
             >

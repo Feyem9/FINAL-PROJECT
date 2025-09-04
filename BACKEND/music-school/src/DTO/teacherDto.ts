@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsArray, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsArray, IsOptional, IsNumber, IsEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserDto } from './userDto';
 
@@ -27,4 +27,12 @@ export class TeacherDto extends UserDto {
     readOnly: true,
   })
   readonly role: 'teacher' = 'teacher'; // 🔒 Rôle forcé à "teacher"
+
+  @ApiProperty({
+    description: 'The teaching experience of the teacher in years',
+    example: 5,
+  })
+  @IsOptional()
+  @IsNumber()
+  readonly experience?: number;
 }

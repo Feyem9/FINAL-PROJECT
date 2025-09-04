@@ -10,7 +10,17 @@ import { PayunitClient } from '@payunit/nodejs-sdk';
 export class TransactionService {
     constructor(
         @InjectModel(Transaction.name) private transactionModel: Model<TransactionDocument>,
-    ) { }
+        // private client: PayunitClient,
+    ) {
+        // this.client = new PayunitClient({
+        //     baseURL: process.env.PAYUNIT_BASE_URL, // facultatif    
+        //     apiKey: process.env.PAYUNIT_X_API_KEY,
+        //     apiUsername: process.env.PAYUNIT_API_USER_NAME,
+        //     apiPassword: process.env.PAYUNIT_API_PASSWORD,
+        //     mode: process.env.PAYUNIT_MODE === 'live' ? 'live' : 'test',
+        //     timeout: Number(process.env.PAYUNIT_TIMEOUT),
+        // });
+    }
 
     // Create a new transaction
     async createTransaction(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
@@ -213,4 +223,51 @@ export class TransactionService {
         return transaction;
     }
 
+//      async createTransactions() {
+//     try {
+//       const checkoutSession = await this.client.checkout.initialize({
+//         cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+//         success_url: `${process.env.FRONTEND_URL}/success`,
+//         notify_url: `${process.env.BACKEND_URL}/webhook`, // callback serveur
+//         currency: 'XAF',
+//         mode: 'payment', // ou "subscription"
+//         transaction_id: `TXN_${Date.now()}`,
+//         total_amount: 1000,
+//         // payment_country: 'CM',
+//         items: [
+//           {
+//             price_description: {
+//               unit_amount: 100,
+//             },
+//             product_description: {
+//               name: 'Test Item',
+//               image_url: 'https://example.com/image.jpg',
+//               about_product: 'Description du produit test',
+//             },
+//             quantity: 1,
+//           },
+//         ],
+//         // customer: {
+//         //   name: 'John Doe',
+//         //   email: 'john@example.com',
+//         //   phone: '6XXXXXX',
+//         // },
+//         meta: {
+//           phone_number_collection: true,
+//           address_collection: true,
+//         },
+//       });
+
+//       // Vérifie si PayUnit retourne une URL de redirection
+//       if (checkoutSession?.redirect) {
+//         return { redirectUrl: checkoutSession.redirect };
+//       }
+
+//       throw new Error('La session de paiement n’a pas retourné de lien de redirection');
+//     } catch (error) {
+//       console.error('Erreur lors de la création de la transaction:', error);
+//       throw error;
+//     }
+//   }
+ 
 }

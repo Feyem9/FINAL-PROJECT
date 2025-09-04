@@ -9,7 +9,8 @@ import {
     Query,
     HttpStatus,
     HttpCode,
-    HttpException
+    HttpException,
+    Res
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { TransactionService } from './transaction.service';
@@ -123,4 +124,10 @@ export class TransactionController {
         console.log("Notification Payunit:", body);
         return { received: true };
     }
+
+    // @Post('/checkouts')
+    // async checkouts(@Res() res) {
+    //     const { redirectUrl } = await this.transactionService.createTransactions();
+    //     return res.json({ redirectUrl });
+    // }
 }

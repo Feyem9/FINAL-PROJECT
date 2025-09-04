@@ -1,19 +1,30 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { Cart } from 'src/interfaces/cart.interface';
 import { CartService } from './cart.service';
 import { CartDto } from 'src/DTO/cart.dto';
+import { User } from 'src/interfaces/user.interface';
 
+interface CartResponse {
+  userId: string | User;  // accepte un id ou un objet User
+  courses: {
+    courseId: string;
+    courseName: string;
+    courseImage: string;
+    courseDescription: string;
+    quantity: number;
+    price: number;
+  }[];
+}
 @Controller('cart')
 export class CartController {
     constructor(private readonly cartService: CartService) {}
 
     @Post('add')
-    async addToCart(@Body() cartItem: CartDto): Promise<Cart> {
+    async addToCart(@Body() cartItem: CartDto): Promise<CartResponse> {
         return this.cartService.addToCart(cartItem);
     }
 
     @Get()
-    async getCartItems(): Promise<Cart[]> {
+    async getCartItems(): Promise<CartResponse[]> {
         return this.cartService.getCartItems();
     }
 
@@ -31,7 +42,7 @@ export class CartController {
     async updateCartItem(
         @Param('id') itemId: string,
         @Body('quantity') quantity: number,
-    ): Promise<Cart> {
+    ): Promise<CartResponse> {
         return this.cartService.updateCartItem(itemId, quantity);
     }
 }
