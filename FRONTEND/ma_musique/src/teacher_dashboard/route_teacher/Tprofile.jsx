@@ -27,7 +27,10 @@ export const Tprofile = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   // Configuration de l'API (remplacez par votre URL)
-  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -513,7 +516,7 @@ export const Tprofile = () => {
                 )}
               </div>
 
-              
+
 
               <div>
                 <label className="block text-gray-600 text-sm mb-1">Phone Number</label>
@@ -570,7 +573,7 @@ export const Tprofile = () => {
                   {teacherData.createdAt ? new Date(teacherData.createdAt).toLocaleDateString() : 'Not available'}
                 </p>
               </div>
-              
+
 
               {location && (
                 <div className="md:col-span-2">
@@ -608,7 +611,7 @@ export const Tprofile = () => {
                   </div>
                 </div>
               )}
-              
+
             </div>
           </div>
 

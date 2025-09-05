@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 // Supposons que tu aies configuré une variable d'environnement pour l'API
-const databaseUri = 'http://localhost:3000';
+// const databaseUri = 'http://localhost:3000';
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
 export const Note = () => {
   const [notes, setNotes] = useState([]);
@@ -233,11 +235,11 @@ export const Note = () => {
               <div>
                 <p className="text-gray-500 text-sm font-medium">This Week</p>
                 <p className="text-2xl font-bold text-gray-800 mt-1">{notes.filter(note => {
-                    const noteDate = new Date(note.createdAt);
-                    const oneWeekAgo = new Date();
-                    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-                    return noteDate >= oneWeekAgo;
-                  }).length}</p>
+                  const noteDate = new Date(note.createdAt);
+                  const oneWeekAgo = new Date();
+                  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                  return noteDate >= oneWeekAgo;
+                }).length}</p>
               </div>
               <div className="p-3 bg-green-100 rounded-full">
                 <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

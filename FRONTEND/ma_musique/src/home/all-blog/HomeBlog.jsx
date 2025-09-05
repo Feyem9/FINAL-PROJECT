@@ -7,7 +7,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 
 const blogPosts = [
- {
+  {
     "title": "The Healing Power of Music",
     "date": "February 2025",
     "image": "/blog1H.jpeg",
@@ -53,6 +53,7 @@ const HomeBlog = () => {
           letterSpacing: 2,
         }}
       >
+
         Museschool Blog
       </Typography>
 

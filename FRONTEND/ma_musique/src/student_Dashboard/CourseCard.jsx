@@ -18,3 +18,4 @@ function CourseCard({ title, progress }) {
 }
 
 export default CourseCard;
+

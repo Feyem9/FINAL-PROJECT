@@ -46,7 +46,9 @@ export const Blog = () => {
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentError, setCommentError] = useState('');
 
-  const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+  // const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
   // console.log("API URL:", API_URL);
 
 
@@ -164,73 +166,73 @@ export const Blog = () => {
   // };
 
   const handleCreateOrEdit = async e => {
-  e.preventDefault();
-  console.log("🔵 Début de la soumission du formulaire...");
+    e.preventDefault();
+    console.log("🔵 Début de la soumission du formulaire...");
 
-  setCreating(true);
-  setFormError('');
+    setCreating(true);
+    setFormError('');
 
-  try {
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
-    console.log("📌 Données du formulaire avant envoi :", form);
+      console.log("📌 Données du formulaire avant envoi :", form);
 
-    formData.append('title', form.title);
-    formData.append('content', form.content);
-    if (form.image) {
-      console.log("🖼️ Image sélectionnée :", form.image.name);
-      formData.append('image', form.image);
-    }
-    if (form.tags) {
-      const tagsArray = form.tags.split(',').map(t => t.trim());
-      console.log("🏷️ Tags :", tagsArray);
-      formData.append('tags', JSON.stringify(tagsArray));
-    }
-    if (form.categories) {
-      const categoriesArray = form.categories.split(',').map(c => c.trim());
-      console.log("📂 Catégories :", categoriesArray);
-      formData.append('categories', JSON.stringify(categoriesArray));
-    }
-
-    const token = localStorage.getItem('token');
-    console.log("🔑 Token récupéré :", token ? "Oui" : "Non");
-
-    const url = editingBlogId
-      ? `${API_URL}/blog/${editingBlogId}`
-      : `${API_URL}/blog/create`;
-
-    const method = editingBlogId ? 'put' : 'post';
-
-    console.log(`📡 Méthode HTTP : ${method.toUpperCase()} | URL : ${url}`);
-
-    // Debug du contenu du FormData (pas directement lisible, donc on l'affiche clé par clé)
-    for (let pair of formData.entries()) {
-      console.log(`➡️ FormData[${pair[0]}] :`, pair[1]);
-    }
-
-    const response = await axios({
-      method,
-      url,
-      data: formData,
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-        'Content-Type': 'multipart/form-data'
+      formData.append('title', form.title);
+      formData.append('content', form.content);
+      if (form.image) {
+        console.log("🖼️ Image sélectionnée :", form.image.name);
+        formData.append('image', form.image);
       }
-    });
+      if (form.tags) {
+        const tagsArray = form.tags.split(',').map(t => t.trim());
+        console.log("🏷️ Tags :", tagsArray);
+        formData.append('tags', JSON.stringify(tagsArray));
+      }
+      if (form.categories) {
+        const categoriesArray = form.categories.split(',').map(c => c.trim());
+        console.log("📂 Catégories :", categoriesArray);
+        formData.append('categories', JSON.stringify(categoriesArray));
+      }
 
-    console.log("✅ Réponse du serveur :", response.data);
+      const token = localStorage.getItem('token');
+      console.log("🔑 Token récupéré :", token ? "Oui" : "Non");
 
-    setForm({ title: '', content: '', image: null, tags: '', categories: '' });
-    setEditingBlogId(null);
+      const url = editingBlogId
+        ? `${API_URL}/blog/${editingBlogId}`
+        : `${API_URL}/blog/create`;
 
-  } catch (err) {
-    console.error("❌ Erreur lors de la soumission :", err.response ? err.response.data : err.message);
-    setFormError('Impossible de soumettre le blog');
-  }
+      const method = editingBlogId ? 'put' : 'post';
 
-  setCreating(false);
-  console.log("🔴 Fin de la soumission du formulaire.");
-};
+      console.log(`📡 Méthode HTTP : ${method.toUpperCase()} | URL : ${url}`);
+
+      // Debug du contenu du FormData (pas directement lisible, donc on l'affiche clé par clé)
+      for (let pair of formData.entries()) {
+        console.log(`➡️ FormData[${pair[0]}] :`, pair[1]);
+      }
+
+      const response = await axios({
+        method,
+        url,
+        data: formData,
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      console.log("✅ Réponse du serveur :", response.data);
+
+      setForm({ title: '', content: '', image: null, tags: '', categories: '' });
+      setEditingBlogId(null);
+
+    } catch (err) {
+      console.error("❌ Erreur lors de la soumission :", err.response ? err.response.data : err.message);
+      setFormError('Impossible de soumettre le blog');
+    }
+
+    setCreating(false);
+    console.log("🔴 Fin de la soumission du formulaire.");
+  };
 
   const handleCommentSubmit = async e => {
     e.preventDefault();
@@ -303,7 +305,7 @@ export const Blog = () => {
                       const blogDate = new Date(blog.publishedAt || blog.createdAt);
                       const now = new Date();
                       return blogDate.getMonth() === now.getMonth() &&
-                             blogDate.getFullYear() === now.getFullYear();
+                        blogDate.getFullYear() === now.getFullYear();
                     }).length}
                   </p>
                 </div>

@@ -51,8 +51,8 @@ const UpcomingTasks = () => {
               <p className="text-sm text-gray-500">Due: {task.due}</p>
             </div>
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${task.priority === 'high' ? 'bg-red-100 text-red-800' :
-                task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-green-100 text-green-800'
+              task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-green-100 text-green-800'
               }`}>
               {task.priority}
             </span>
@@ -78,8 +78,8 @@ const RecentActivity = () => {
         {activities.map((activity, index) => (
           <div key={index} className="flex items-start">
             <div className={`mr-3 mt-1 w-8 h-8 rounded-full flex items-center justify-center ${activity.type === 'quiz' ? 'bg-blue-100 text-blue-600' :
-                activity.type === 'assignment' ? 'bg-green-100 text-green-600' :
-                  'bg-amber-100 text-amber-600'
+              activity.type === 'assignment' ? 'bg-green-100 text-green-600' :
+                'bg-amber-100 text-amber-600'
               }`}>
               {activity.type === 'quiz' ? '📝' : activity.type === 'assignment' ? '✅' : '📚'}
             </div>

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
 export const Tnotification = () => {
-  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-  
+  // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
+
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, unread, read
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   const teacherData = JSON.parse(localStorage.getItem('teacher'));
   const teacherId = teacherData?._id;
 
@@ -93,12 +95,12 @@ export const Tnotification = () => {
   };
 
   const filteredNotifications = notifications.filter(n => {
-    const matchesFilter = 
+    const matchesFilter =
       filter === 'all' ||
       (filter === 'unread' && !n.read) ||
       (filter === 'read' && n.read);
-    
-    const matchesSearch = 
+
+    const matchesSearch =
       n.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       n.message.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -156,9 +158,9 @@ export const Tnotification = () => {
     if (diffInMinutes < 60) return `Il y a ${diffInMinutes} min`;
     if (diffInHours < 24) return `Il y a ${diffInHours}h`;
     if (diffInDays < 7) return `Il y a ${diffInDays}j`;
-    
-    return date.toLocaleDateString('fr-FR', { 
-      day: 'numeric', 
+
+    return date.toLocaleDateString('fr-FR', {
+      day: 'numeric',
       month: 'short',
       year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
     });
@@ -248,11 +250,10 @@ export const Tnotification = () => {
                 <button
                   key={tab.key}
                   onClick={() => setFilter(tab.key)}
-                  className={`px-4 py-2 text-sm font-medium ${
-                    filter === tab.key
+                  className={`px-4 py-2 text-sm font-medium ${filter === tab.key
                       ? 'bg-blue-600 text-white'
                       : 'bg-white text-gray-700 hover:bg-gray-50'
-                  } transition-colors duration-200`}
+                    } transition-colors duration-200`}
                 >
                   {tab.label} ({tab.count})
                 </button>
@@ -289,8 +290,8 @@ export const Tnotification = () => {
               {searchTerm || filter !== 'all' ? 'Aucune notification trouvée' : 'Aucune notification'}
             </h3>
             <p className="mt-2 text-gray-500">
-              {searchTerm || filter !== 'all' 
-                ? 'Essayez de modifier vos critères de recherche.' 
+              {searchTerm || filter !== 'all'
+                ? 'Essayez de modifier vos critères de recherche.'
                 : 'Vous recevrez ici toutes vos notifications importantes.'}
             </p>
           </div>
@@ -299,11 +300,10 @@ export const Tnotification = () => {
             {filteredNotifications.map(notification => (
               <div
                 key={notification._id}
-                className={`bg-white rounded-lg shadow-sm border-l-4 transition-all duration-200 hover:shadow-md ${
-                  notification.read 
-                    ? 'border-l-gray-200' 
+                className={`bg-white rounded-lg shadow-sm border-l-4 transition-all duration-200 hover:shadow-md ${notification.read
+                    ? 'border-l-gray-200'
                     : 'border-l-blue-500 bg-gradient-to-r from-blue-50 to-white'
-                }`}
+                  }`}
               >
                 <div className="p-6">
                   <div className="flex items-start space-x-4">
@@ -325,9 +325,8 @@ export const Tnotification = () => {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <h3 className={`text-lg font-semibold ${
-                          notification.read ? 'text-gray-800' : 'text-gray-900'
-                        }`}>
+                        <h3 className={`text-lg font-semibold ${notification.read ? 'text-gray-800' : 'text-gray-900'
+                          }`}>
                           {notification.title}
                         </h3>
                         <div className="flex items-center space-x-2">
@@ -339,10 +338,9 @@ export const Tnotification = () => {
                           )}
                         </div>
                       </div>
-                      
-                      <p className={`mt-1 text-sm ${
-                        notification.read ? 'text-gray-600' : 'text-gray-700'
-                      }`}>
+
+                      <p className={`mt-1 text-sm ${notification.read ? 'text-gray-600' : 'text-gray-700'
+                        }`}>
                         {notification.message}
                       </p>
 

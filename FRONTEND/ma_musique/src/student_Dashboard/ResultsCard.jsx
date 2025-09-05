@@ -32,3 +32,4 @@ function ResultsCard() {
 }
 
 export default ResultsCard;
+

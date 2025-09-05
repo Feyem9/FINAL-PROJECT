@@ -15,7 +15,7 @@ export const PrivateRoute = ({ allowedRoles }) => {
     // localStorage contient des données malformées, on peut gérer ça ici (ex: forcer la déconnexion)
     user = null;
     console.log('user', user);
-    
+
   }
 
   if (!user) {
@@ -24,10 +24,10 @@ export const PrivateRoute = ({ allowedRoles }) => {
 
   const userRole = user.role?.toLowerCase();
   console.log('user role', userRole);
-  
+
   const allowed = allowedRoles.map(r => r.toLowerCase());
   console.log('allowed role', allowed);
-  
+
 
   if (!allowed.includes(userRole)) {
     return (

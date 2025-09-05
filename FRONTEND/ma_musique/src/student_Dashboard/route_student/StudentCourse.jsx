@@ -15,3 +15,4 @@ const StudentCourse = () => {
 };
 
 export default StudentCourse;
+

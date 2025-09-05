@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+// const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
 export const TransactionHistory = () => {
   const [transactions, setTransactions] = useState([]);
@@ -25,7 +27,7 @@ export const TransactionHistory = () => {
         axios.get(`${API_URL}/transactions?userId=${userId}`),
         axios.get(`${API_URL}/transactions/stats?userId=${userId}`)
       ]);
-      
+
       setTransactions(transactionsResponse.data);
       setFilteredTransactions(transactionsResponse.data);
       setStats(statsResponse.data);
@@ -67,7 +69,7 @@ export const TransactionHistory = () => {
       }
 
       if (dateLimit) {
-        filtered = filtered.filter(transaction => 
+        filtered = filtered.filter(transaction =>
           new Date(transaction.createdAt) >= dateLimit
         );
       }
@@ -171,8 +173,8 @@ export const TransactionHistory = () => {
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex flex-col">
             <label className="font-semibold text-gray-800 mb-2">Statut:</label>
-            <select 
-              value={filters.status} 
+            <select
+              value={filters.status}
               onChange={(e) => handleFilterChange('status', e.target.value)}
               className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
@@ -186,8 +188,8 @@ export const TransactionHistory = () => {
 
           <div className="flex flex-col">
             <label className="font-semibold text-gray-800 mb-2">Période:</label>
-            <select 
-              value={filters.dateRange} 
+            <select
+              value={filters.dateRange}
               onChange={(e) => handleFilterChange('dateRange', e.target.value)}
               className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
@@ -200,8 +202,8 @@ export const TransactionHistory = () => {
 
           <div className="flex flex-col">
             <label className="font-semibold text-gray-800 mb-2">Trier par:</label>
-            <select 
-              value={filters.sortBy} 
+            <select
+              value={filters.sortBy}
               onChange={(e) => handleFilterChange('sortBy', e.target.value)}
               className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
@@ -246,7 +248,7 @@ export const TransactionHistory = () => {
                 </div>
 
                 <div>
-                  <button 
+                  <button
                     onClick={() => viewTransactionDetails(transaction.transactionId)}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
                   >
@@ -259,8 +261,8 @@ export const TransactionHistory = () => {
               <div className="flex flex-wrap gap-4 items-center pt-6 border-t border-gray-200">
                 {transaction.items.slice(0, 2).map((item, index) => (
                   <div key={index} className="flex items-center gap-3">
-                    <img 
-                      src={item.courseImage} 
+                    <img
+                      src={item.courseImage}
                       alt={item.courseName}
                       className="w-8 h-6 object-cover rounded"
                       onError={(e) => {

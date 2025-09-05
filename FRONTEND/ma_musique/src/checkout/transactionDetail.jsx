@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+// const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
 export const TransactionDetails = () => {
   const { transactionId } = useParams();
@@ -157,9 +159,9 @@ export const TransactionDetails = () => {
         <div className="space-y-6">
           {transaction.items.map((item, index) => (
             <div key={index} className="flex flex-col sm:flex-row gap-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
-              <img 
-                src={item.courseImage} 
-                alt={item.courseName} 
+              <img
+                src={item.courseImage}
+                alt={item.courseName}
                 className="w-full sm:w-24 h-24 object-cover rounded-lg"
                 onError={(e) => {
                   e.target.src = '/placeholder-course.jpg';
@@ -199,7 +201,7 @@ export const TransactionDetails = () => {
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-4">
-        <button 
+        <button
           onClick={() => window.history.back()}
           className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
         >
@@ -207,7 +209,7 @@ export const TransactionDetails = () => {
         </button>
 
         {transaction.status === 'pending' && (
-          <button 
+          <button
             onClick={cancelTransaction}
             className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
           >
@@ -216,7 +218,7 @@ export const TransactionDetails = () => {
         )}
 
         {transaction.status === 'completed' && (
-          <button 
+          <button
             onClick={() => window.print()}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
           >

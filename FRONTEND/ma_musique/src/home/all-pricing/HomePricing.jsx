@@ -28,15 +28,15 @@ const plans = [
 
 const HomePricing = () => {
 
-    const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
 
-    const handleSubscribe = () => {
-      alert(`Merci pour votre inscription: ${email}`);
-      setEmail("");
-    };
+  const handleSubscribe = () => {
+    alert(`Merci pour votre inscription: ${email}`);
+    setEmail("");
+  };
   return (
     <Box sx={{ textAlign: "center", py: 6, background: "#f4f4f4" }}>
-      <Typography variant="h3" sx={{ fontWeight: "bold", mb: 3 , color:"#43A047"}}>
+      <Typography variant="h3" sx={{ fontWeight: "bold", mb: 3, color: "#43A047" }}>
         Nos Offres
       </Typography>
       <Grid container spacing={3} justifyContent="center">
@@ -57,7 +57,7 @@ const HomePricing = () => {
                     </li>
                   ))}
                 </ul>
-                <Button variant="contained"  sx={{ mt: 2 , background:"#E65100" , fontWeight:"bolder" }}>
+                <Button variant="contained" sx={{ mt: 2, background: "#E65100", fontWeight: "bolder" }}>
                   Choisir
                 </Button>
               </CardContent>
@@ -67,14 +67,14 @@ const HomePricing = () => {
       </Grid>
       <div style={{ marginTop: "40px" }}>
         <Typography variant="h5" gutterBottom>Subscribe to our newsletter</Typography>
-        <TextField 
-          label="your email" 
-          variant="outlined" 
-          value={email} 
-          onChange={(e) => setEmail(e.target.value)} 
+        <TextField
+          label="your email"
+          variant="outlined"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           style={{ marginRight: "10px" }}
         />
-        <Button variant="contained" onClick={handleSubscribe} sx={{background:"#E65100" , fontWeight:"bolder"}}>Subscribe</Button>
+        <Button variant="contained" onClick={handleSubscribe} sx={{ background: "#E65100", fontWeight: "bolder" }}>Subscribe</Button>
       </div>
 
     </Box>
@@ -82,3 +82,4 @@ const HomePricing = () => {
 };
 
 export default HomePricing;
+

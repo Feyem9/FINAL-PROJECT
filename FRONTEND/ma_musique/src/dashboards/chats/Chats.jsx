@@ -559,7 +559,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 
-const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+// const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
 export const Chats = ({ role, senderId, receiverId }) => {
   // États de base
@@ -603,7 +605,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
   useEffect(() => {
     addDebugLog('🔄 Initialisation du composant...');
     addDebugLog(`Props reçues: role=${role}, senderId=${senderId}, receiverId=${receiverId}`);
-    
+
     const storedAdmin = JSON.parse(localStorage.getItem('admin'));
     const storedTeacher = JSON.parse(localStorage.getItem('teacher'));
     const storedStudent = JSON.parse(localStorage.getItem('student'));
@@ -615,7 +617,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
       return;
     }
 
-    addDebugLog('✅ utilisateur récupéré:' , userId);
+    addDebugLog('✅ utilisateur récupéré:', userId);
     setAdmin(storedAdmin || storedTeacher || storedStudent);
 
     // Configuration socket avec debug complet
@@ -662,11 +664,11 @@ export const Chats = ({ role, senderId, receiverId }) => {
     }
 
     addDebugLog(`🏠 Configuration room pour ${senderId} et ${receiverId}`);
-    
+
     // Configuration de la room
     const sortedIds = [senderId, receiverId].sort();
     const room = `${sortedIds[0]}-${sortedIds[1]}`;
-    
+
     addDebugLog(`🏠 Joining room: ${room}`);
     socket.emit('joinRoom', { room, senderId, receiverId });
 
@@ -772,7 +774,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
   // Fonction d'envoi de message CORRIGÉE
   const sendMessage = () => {
     addDebugLog(`📤 Tentative d'envoi: "${message}"`);
-    
+
     // Vérifications préliminaires
     if (!socket) {
       addDebugLog('❌ Socket non disponible');
@@ -793,7 +795,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
     }
 
     const sanitizedMessage = sanitizeMessage(message);
-    
+
     if (!validateMessage(sanitizedMessage)) {
       addDebugLog('❌ Message invalide après sanitisation');
       setError('Message invalide');
@@ -827,12 +829,12 @@ export const Chats = ({ role, senderId, receiverId }) => {
       ...messageData,
       createdAt: new Date()
     };
-    
+
     setMessages((prev) => {
       addDebugLog(`📝 Ajout message local: ${prev.length} -> ${prev.length + 1} messages`);
       return [...prev, localMessage];
     });
-    
+
     setMessage('');
 
     // Arrêter l'indicateur de frappe
@@ -847,7 +849,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
     if (socket && !typing) {
       setTyping(true);
       socket.emit('typing', { senderId, receiverId });
-      
+
       setTimeout(() => {
         setTyping(false);
         socket.emit('stopTyping', { senderId, receiverId });
@@ -949,7 +951,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
     addDebugLog(`SenderId: ${senderId || 'KO'}`);
     addDebugLog(`ReceiverId: ${receiverId || 'KO'}`);
     addDebugLog(`Database URI: ${databaseUri || 'KO'}`);
-    
+
     if (socket) {
       addDebugLog(`Socket ID: ${socket.id}`);
       addDebugLog(`Socket connected: ${socket.connected}`);
@@ -967,13 +969,13 @@ export const Chats = ({ role, senderId, receiverId }) => {
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-yellow-400">DEBUG MODE</h3>
               <div className="flex gap-2">
-                <button 
+                <button
                   onClick={testConnections}
                   className="bg-blue-600 text-white px-2 py-1 rounded text-xs"
                 >
                   Test
                 </button>
-                <button 
+                <button
                   onClick={() => setDebugMode(false)}
                   className="bg-red-600 text-white px-2 py-1 rounded text-xs"
                 >
@@ -1091,7 +1093,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
           {/* Chat Window */}
           <div className="lg:col-span-3">
             <div className="flex flex-col h-[80vh] w-full max-w-full mx-auto border border-gray-200 rounded-2xl shadow-xl bg-white overflow-hidden">
-              
+
               {/* Header du chat avec indicateurs de statut */}
               <div className="relative flex items-center p-4 border-b border-gray-200">
                 {/* Indicateurs d'erreur */}
@@ -1210,7 +1212,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
                     </span>
                   </div>
                 ))}
-                
+
                 {/* Message si aucun message */}
                 {messages.length === 0 && (
                   <div className="flex items-center justify-center h-full">
@@ -1223,7 +1225,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
                     </div>
                   </div>
                 )}
-                
+
                 <div ref={chatEndRef} />
               </div>
 
@@ -1236,19 +1238,19 @@ export const Chats = ({ role, senderId, receiverId }) => {
                   onChange={handleFileChange}
                   accept="image/*,.pdf,.txt,.doc,.docx"
                 />
-                
+
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading || !isConnected}
-                  className={`text-xl transition-colors duration-200 ${uploading || !isConnected 
-                    ? 'text-gray-300 cursor-not-allowed' 
+                  className={`text-xl transition-colors duration-200 ${uploading || !isConnected
+                    ? 'text-gray-300 cursor-not-allowed'
                     : 'text-gray-500 hover:text-green-600'
-                  }`}
+                    }`}
                   title={uploading ? "Upload en cours..." : "Partager un fichier"}
                 >
                   {uploading ? '⏳' : '📎'}
                 </button>
-                
+
                 <input
                   type="text"
                   placeholder={isConnected ? "Tapez votre message..." : "Connexion en cours..."}
@@ -1257,7 +1259,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
                     setMessage(e.target.value);
                     handleTyping();
                   }}
-                  onKeyDown={(e) => { 
+                  onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
                       sendMessage();
@@ -1266,15 +1268,14 @@ export const Chats = ({ role, senderId, receiverId }) => {
                   disabled={!isConnected}
                   className={`flex-1 border-none rounded-full px-4 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 ${!isConnected ? 'cursor-not-allowed opacity-50' : ''}`}
                 />
-                
+
                 <button
                   onClick={sendMessage}
                   disabled={!message.trim() || !isConnected}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-xl transition-transform duration-200 ${
-                    !message.trim() || !isConnected 
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-xl transition-transform duration-200 ${!message.trim() || !isConnected
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:scale-105'
-                  }`}
+                    }`}
                   title={!isConnected ? "Connexion requise" : "Envoyer le message"}
                 >
                   {!isConnected ? '⏸️' : '➤'}

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+// const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
 export const Checkout = () => {
   const [cart, setCart] = useState([]);
@@ -27,11 +29,11 @@ export const Checkout = () => {
       setLoading(true);
       const response = await axios.get(`${API_URL}/cart`);
       setCart(response.data);
-      
+
       // Calculate total
       const totalAmount = response.data.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       setTotal(totalAmount);
-      
+
       setError(null);
     } catch (error) {
       console.error('Erreur lors du chargement du panier:', error);
@@ -42,10 +44,10 @@ export const Checkout = () => {
   };
 
   const checkout = async () => {
-  const res = await fetch("http://localhost:3000/transactions/checkout", { method: "POST" });
-  const data = await res.json();
-  console.log(data);
-};
+    const res = await fetch("http://localhost:3000/transactions/checkout", { method: "POST" });
+    const data = await res.json();
+    console.log(data);
+  };
 
   // Handle payment method change
   const handlePaymentMethodChange = (method) => {
@@ -71,10 +73,10 @@ export const Checkout = () => {
   // Validate payment details
   const validatePaymentDetails = () => {
     if (paymentMethod === 'card') {
-      return paymentDetails.cardNumber && 
-             paymentDetails.cardExpiry && 
-             paymentDetails.cardCVC && 
-             paymentDetails.cardName;
+      return paymentDetails.cardNumber &&
+        paymentDetails.cardExpiry &&
+        paymentDetails.cardCVC &&
+        paymentDetails.cardName;
     } else if (paymentMethod === 'paypal') {
       return paymentDetails.paypalEmail;
     } else if (paymentMethod === 'bank_transfer') {
@@ -121,11 +123,11 @@ export const Checkout = () => {
 
       // Process payment
       const paymentResponse = await axios.post(`${API_URL}/transactions/${transaction.transactionId}/process`);
-      
+
       if (paymentResponse.data.status === 'completed') {
         // Payment successful - clear cart
         await axios.delete(`${API_URL}/cart`);
-        
+
         // Redirect to success page
         alert('Paiement réussi! Votre commande a été traitée.');
         window.location.href = `/transaction/${transaction.transactionId}`;
@@ -178,9 +180,9 @@ export const Checkout = () => {
         <div className="space-y-4">
           {cart.map((item) => (
             <div key={item._id} className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 rounded-lg">
-              <img 
-                src={item.courseImage} 
-                alt={item.courseName} 
+              <img
+                src={item.courseImage}
+                alt={item.courseName}
                 className="w-full sm:w-20 h-20 object-cover rounded-lg"
               />
               <div className="flex-1">
@@ -199,13 +201,12 @@ export const Checkout = () => {
       {/* Payment Method Selection */}
       <div className="bg-white p-8 rounded-lg border border-gray-200 shadow-sm mb-8">
         <h2 className="text-2xl font-semibold text-gray-900 mb-6">Méthode de Paiement</h2>
-        
+
         <div className="space-y-4">
-          <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-            paymentMethod === 'card' 
-              ? 'border-blue-500 bg-blue-50' 
+          <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${paymentMethod === 'card'
+              ? 'border-blue-500 bg-blue-50'
               : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-          }`}>
+            }`}>
             <input
               type="radio"
               value="card"
@@ -216,11 +217,10 @@ export const Checkout = () => {
             <span className="font-medium text-gray-800">Carte Bancaire</span>
           </label>
 
-          <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-            paymentMethod === 'paypal' 
-              ? 'border-blue-500 bg-blue-50' 
+          <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${paymentMethod === 'paypal'
+              ? 'border-blue-500 bg-blue-50'
               : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-          }`}>
+            }`}>
             <input
               type="radio"
               value="paypal"
@@ -231,11 +231,10 @@ export const Checkout = () => {
             <span className="font-medium text-gray-800">PayPal</span>
           </label>
 
-          <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-            paymentMethod === 'bank_transfer' 
-              ? 'border-blue-500 bg-blue-50' 
+          <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${paymentMethod === 'bank_transfer'
+              ? 'border-blue-500 bg-blue-50'
               : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-          }`}>
+            }`}>
             <input
               type="radio"
               value="bank_transfer"
@@ -325,14 +324,14 @@ export const Checkout = () => {
 
       {/* Checkout Actions */}
       <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <button 
+        <button
           onClick={() => window.history.back()}
           className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
         >
           Retour au Panier
         </button>
-        
-        <button 
+
+        <button
           // onClick={processCheckout}
           onClick={checkout}
           disabled={processingPayment || !validatePaymentDetails()}

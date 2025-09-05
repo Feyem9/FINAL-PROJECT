@@ -110,8 +110,8 @@ function SidebarLink({ to, icon, label }) {
     <Link
       to={to}
       className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all font-medium ${isActive
-          ? 'bg-lime-600 text-white hover:bg-lime-100 hover:text-lime-950'
-          : 'text-lime-950 hover:bg-white'
+        ? 'bg-lime-600 text-white hover:bg-lime-100 hover:text-lime-950'
+        : 'text-lime-950 hover:bg-white'
         }`}
     >
       <span className="text-lg">{icon}</span>

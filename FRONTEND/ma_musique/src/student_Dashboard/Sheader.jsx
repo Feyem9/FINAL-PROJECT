@@ -3,6 +3,8 @@ import React from 'react';
 export const Header = () => {
   const id = localStorage.getItem('userId');
   // console.log(`User ID received: ${id}`);
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
   const API_URL = `http://localhost:3000/students/${id}`;
 
   const student = JSON.parse(localStorage.getItem('student'));

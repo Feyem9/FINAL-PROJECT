@@ -266,14 +266,14 @@ export const Tcalendar = () => {
                                     key={index}
                                     onClick={() => day && setSelectedDate(day)}
                                     className={`min-h-16 p-2 text-center cursor-pointer rounded-lg transition-colors ${!day
-                                            ? ''
-                                            : formatDate(day) === formatDate(new Date())
-                                                ? 'bg-orange-500 text-white font-bold'
-                                                : formatDate(day) === formatDate(selectedDate)
-                                                    ? 'bg-orange-100 text-orange-800 font-bold'
-                                                    : hasEvents(day)
-                                                        ? 'bg-blue-50 text-blue-700 font-medium'
-                                                        : 'hover:bg-gray-100'
+                                        ? ''
+                                        : formatDate(day) === formatDate(new Date())
+                                            ? 'bg-orange-500 text-white font-bold'
+                                            : formatDate(day) === formatDate(selectedDate)
+                                                ? 'bg-orange-100 text-orange-800 font-bold'
+                                                : hasEvents(day)
+                                                    ? 'bg-blue-50 text-blue-700 font-medium'
+                                                    : 'hover:bg-gray-100'
                                         }`}
                                 >
                                     {day ? day.getDate() : ''}

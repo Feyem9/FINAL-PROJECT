@@ -1,4 +1,4 @@
-    import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,7 +7,9 @@ export default function Course() {
     const { id } = useParams(); // si `id` existe → édition
 
     // Define databaseUri in a scope accessible to all functions
-    const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI || 'http://localhost:3000';
+    // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI || 'http://localhost:3000';
+    const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -285,8 +287,8 @@ export default function Course() {
     // Function to render media based on type
     const renderMedia = (course) => {
         // Construire l'URL correcte du fichier
-        const fileUrl = course.fileUrl ? 
-            (course.fileUrl.startsWith('http') ? course.fileUrl : `${databaseUri}${course.fileUrl}`) : 
+        const fileUrl = course.fileUrl ?
+            (course.fileUrl.startsWith('http') ? course.fileUrl : `${databaseUri}${course.fileUrl}`) :
             null;
 
         console.log('Course:', course);
@@ -319,7 +321,7 @@ export default function Course() {
                             Your browser does not support the video tag.
                         </video>
                     </div>
-                    
+
                     {/* Bouton de téléchargement de secours */}
                     <div className="flex justify-center">
                         <a
@@ -351,7 +353,7 @@ export default function Course() {
                             }}
                         ></iframe>
                     </div>
-                    
+
                     {/* Boutons d'action pour le PDF */}
                     <div className="flex justify-center space-x-4">
                         <a
@@ -390,7 +392,7 @@ export default function Course() {
                             Your browser does not support the audio element.
                         </audio>
                     </div>
-                    
+
                     {/* Bouton de téléchargement */}
                     <div className="flex justify-center">
                         <a
@@ -598,7 +600,7 @@ export default function Course() {
                             <option value="intermediate">Intermediate</option>
                             <option value="advanced">Advanced</option>
                         </select>
-                        <select 
+                        <select
                             value={categoryFilter}
                             onChange={e => setCategoryFilter(e.target.value)}
                             className="w-full md:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -692,7 +694,7 @@ export default function Course() {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
                                         </button>
-                                        <button 
+                                        <button
                                             className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
                                             onClick={() => {
                                                 setSelectedCourse(course);

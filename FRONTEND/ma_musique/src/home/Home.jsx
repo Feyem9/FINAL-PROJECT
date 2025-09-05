@@ -13,20 +13,21 @@ import Footer from './Footer';
 const HomePage = () => {
   return (
     <div>
-      <Navbar/>
-      <Typography variant="h4" sx={{ fontWeight: "bold", color: "#43A047", mb: 2  , textAlign:"center",mt:4 , }}>
-          Welcome to Museschool!
-        </Typography>
-      <HomeWelcome/>
-      <HomeCourseSlide/>
-      <HomeTeacherSlide/>
-      <HomeBlog/>
-      <HomeAnonce/>
-      <Homepricing/>
-      <Footer/>
+      <Navbar />
+      <Typography variant="h4" sx={{ fontWeight: "bold", color: "#43A047", mb: 2, textAlign: "center", mt: 4, }}>
+        Welcome to Museschool!
+      </Typography>
+      <HomeWelcome />
+      <HomeCourseSlide />
+      <HomeTeacherSlide />
+      <HomeBlog />
+      <HomeAnonce />
+      <Homepricing />
+      <Footer />
 
     </div>
   );
 };
 
 export default HomePage;
+

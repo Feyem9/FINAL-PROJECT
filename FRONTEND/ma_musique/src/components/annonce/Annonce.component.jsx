@@ -13,20 +13,22 @@ export const Annonce = () => {
   const [typeFilter, setTypeFilter] = useState('');
 
   // Formulaire de création
-  const [form, setForm] = useState({ 
-    title: '', 
-    type: 'event', 
-    description: '', 
-    date: new Date().toISOString().slice(0, 16), 
-    link: '', 
-    image: null, 
-    location: '' 
+  const [form, setForm] = useState({
+    title: '',
+    type: 'event',
+    description: '',
+    date: new Date().toISOString().slice(0, 16),
+    link: '',
+    image: null,
+    location: ''
   });
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
 
   // Utilise la variable d'environnement pour l'URL du backend
-  const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+  // const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
   // Recherche et pagination
   useEffect(() => {
@@ -92,14 +94,14 @@ export const Annonce = () => {
 
       const data = res.data;
       setAnnonces(prev => [data, ...prev]);
-      setForm({ 
-        title: '', 
-        type: 'event', 
-        description: '', 
-        date: new Date().toISOString().slice(0, 16), 
-        link: '', 
-        image: null, 
-        location: '' 
+      setForm({
+        title: '',
+        type: 'event',
+        description: '',
+        date: new Date().toISOString().slice(0, 16),
+        link: '',
+        image: null,
+        location: ''
       });
     } catch (err) {
       if (err.response?.status === 403) {
@@ -111,7 +113,7 @@ export const Annonce = () => {
 
     setCreating(false);
   };
-  
+
   return (
     <div>
       <Navbar />
@@ -149,7 +151,7 @@ export const Annonce = () => {
                     const annonceDate = new Date(a.date);
                     const now = new Date();
                     return annonceDate.getMonth() === now.getMonth() &&
-                           annonceDate.getFullYear() === now.getFullYear();
+                      annonceDate.getFullYear() === now.getFullYear();
                   }).length}</p>
                 </div>
                 <div className="p-3 bg-green-100 rounded-full">
@@ -329,7 +331,7 @@ export const Annonce = () => {
               />
             </div>
             <div className="flex flex-wrap gap-4 w-full md:w-auto">
-              <select 
+              <select
                 className="w-full md:w-auto px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
@@ -383,11 +385,10 @@ export const Annonce = () => {
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-3">
                       <h2 className="font-bold text-gray-800 text-lg line-clamp-1">{annonce.title}</h2>
-                      <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-                        annonce.type === 'event' ? 'bg-blue-100 text-blue-800' : 
-                        annonce.type === 'training' ? 'bg-green-100 text-green-800' : 
-                        'bg-purple-100 text-purple-800'
-                      }`}>
+                      <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${annonce.type === 'event' ? 'bg-blue-100 text-blue-800' :
+                          annonce.type === 'training' ? 'bg-green-100 text-green-800' :
+                            'bg-purple-100 text-purple-800'
+                        }`}>
                         {annonce.type.charAt(0).toUpperCase() + annonce.type.slice(1)}
                       </span>
                     </div>

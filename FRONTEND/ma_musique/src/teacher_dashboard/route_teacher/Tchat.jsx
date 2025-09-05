@@ -4,7 +4,9 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 export const Tchat = () => {
-  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
   const [students, setStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState('');
@@ -18,10 +20,10 @@ export const Tchat = () => {
     const initializeComponent = async () => {
       try {
         setLoading(true);
-        
+
         // Récupération des informations du professeur
         const storedTeacher = JSON.parse(localStorage.getItem('teacher'));
-        
+
         if (!storedTeacher || !storedTeacher._id) {
           setError('Informations du professeur introuvables. Veuillez vous reconnecter.');
           toast.error('Session expirée. Veuillez vous reconnecter.');
@@ -34,7 +36,7 @@ export const Tchat = () => {
 
         // Récupération de la liste des étudiants
         await fetchStudents();
-        
+
       } catch (err) {
         console.error('Erreur lors de l\'initialisation:', err);
         setError('Erreur lors du chargement des données');
@@ -52,8 +54,8 @@ export const Tchat = () => {
       console.log('Récupération des étudiants...');
       const res = await axios.get(`${databaseUri}/students/all`);
       console.log(res);
-      
-      
+
+
       if (res.data && Array.isArray(res.data)) {
         console.log('Étudiants récupérés:', res.data.length);
         setStudents(res.data);
@@ -66,7 +68,7 @@ export const Tchat = () => {
     } catch (err) {
       console.error('Erreur lors du chargement des étudiants:', err);
       setError('Impossible de charger la liste des étudiants');
-      
+
       if (err.response?.status === 404) {
         toast.error('Service étudiants non disponible');
       } else if (err.response?.status >= 500) {
@@ -80,7 +82,7 @@ export const Tchat = () => {
   const handleSelectStudent = (e) => {
     const studentId = e.target.value;
     setSelectedStudentId(studentId);
-    
+
     if (studentId) {
       const selectedStudent = students.find(s => s._id === studentId);
       console.log('Étudiant sélectionné:', selectedStudent);
@@ -131,7 +133,7 @@ export const Tchat = () => {
           </div>
           <h2 className="text-xl font-bold text-gray-800 mb-2">Erreur de connexion</h2>
           <p className="text-gray-600 mb-4">{error}</p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -145,7 +147,7 @@ export const Tchat = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-7xl mx-auto">
-        
+
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -157,7 +159,7 @@ export const Tchat = () => {
                 Bienvenue, {teacher?.name || 'Professeur'} - Gérez vos conversations avec les étudiants
               </p>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <div className="text-sm text-gray-500">
                 <span className="font-medium">{students.length}</span> étudiant{students.length > 1 ? 's' : ''}
@@ -181,7 +183,7 @@ export const Tchat = () => {
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Sélectionner un étudiant
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {/* Barre de recherche */}
             <div className="relative">
@@ -299,7 +301,7 @@ export const Tchat = () => {
                     <p className="text-sm text-gray-600">En ligne</p>
                   </div>
                 </div>
-                
+
                 <button
                   onClick={() => setSelectedStudentId('')}
                   className="text-gray-500 hover:text-gray-700 transition-colors"

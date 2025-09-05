@@ -29,7 +29,9 @@ import {
 export const Dashboard = () => {
 
   // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
-  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
   const [userType, setUserType] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");

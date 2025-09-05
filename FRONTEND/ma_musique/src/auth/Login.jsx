@@ -6,7 +6,9 @@ import { useAuth0 } from '@auth0/auth0-react';
 const Login = () => {
 
   // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI || 'http://localhost:3000';
-  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
   // Par sécurité :
   // const databaseUri = import.meta.env.REACT_APP_BACKEND_ONLINE_URI || process.env.REACT_APP_BACKEND_ONLINE_URI  || 'http://localhost:3000';

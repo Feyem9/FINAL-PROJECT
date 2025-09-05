@@ -3,7 +3,9 @@ import axios from 'axios';
 
 export const Snotification = () => {
   // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI || 'http://localhost:3000';
-  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
   const [notifications, setNotifications] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');

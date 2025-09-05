@@ -80,7 +80,9 @@ import axios from 'axios';
 
 export const Notification = () => {
     // Les appels d'API et la logique d'état restent inchangés
-    const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+    // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+    const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
     const [allNotifications, setAllNotifications] = useState([]);
     const [adminNotifications, setAdminNotifications] = useState([]);

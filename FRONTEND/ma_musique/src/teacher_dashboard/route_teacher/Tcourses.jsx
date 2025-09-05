@@ -25,7 +25,9 @@ export const Tcourses = () => {
   });
 
   // Define databaseUri
-  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI || 'http://localhost:3000';
+  // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI || 'http://localhost:3000';
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
   // Get user data
   const teacherData = JSON.parse(localStorage.getItem('teacher') || '{}');
@@ -131,7 +133,7 @@ export const Tcourses = () => {
     formData.append('category', category);
     formData.append('user_id', currentUserId);
     formData.append('role', userRole);
-    
+
     // Add teacher_id if user is admin
     if (userRole === 'admin' && teacher_id) {
       formData.append('teacher_id', teacher_id);
@@ -235,11 +237,11 @@ export const Tcourses = () => {
     const matchesFilter = filter === 'All' || course.level === filter;
     const matchesCategory = !categoryFilter || course.category === categoryFilter;
     const matchesType = !typeFilter || course.media === typeFilter;
-    
+
     const matchesTab = activeTab === 'all' ||
       (activeTab === 'published' && course.status !== 'inactive' && (course.user_id === currentUserId || course.teacher_id === currentUserId)) ||
       (activeTab === 'draft' && course.status === 'inactive' && (course.user_id === currentUserId || course.teacher_id === currentUserId));
-    
+
     return matchesSearch && matchesFilter && matchesCategory && matchesType && matchesTab;
   });
 
@@ -459,12 +461,12 @@ export const Tcourses = () => {
   // Fonction pour vérifier si le formulaire est valide
   const isFormValid = () => {
     const { title, description, amount, level, media, category } = newCourse;
-    return title.trim() && 
-           description.trim() && 
-           amount && 
-           level && 
-           media && 
-           category;
+    return title.trim() &&
+      description.trim() &&
+      amount &&
+      level &&
+      media &&
+      category;
   };
 
   return (

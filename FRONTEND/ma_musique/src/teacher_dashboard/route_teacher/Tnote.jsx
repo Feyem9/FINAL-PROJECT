@@ -12,35 +12,37 @@ export const Tnote = () => {
   const [editingNote, setEditingNote] = useState(null);
 
   // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI || 'http://localhost:3000';
-  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
   const teacherData = JSON.parse(localStorage.getItem('teacher'));
   const teacherId = teacherData?._id;
 
-const fetchNotes = async () => {
-  try {
-    console.log('Fetching notes for teacher:', teacherId);
-    setLoading(true);
+  const fetchNotes = async () => {
+    try {
+      console.log('Fetching notes for teacher:', teacherId);
+      setLoading(true);
 
-    const response = await axios.get(`${databaseUri}/notes/all`, {
-      headers: {
-        'x-author-id': teacherId,
-      },
-    });
+      const response = await axios.get(`${databaseUri}/notes/all`, {
+        headers: {
+          'x-author-id': teacherId,
+        },
+      });
 
-    // axios ne passe ici que si status = 2xx
-    setNotes(response.data || []);
-  } catch (err) {
-    if (err.response?.status === 404) {
-      setNotes([]); // pas de notes trouvées
-    } else {
-      setError('Failed to fetch notes.');
-      console.error(err);
+      // axios ne passe ici que si status = 2xx
+      setNotes(response.data || []);
+    } catch (err) {
+      if (err.response?.status === 404) {
+        setNotes([]); // pas de notes trouvées
+      } else {
+        setError('Failed to fetch notes.');
+        console.error(err);
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     if (teacherId) {

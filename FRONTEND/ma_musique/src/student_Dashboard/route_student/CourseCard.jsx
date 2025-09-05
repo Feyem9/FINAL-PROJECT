@@ -16,3 +16,4 @@ const CourseCard = ({ title, progress }) => {
 };
 
 export default CourseCard;
+

@@ -3,7 +3,9 @@ import axios from "axios";
 import { Navbar } from '../home/Navbar';
 import Footer from '../home/Footer';
 
-const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+// const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
 export const Cart = () => {
   const [cart, setCart] = useState([]);
@@ -152,36 +154,36 @@ export const Cart = () => {
   };
 
   const startPayment = async () => {
-  try {
-    const response = await fetch("http://localhost:3001/transaction/checkout", {
-      method: "POST",
-    });
-    const data = await response.json();
+    try {
+      const response = await fetch("http://localhost:3001/transaction/checkout", {
+        method: "POST",
+      });
+      const data = await response.json();
 
-    if (data.redirectUrl) {
-      window.location.href = data.redirectUrl; // Redirection PayUnit
-    } else {
-      console.error("Pas de lien de redirection reçu !");
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl; // Redirection PayUnit
+      } else {
+        console.error("Pas de lien de redirection reçu !");
+      }
+    } catch (err) {
+      console.error("Erreur lors du paiement :", err);
     }
-  } catch (err) {
-    console.error("Erreur lors du paiement :", err);
-  }
-};
-  
+  };
+
   return (
     <div>
       <Navbar />
       <div className="max-w-6xl mx-auto p-8">
-    {/* Header Section */}
-          <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Panier d'Achat</h1>
-            </div>
-          </header>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8"></h1>
+        {/* Header Section */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Panier d'Achat</h1>
+          </div>
+        </header>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8"></h1>
 
-      {/* Add Item Form */}
-      {/* <div className="bg-gray-50 p-8 rounded-lg mb-8">
+        {/* Add Item Form */}
+        {/* <div className="bg-gray-50 p-8 rounded-lg mb-8">
         <h3 className="text-xl font-semibold text-gray-800 mb-6">Ajouter un cours</h3>
         <div className="space-y-4">
           <input
@@ -239,91 +241,91 @@ export const Cart = () => {
         </div>
       </div> */}
 
-      {/* Cart Items */}
-      <div className="mb-8">
-        {cart.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <p className="text-gray-600 text-lg">Votre panier est vide</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {cart.map((item) => (
-              <div key={item._id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
-                <div className="flex flex-col md:flex-row gap-6">
-                  <img
-                    src={item.courseImage}
-                    alt={item.courseName}
-                    className="w-full md:w-32 h-32 object-cover rounded-lg"
-                  />
-                  <div className="flex-1">
-                    <h4 className="text-xl font-semibold text-gray-900 mb-2">{item.courseName}</h4>
-                    <p className="text-gray-600 mb-4">{item.courseDescription}</p>
+        {/* Cart Items */}
+        <div className="mb-8">
+          {cart.length === 0 ? (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <p className="text-gray-600 text-lg">Votre panier est vide</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {cart.map((item) => (
+                <div key={item._id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <img
+                      src={item.courseImage}
+                      alt={item.courseName}
+                      className="w-full md:w-32 h-32 object-cover rounded-lg"
+                    />
+                    <div className="flex-1">
+                      <h4 className="text-xl font-semibold text-gray-900 mb-2">{item.courseName}</h4>
+                      <p className="text-gray-600 mb-4">{item.courseDescription}</p>
 
-                    <div className="flex items-center gap-4 mb-4">
-                      <button
-                        onClick={() => updateCartItems(item._id, item.quantity - 1)}
-                        disabled={item.quantity <= 1}
-                        className="w-8 h-8 flex items-center justify-center bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg transition-colors duration-200"
-                      >
-                        -
-                      </button>
-                      <span className="font-medium text-gray-800 min-w-max">Quantité: {item.quantity}</span>
-                      <button
-                        onClick={() => updateCartItems(item._id, item.quantity + 1)}
-                        className="w-8 h-8 flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
-                      >
-                        +
-                      </button>
-                    </div>
+                      <div className="flex items-center gap-4 mb-4">
+                        <button
+                          onClick={() => updateCartItems(item._id, item.quantity - 1)}
+                          disabled={item.quantity <= 1}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg transition-colors duration-200"
+                        >
+                          -
+                        </button>
+                        <span className="font-medium text-gray-800 min-w-max">Quantité: {item.quantity}</span>
+                        <button
+                          onClick={() => updateCartItems(item._id, item.quantity + 1)}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
+                        >
+                          +
+                        </button>
+                      </div>
 
-                    <div className="flex justify-between items-center">
-                      <p className="text-lg font-bold text-green-600">
-                        Prix: {item.price}€ × {item.quantity} = {(item.price * item.quantity).toFixed(2)}€
-                      </p>
-                      <button
-                        onClick={() => removeCartItem(item._id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
-                      >
-                        Supprimer
-                      </button>
+                      <div className="flex justify-between items-center">
+                        <p className="text-lg font-bold text-green-600">
+                          Prix: {item.price}€ × {item.quantity} = {(item.price * item.quantity).toFixed(2)}€
+                        </p>
+                        <button
+                          onClick={() => removeCartItem(item._id)}
+                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Cart Summary */}
+        {cart.length > 0 && (
+          <div className="bg-gray-50 p-8 rounded-lg border-l-4 border-blue-500">
+            <h3 className="text-2xl font-semibold text-gray-900 mb-4">Résumé du Panier</h3>
+            <div className="space-y-2 mb-6">
+              <p className="text-gray-700">Nombre d'articles: <span className="font-semibold">{cart.reduce((sum, item) => sum + item.quantity, 0)}</span></p>
+              <p className="text-2xl font-bold text-green-600">Total: {total.toFixed(2)}€</p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={removeCartItems}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
+              >
+                Vider le Panier
+              </button>
+              <button
+                // onClick={startPayment}
+                onClick={checkout}
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors duration-200"
+              >
+                Procéder au Paiement
+              </button>
+            </div>
           </div>
         )}
+
       </div>
-
-      {/* Cart Summary */}
-      {cart.length > 0 && (
-        <div className="bg-gray-50 p-8 rounded-lg border-l-4 border-blue-500">
-          <h3 className="text-2xl font-semibold text-gray-900 mb-4">Résumé du Panier</h3>
-          <div className="space-y-2 mb-6">
-            <p className="text-gray-700">Nombre d'articles: <span className="font-semibold">{cart.reduce((sum, item) => sum + item.quantity, 0)}</span></p>
-            <p className="text-2xl font-bold text-green-600">Total: {total.toFixed(2)}€</p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button
-              onClick={removeCartItems}
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
-            >
-              Vider le Panier
-            </button>
-            <button
-              // onClick={startPayment}
-              onClick={checkout}
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors duration-200"
-            >
-              Procéder au Paiement
-            </button>
-          </div>
-        </div>
-      )}
-     
-    </div>
-     <Footer />
+      <Footer />
     </div>
   );
 };

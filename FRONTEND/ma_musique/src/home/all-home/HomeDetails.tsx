@@ -12,21 +12,21 @@ export const HomeDetails = () => {
         Welcome to Museschool!
       </Typography> */}
       <Typography variant="h5" sx={{ color: "#333", fontWeight: "medium", mb: 2 }}>
-        Discover the World of Music 🎵 
+        Discover the World of Music 🎵
         Take your playing to the next level
         Interactive music lessons led by the world’s top professional musicians.
       </Typography>
       <Typography variant="body1" sx={{ color: "#555" }}>
         Learn from expert teachers and explore curated courses designed for all levels.
       </Typography>
-      <Button 
-        component={NavLink} 
-        to="/courses" 
-        variant="contained" 
-        sx={{ 
-          mt: 2, 
-          bgcolor: "#FF9800", 
-          color: "white", 
+      <Button
+        component={NavLink}
+        to="/courses"
+        variant="contained"
+        sx={{
+          mt: 2,
+          bgcolor: "#FF9800",
+          color: "white",
           fontSize: "1.2rem",
           fontWeight: "bold",
           px: 4,
@@ -42,3 +42,4 @@ export const HomeDetails = () => {
     </Box>
   );
 };
+

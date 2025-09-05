@@ -43,7 +43,9 @@ export const Resource = () => {
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+  // const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+
 
   // Fetch resources depuis backend
   useEffect(() => {
@@ -92,7 +94,7 @@ export const Resource = () => {
     formData.append('url', form.url);
     formData.append('level', form.level);
     formData.append('instrument', form.instrument);
-    
+
     if (form.image) {
       formData.append('image', form.image);
     }
@@ -410,7 +412,7 @@ export const Resource = () => {
                 <MenuItem value="article">Article</MenuItem>
               </Select>
             </FormControl>
-            
+
             <FormControl className="w-full md:w-auto">
               <InputLabel>Niveau</InputLabel>
               <Select
@@ -424,7 +426,7 @@ export const Resource = () => {
                 <MenuItem value="advanced">Avancé</MenuItem>
               </Select>
             </FormControl>
-            
+
             <FormControl className="w-full md:w-auto">
               <InputLabel>Trier par</InputLabel>
               <Select
@@ -485,47 +487,45 @@ export const Resource = () => {
                       <Typography variant="h6" className="font-bold text-gray-800 text-lg line-clamp-2">
                         {resource.title}
                       </Typography>
-                      <Chip 
-                        label={resource.type === 'sheet_music' ? 'Partition' : 
-                               resource.type === 'video' ? 'Vidéo' : 
-                               resource.type === 'audio' ? 'Audio' : 'Article'} 
-                        size="small" 
-                        className={`${
-                          resource.type === 'sheet_music' ? 'bg-blue-100 text-blue-800' : 
-                          resource.type === 'video' ? 'bg-red-100 text-red-800' : 
-                          resource.type === 'audio' ? 'bg-green-100 text-green-800' : 
-                          'bg-purple-100 text-purple-800'
-                        }`} 
+                      <Chip
+                        label={resource.type === 'sheet_music' ? 'Partition' :
+                          resource.type === 'video' ? 'Vidéo' :
+                            resource.type === 'audio' ? 'Audio' : 'Article'}
+                        size="small"
+                        className={`${resource.type === 'sheet_music' ? 'bg-blue-100 text-blue-800' :
+                            resource.type === 'video' ? 'bg-red-100 text-red-800' :
+                              resource.type === 'audio' ? 'bg-green-100 text-green-800' :
+                                'bg-purple-100 text-purple-800'
+                          }`}
                       />
                     </div>
-                    
+
                     <Typography variant="body2" color="text.secondary" className="text-gray-600 mb-3 line-clamp-3 flex-grow">
                       {resource.description}
                     </Typography>
-                    
+
                     <div className="flex items-center justify-between mb-3">
-                      <Chip 
-                        label={resource.instrument} 
-                        size="small" 
-                        className="bg-indigo-100 text-indigo-800" 
+                      <Chip
+                        label={resource.instrument}
+                        size="small"
+                        className="bg-indigo-100 text-indigo-800"
                       />
-                      <Chip 
-                        label={resource.level === 'beginner' ? 'Débutant' : 
-                               resource.level === 'intermediate' ? 'Intermédiaire' : 'Avancé'} 
-                        size="small" 
-                        className={`${
-                          resource.level === 'beginner' ? 'bg-green-100 text-green-800' : 
-                          resource.level === 'intermediate' ? 'bg-yellow-100 text-yellow-800' : 
-                          'bg-red-100 text-red-800'
-                        }`} 
+                      <Chip
+                        label={resource.level === 'beginner' ? 'Débutant' :
+                          resource.level === 'intermediate' ? 'Intermédiaire' : 'Avancé'}
+                        size="small"
+                        className={`${resource.level === 'beginner' ? 'bg-green-100 text-green-800' :
+                            resource.level === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
+                          }`}
                       />
                     </div>
-                    
+
                     <div className="mt-auto">
-                      <Button 
-                        variant="outlined" 
-                        size="small" 
-                        href={resource.url} 
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        href={resource.url}
                         target="_blank"
                         className="w-full mb-2"
                       >
