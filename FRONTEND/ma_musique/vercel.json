@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd FRONTEND/ma_musique && npm install",
-  "buildCommand": "cd FRONTEND/ma_musique && npm run build",
+  "installCommand": "FRONTEND/ma_musique && npm install",
+  "buildCommand": "FRONTEND/ma_musique && npm run build",
   "outputDirectory": "FRONTEND/ma_musique/dist",
   "rewrites": [
     { "source": "/(.*)", "destination": "/" }
