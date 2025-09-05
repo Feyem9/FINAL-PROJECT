@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Navbar } from '../home/Navbar';
+import Footer from '../home/Footer';
 
 const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
 
@@ -167,8 +169,16 @@ export const Cart = () => {
 };
   
   return (
-    <div className="max-w-6xl mx-auto p-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Panier d'Achat</h1>
+    <div>
+      <Navbar />
+      <div className="max-w-6xl mx-auto p-8">
+    {/* Header Section */}
+          <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">Panier d'Achat</h1>
+            </div>
+          </header>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8"></h1>
 
       {/* Add Item Form */}
       {/* <div className="bg-gray-50 p-8 rounded-lg mb-8">
@@ -311,6 +321,9 @@ export const Cart = () => {
           </div>
         </div>
       )}
+     
+    </div>
+     <Footer />
     </div>
   );
 };
