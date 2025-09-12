@@ -3,7 +3,7 @@ import axios from "axios";
 import { Navbar } from "../home/Navbar";
 import Footer from "../home/Footer";
 
-// const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
+const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
 const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
 
 
@@ -136,6 +136,11 @@ const updateCartItems = (itemId, newQuantity) => {
     );
     setTotal(totalAmount);
   };
+
+  useEffect(() => {
+  calculateTotal(cart);
+}, [cart]);
+
 
   // Proceed to checkout
   const proceedToCheckout = () => {
