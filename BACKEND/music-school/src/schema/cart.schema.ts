@@ -10,28 +10,23 @@ export class Cart {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   userId: User;
 
-  // Tableau de cours dans le panier
-  @Prop({
-    type: [
-      {
-        courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
-        courseName: { type: String, required: true },
-        courseImage: { type: String, required: true },
-        courseDescription: { type: String, required: true },
-        quantity: { type: Number, required: true, default: 1 },
-        price: { type: Number, required: true },
-      }
-    ],
-    default: [],
-  })
-  courses: {
-    courseId: string;
-    courseName: string;
-    courseImage: string;
-    courseDescription: string;
-    quantity: number;
-    price: number;
-  }[];
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true })
+  courseId: string;
+
+  @Prop({ type: String, required: true })
+  courseName: string;
+
+  @Prop({ type: String, required: true })
+  courseImage: string;
+
+  @Prop({ type: String, required: true })
+  courseDescription: string;
+
+  @Prop({ type: Number, required: true, default: 1 })
+  quantity: number;
+
+  @Prop({ type: Number, required: true })
+  price: number;
 }
 
 export const CartSchema = SchemaFactory.createForClass(Cart);

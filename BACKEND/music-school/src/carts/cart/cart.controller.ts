@@ -5,14 +5,12 @@ import { User } from 'src/interfaces/user.interface';
 
 interface CartResponse {
   userId: string | User;  // accepte un id ou un objet User
-  courses: {
-    courseId: string;
-    courseName: string;
-    courseImage: string;
-    courseDescription: string;
-    quantity: number;
-    price: number;
-  }[];
+  courseId: string;
+  courseName: string;
+  courseImage: string;
+  courseDescription: string;
+  quantity: number;
+  price: number;
 }
 @Controller('cart')
 export class CartController {

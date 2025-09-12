@@ -2,6 +2,11 @@ import { IsString, IsNumber, IsNotEmpty } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CartDto {
+  @ApiProperty({ description: 'The ID of the user', example: 'user123' })
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
+
   @ApiProperty({ description: 'The ID of the course', example: '12345' })
   @IsString()
   @IsNotEmpty()

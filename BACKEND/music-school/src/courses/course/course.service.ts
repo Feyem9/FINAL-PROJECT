@@ -1,4 +1,11 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CourseDto } from '../../DTO/course.dto';
@@ -14,20 +21,22 @@ import { log } from 'util';
 @Injectable()
 export class CourseService {
   constructor(
-    @InjectModel(Course.name) private readonly courseModel: Model<courseDocument>,
+    @InjectModel(Course.name)
+    private readonly courseModel: Model<courseDocument>,
     @InjectModel('User') private readonly userModel: Model<User>,
     @InjectModel('Teacher') private readonly teacherModel: Model<User>, // Assurez-vous que le modèle Teacher est correctement importé
     @InjectModel('Admin') private readonly adminModel: Model<User>, // Assurez-vous que le modèle Admin est correctement importé
     @InjectModel('Cart') private readonly cartModel: Model<any>, // Modèle pour le panier
-    private readonly httpService: HttpService
-  ) { }
+    private readonly httpService: HttpService,
+  ) {}
 
   async createCourse(
     courseDto: CourseDto,
     mediaFile?: Express.Multer.File,
     imageFile?: Express.Multer.File,
   ): Promise<Course> {
-    const { title, description, amount, category, level, user_id, role } = courseDto;
+    const { title, description, amount, category, level, user_id, role } =
+      courseDto;
 
     // Vérifier que l'user existe
     const user = await this.getUserByRole(user_id, role);
@@ -35,10 +44,11 @@ export class CourseService {
 
     if (!user) throw new BadRequestException('Utilisateur inexistant.');
 
-
     // Vérifier son rôle
     if (role !== 'teacher' && role !== 'admin') {
-      throw new ForbiddenException('Seuls les enseignants ou administrateurs peuvent créer un cours.');
+      throw new ForbiddenException(
+        'Seuls les enseignants ou administrateurs peuvent créer un cours.',
+      );
     }
 
     // Préparation des fichiers
@@ -62,7 +72,6 @@ export class CourseService {
     return newCourse.save();
   }
 
-
   async getUserByRole(user_id: string, role: 'teacher' | 'admin') {
     let user;
     // Vérifie le rôle et récupère l'utilisateur approprié
@@ -76,7 +85,6 @@ export class CourseService {
 
     return user;
   }
-
 
   async getAllCourses(): Promise<Course[]> {
     return this.courseModel.find().exec();
@@ -116,7 +124,9 @@ export class CourseService {
     if (mediaFile) updateData.media = `/uploads/${mediaFile.filename}`;
     if (imageFile) updateData.image = `/uploads/${imageFile.filename}`;
 
-    const updatedCourse = await this.courseModel.findByIdAndUpdate(courseId, updateData, { new: true }).exec();
+    const updatedCourse = await this.courseModel
+      .findByIdAndUpdate(courseId, updateData, { new: true })
+      .exec();
     if (!updatedCourse) {
       throw new NotFoundException(`Course with ID ${courseId} not found`);
     }
@@ -125,7 +135,9 @@ export class CourseService {
   }
 
   async deleteCourse(courseId: string): Promise<Course> {
-    const deletedCourse = await this.courseModel.findByIdAndDelete(courseId).exec();
+    const deletedCourse = await this.courseModel
+      .findByIdAndDelete(courseId)
+      .exec();
     if (!deletedCourse) {
       throw new NotFoundException(`Course with ID ${courseId} not found`);
     }
@@ -142,7 +154,9 @@ export class CourseService {
     return deletedCourse;
   }
 
-  async uploadMedia(file: Express.Multer.File): Promise<{ filename: string; path: string }> {
+  async uploadMedia(
+    file: Express.Multer.File,
+  ): Promise<{ filename: string; path: string }> {
     if (!file) {
       throw new NotFoundException('No file provided');
     }
@@ -159,111 +173,88 @@ export class CourseService {
     const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoCategoryId=27&q=${encodeURIComponent(query)}&key=${API_KEY}&maxResults=10`;
     console.log(`YouTube API URL: ${url}`);
 
-
     try {
       const response = await this.httpService.axiosRef.get(url);
-      console.log(`YouTube API Response: ${JSON.stringify(response.data.items)}`);
+      console.log(
+        `YouTube API Response: ${JSON.stringify(response.data.items)}`,
+      );
 
-      return response.data.items.map(item => ({
+      return response.data.items.map((item) => ({
         title: item.snippet.title,
         description: item.snippet.description,
         thumbnail: item.snippet.thumbnails.default.url,
-        videoId: item.id.videoId
+        videoId: item.id.videoId,
       }));
-
     } catch (error) {
       throw new Error('Erreur lors de la récupération des vidéos YouTube');
     }
   }
 
-
   async addToCart(
-  courseId: string,
-  userId: string,
-  title: string,
-  description: string,
-  image: string,
-  amount: number,
-  quantity: number = 1
-): Promise<any> {
-  try {
-    console.log(`Adding course ${courseId} to cart for user ${userId}`);
+    courseId: string,
+    userId: string,
+    quantity: number = 1,
+  ): Promise<any> {
+    try {
+      // Validation
+      if (!courseId?.trim()) {
+        throw new BadRequestException('Course ID is required');
+      }
+      if (!userId?.trim()) {
+        throw new BadRequestException('User ID is required');
+      }
+      if (quantity < 1) {
+        throw new BadRequestException('Quantity must be at least 1');
+      }
 
-    const course = await this.courseModel.findById(courseId).exec();
-    console.log(`Found course: ${JSON.stringify(course)}`);
+      // Fetch course
+      const course = await this.courseModel.findById(courseId).exec();
+      if (!course) {
+        throw new NotFoundException(`Course with ID ${courseId} not found`);
+      }
 
-    if (!course) {
-      throw new NotFoundException(`Course with ID ${courseId} not found`);
-    }
-const { title, description, image, amount } = course;
-    // 1. Validation des paramètres
-    if (!courseId || !userId) {
-      throw new BadRequestException('Course ID and User ID are required');
-    }
-    if (!title || !description || !image || !amount) {
-      throw new BadRequestException('Course details are required');
-    }
-
-//     // 2. Recherche ou création du panier
-    let cart = await this.cartModel.findOne({ userId }).exec();
-
-    if (!cart) {
-      console.log(`Creating new cart for user ${userId}`);
-      cart = new this.cartModel({
+      // Create a new cart item for the course (course by course)
+      const newCartItem = new this.cartModel({
         userId,
-        courses: [],
-        image,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        courseId: course._id,
+        courseName: course.title,
+        courseDescription: course.description,
+        courseImage: course.image,
+        price: course.amount,
+        quantity,
       });
+
+      const savedCartItem = await newCartItem.save();
+
+      // Fetch all cart items for the user to return the full cart
+      const allCartItems = await this.cartModel.find({ userId }).exec();
+
+      return {
+        success: true,
+        message: `Course "${course.title}" added to cart successfully`,
+        cart: allCartItems,
+
+        courseAdded: {
+          id: course._id,
+          title: course.title,
+          price: course.amount,
+          image: course.image,
+          quantity,
+        },
+      };
+    } catch (error) {
+      console.error(`Error adding course to cart: ${error.message}`);
+
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Failed to add course to cart');
     }
-
-    if (!cart.courses) {
-      cart.courses = [];
-    }
-
-cart.courses.push({
-  courseId: course._id,
-  courseName: course.title,
-  courseDescription: course.description,
-  courseImage: course.image,
-  price: course.amount,
-  quantity: 1
-});
-
-cart.updatedAt = new Date();
-
-// // 6. Sauvegarde et retour
-const savedCart = await cart.save();
-
-return {
-  success: true,
-  message: `Course "${course.title}" added to cart successfully`,
-  cart: savedCart,
-  courseAdded: {
-    id: course._id,
-    title: course.title,
-    price: course.amount,
-    image: course.image,
-    quantity: 1
   }
-};
-
-  } catch (error) {
-    console.error(`Error adding course to cart: ${error.message}`);
-
-    if (
-      error instanceof NotFoundException ||
-      error instanceof ConflictException ||
-      error instanceof BadRequestException
-    ) {
-      throw error;
-    }
-
-    throw new InternalServerErrorException('Failed to add course to cart');
-  }
-}
-
 
   // Méthode utilitaire pour créer un panier si nécessaire
   private async createCartIfNotExists(userId: string): Promise<any> {
@@ -274,7 +265,7 @@ return {
         userId,
         courses: [],
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
       await cart.save();
       console.log(`New cart created for user ${userId}`);
@@ -291,7 +282,7 @@ return {
     // Récupération des données
     const [course, cart] = await Promise.all([
       this.findCourseById(courseId),
-      this.createCartIfNotExists(userId)
+      this.createCartIfNotExists(userId),
     ]);
 
     // Vérification des doublons
@@ -303,7 +294,9 @@ return {
 
   private validateInputs(courseId: string, userId: string): void {
     if (!courseId?.trim()) {
-      throw new BadRequestException('Course ID is required and cannot be empty');
+      throw new BadRequestException(
+        'Course ID is required and cannot be empty',
+      );
     }
     if (!userId?.trim()) {
       throw new BadRequestException('User ID is required and cannot be empty');
@@ -318,13 +311,19 @@ return {
     return course;
   }
 
-  private checkDuplicateCourse(cart: any, courseId: string, courseTitle: string): void {
+  private checkDuplicateCourse(
+    cart: any,
+    courseId: string,
+    courseTitle: string,
+  ): void {
     const isDuplicate = cart.courses.some(
-      (existingCourse: any) => existingCourse._id.toString() === courseId
+      (existingCourse: any) => existingCourse._id.toString() === courseId,
     );
 
     if (isDuplicate) {
-      throw new ConflictException(`Course "${courseTitle}" is already in your cart`);
+      throw new ConflictException(
+        `Course "${courseTitle}" is already in your cart`,
+      );
     }
   }
 
@@ -341,14 +340,14 @@ return {
         id: savedCart._id,
         userId: savedCart.userId,
         coursesCount: savedCart.courses.length,
-        totalamount: this.calculateCartTotal(savedCart.courses)
+        totalamount: this.calculateCartTotal(savedCart.courses),
       },
       courseAdded: {
         id: course._id,
         title: course.title,
         amount: course.amount,
-        instructor: course.instructor
-      }
+        instructor: course.instructor,
+      },
     };
   }
 
@@ -357,7 +356,10 @@ return {
   }
 
   // Version avec transaction pour la cohérence des données
-  async addToCartWithTransaction(courseId: string, userId: string): Promise<any> {
+  async addToCartWithTransaction(
+    courseId: string,
+    userId: string,
+  ): Promise<any> {
     const session = await this.cartModel.db.startSession();
 
     try {
@@ -367,30 +369,38 @@ return {
       this.validateInputs(courseId, userId);
 
       // Vérification du cours
-      const course = await this.courseModel.findById(courseId).session(session).exec();
+      const course = await this.courseModel
+        .findById(courseId)
+        .session(session)
+        .exec();
       if (!course) {
         throw new NotFoundException(`Course with ID ${courseId} not found`);
       }
 
       // Recherche ou création du panier
-      let cart = await this.cartModel.findOne({ userId }).session(session).exec();
+      let cart = await this.cartModel
+        .findOne({ userId })
+        .session(session)
+        .exec();
 
       if (!cart) {
         cart = new this.cartModel({
           userId,
           courses: [],
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         });
       }
 
       // Vérification des doublons
       const isDuplicate = cart.courses.some(
-        (existingCourse: any) => existingCourse._id.toString() === courseId
+        (existingCourse: any) => existingCourse._id.toString() === courseId,
       );
 
       if (isDuplicate) {
-        throw new ConflictException(`Course "${course.title}" is already in your cart`);
+        throw new ConflictException(
+          `Course "${course.title}" is already in your cart`,
+        );
       }
 
       // Ajout du cours
@@ -404,9 +414,8 @@ return {
       return {
         success: true,
         message: `Course "${course.title}" added to cart successfully`,
-        cart: savedCart
+        cart: savedCart,
       };
-
     } catch (error) {
       await session.abortTransaction();
       throw error;
@@ -414,7 +423,6 @@ return {
       session.endSession();
     }
   }
-
 }
 
 export const multerOptions = {

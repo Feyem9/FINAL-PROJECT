@@ -11,8 +11,21 @@ export class CartService {
     ) {}
 
     async addToCart(item: CartDto): Promise<Cart> {
-        const newItem = new this.cartModel(item);
-        return newItem.save();
+        // Check if the same course for the user already exists
+        const existingCartItem = await this.cartModel.findOne({
+            userId: item.userId,
+            courseId: item.courseId,
+        }).exec();
+
+        if (existingCartItem) {
+            // If exists, update quantity
+            existingCartItem.quantity += item.quantity;
+            return existingCartItem.save();
+        } else {
+            // Else create new cart item
+            const newItem = new this.cartModel(item);
+            return newItem.save();
+        }
     }
 
     async getCartItems(): Promise<Cart[]> {

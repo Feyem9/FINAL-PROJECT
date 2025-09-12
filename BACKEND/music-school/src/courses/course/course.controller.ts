@@ -154,8 +154,8 @@ export class CourseController {
   @ApiOperation({ summary: 'Add a course to the cart' })
   @ApiResponse({ status: 201, description: 'Course added to cart successfully' })
   @ApiResponse({ status: 404, description: 'Course or cart not found' })
-  async addToCart(@Body() addToCartDto: { courseId: string; userId: string; courseName: string; courseDescription: string; courseImage: string; amount: number; quantity: number }) {
-    return this.courseService.addToCart(addToCartDto.courseId, addToCartDto.userId, addToCartDto.courseName, addToCartDto.courseDescription, addToCartDto.courseImage, addToCartDto.amount, addToCartDto.quantity);
+  async addToCart(@Body() addToCartDto: { courseId: string; userId: string; quantity: number }) {
+    return this.courseService.addToCart(addToCartDto.courseId, addToCartDto.userId, addToCartDto.quantity);
   }
 
 }
