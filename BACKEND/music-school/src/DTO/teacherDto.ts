@@ -35,4 +35,12 @@ export class TeacherDto extends UserDto {
   @IsOptional()
   @IsNumber()
   readonly experience?: number;
+
+  @ApiProperty({
+    description: 'certificates or diplomas of the teacher',
+    example: 'Bachelor in Music, Diploma in Piano Performance',
+  })
+  @IsOptional()
+  @IsString()
+  readonly certificate?: string; // 📌 Certificats ou diplômes de l’enseignant
 }
