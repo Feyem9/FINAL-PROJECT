@@ -20,6 +20,9 @@ export class Student extends User {  // 👈 Héritage du modèle User
 
   @Prop({ type: [Object], default: [], required: false })
   quizzes: any[]; // Liste des quiz de l'étudiant
+
+  @Prop({ type: [Object], default: [], required: false })
+  upcomingTasks: any[]; // Liste des tâches à venir de l'étudiant
 }
 
 

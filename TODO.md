@@ -35,7 +35,7 @@ The student dashboard now fetches and displays real course data from the backend
 - [ ] Add real progress tracking API endpoint
 - [x] Add assignments/quizzes API endpoints (COMPLETED - Created GET /:id/assignments, GET /:id/quizzes, POST /submit-assignment, POST /submit-quiz)
 - [ ] Add recent activities API endpoint
-- [ ] Add upcoming tasks API endpoint
+- [x] Add upcoming tasks API endpoint (COMPLETED - Created GET /:id/upcoming-tasks, POST /:id/upcoming-tasks, PUT /:id/upcoming-tasks/:taskId, DELETE /:id/upcoming-tasks/:taskId)
 - [ ] Add weekly goals API endpoint
 
 ## Notes

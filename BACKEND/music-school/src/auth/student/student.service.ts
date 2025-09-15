@@ -364,4 +364,54 @@ export class StudentService {
     await student.save();
     return quiz;
   }
+
+  // Upcoming Tasks endpoints
+  async getUpcomingTasks(studentId: string): Promise<any[]> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    return student.upcomingTasks || [];
+  }
+
+  async addUpcomingTask(studentId: string, task: any): Promise<any> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    student.upcomingTasks.push(task);
+    await student.save();
+    return task;
+  }
+
+  async updateUpcomingTask(studentId: string, taskId: string, updatedTask: any): Promise<any> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    const taskIndex = student.upcomingTasks.findIndex((task: any) => task.id === taskId);
+    if (taskIndex === -1) {
+      throw new NotFoundException('Task not found');
+    }
+
+    student.upcomingTasks[taskIndex] = { ...student.upcomingTasks[taskIndex], ...updatedTask };
+    await student.save();
+    return student.upcomingTasks[taskIndex];
+  }
+
+  async deleteUpcomingTask(studentId: string, taskId: string): Promise<void> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    const taskIndex = student.upcomingTasks.findIndex((task: any) => task.id === taskId);
+    if (taskIndex === -1) {
+      throw new NotFoundException('Task not found');
+    }
+
+    student.upcomingTasks.splice(taskIndex, 1);
+    await student.save();
+  }
 }

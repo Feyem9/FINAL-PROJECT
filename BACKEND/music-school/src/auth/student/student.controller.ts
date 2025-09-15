@@ -347,6 +347,42 @@ export class StudentController {
     };
   }
 
+  // Upcoming Tasks endpoints
+  @Get('/:id/upcoming-tasks')
+  @ApiOperation({ summary: 'Get upcoming tasks for a student' })
+  @ApiParam({ name: 'id', description: 'Student ID' })
+  @ApiResponse({ status: 200, description: 'List of upcoming tasks' })
+  async getUpcomingTasks(@Param('id') id: string) {
+    return this.studentService.getUpcomingTasks(id);
+  }
+
+  @Post('/:id/upcoming-tasks')
+  @ApiOperation({ summary: 'Add an upcoming task for a student' })
+  @ApiParam({ name: 'id', description: 'Student ID' })
+  @ApiResponse({ status: 201, description: 'Task added successfully' })
+  async addUpcomingTask(@Param('id') id: string, @Body() task: any) {
+    return this.studentService.addUpcomingTask(id, task);
+  }
+
+  @Put('/:id/upcoming-tasks/:taskId')
+  @ApiOperation({ summary: 'Update an upcoming task for a student' })
+  @ApiParam({ name: 'id', description: 'Student ID' })
+  @ApiParam({ name: 'taskId', description: 'Task ID' })
+  @ApiResponse({ status: 200, description: 'Task updated successfully' })
+  async updateUpcomingTask(@Param('id') id: string, @Param('taskId') taskId: string, @Body() updatedTask: any) {
+    return this.studentService.updateUpcomingTask(id, taskId, updatedTask);
+  }
+
+  @Delete('/:id/upcoming-tasks/:taskId')
+  @ApiOperation({ summary: 'Delete an upcoming task for a student' })
+  @ApiParam({ name: 'id', description: 'Student ID' })
+  @ApiParam({ name: 'taskId', description: 'Task ID' })
+  @ApiResponse({ status: 200, description: 'Task deleted successfully' })
+  async deleteUpcomingTask(@Param('id') id: string, @Param('taskId') taskId: string) {
+    await this.studentService.deleteUpcomingTask(id, taskId);
+    return { message: 'Task deleted successfully' };
+  }
+
 }
 
 

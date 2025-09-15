@@ -200,6 +200,7 @@ export const Sdashboard = () => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
+  const [upcomingTasks, setUpcomingTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
 
@@ -213,7 +214,7 @@ export const Sdashboard = () => {
     setUserId(userIdFromStorage);
   }, []);
 
-  // Fetch enrolled courses, assignments, and quizzes
+  // Fetch enrolled courses, assignments, quizzes, and upcoming tasks
   useEffect(() => {
     const fetchDashboardData = async () => {
       if (!userId || !databaseUri) {
@@ -222,47 +223,31 @@ export const Sdashboard = () => {
       }
 
       try {
-        // Fetch enrolled courses
-        const coursesResponse = await axios.get(`${databaseUri}/students/${userId}/enrolled-courses`, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        if (Array.isArray(coursesResponse.data)) {
-          setEnrolledCourses(coursesResponse.data);
-        } else {
-          setEnrolledCourses([]);
-        }
+        const [coursesResponse, assignmentsResponse, quizzesResponse, tasksResponse] = await Promise.all([
+          axios.get(`${databaseUri}/students/${userId}/enrolled-courses`, {
+            headers: { 'Content-Type': 'application/json' }
+          }),
+          axios.get(`${databaseUri}/students/${userId}/assignments`, {
+            headers: { 'Content-Type': 'application/json' }
+          }),
+          axios.get(`${databaseUri}/students/${userId}/quizzes`, {
+            headers: { 'Content-Type': 'application/json' }
+          }),
+          axios.get(`${databaseUri}/students/${userId}/upcoming-tasks`, {
+            headers: { 'Content-Type': 'application/json' }
+          })
+        ]);
 
-        // Fetch assignments
-        const assignmentsResponse = await axios.get(`${databaseUri}/students/${userId}/assignments`, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        if (Array.isArray(assignmentsResponse.data)) {
-          setAssignments(assignmentsResponse.data);
-        } else {
-          setAssignments([]);
-        }
-
-        // Fetch quizzes
-        const quizzesResponse = await axios.get(`${databaseUri}/students/${userId}/quizzes`, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        if (Array.isArray(quizzesResponse.data)) {
-          setQuizzes(quizzesResponse.data);
-        } else {
-          setQuizzes([]);
-        }
-
+        setEnrolledCourses(Array.isArray(coursesResponse.data) ? coursesResponse.data : []);
+        setAssignments(Array.isArray(assignmentsResponse.data) ? assignmentsResponse.data : []);
+        setQuizzes(Array.isArray(quizzesResponse.data) ? quizzesResponse.data : []);
+        setUpcomingTasks(Array.isArray(tasksResponse.data) ? tasksResponse.data : []);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
         setEnrolledCourses([]);
         setAssignments([]);
         setQuizzes([]);
+        setUpcomingTasks([]);
       } finally {
         setLoading(false);
       }
