@@ -1,19 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 // Progress Overview Component
-const ProgressOverview = () => {
+const ProgressOverview = ({ enrolledCourses }) => {
+  // Mock progress data for now - in real implementation, this would come from backend
+  const coursesWithProgress = enrolledCourses.map((course, index) => {
+    const colors = [
+      'bg-gradient-to-r from-blue-500 to-indigo-600',
+      'bg-gradient-to-r from-green-500 to-teal-600',
+      'bg-gradient-to-r from-amber-500 to-orange-600',
+      'bg-gradient-to-r from-red-500 to-pink-600'
+    ];
+    return {
+      name: course.title,
+      progress: Math.floor(Math.random() * 100), // Mock progress - replace with real data
+      color: colors[index % colors.length]
+    };
+  });
+
+  // Commented out old hardcoded data
+  /*
   const courses = [
     { name: 'Piano Basics', progress: 85, color: 'bg-gradient-to-r from-blue-500 to-indigo-600' },
     { name: 'Music Theory', progress: 72, color: 'bg-gradient-to-r from-green-500 to-teal-600' },
     { name: 'Chord Progressions', progress: 60, color: 'bg-gradient-to-r from-amber-500 to-orange-600' },
     { name: 'Jazz Piano', progress: 45, color: 'bg-gradient-to-r from-red-500 to-pink-600' },
   ];
+  */
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Course Progress</h2>
       <div className="space-y-5">
-        {courses.map((course, index) => (
+        {coursesWithProgress.length > 0 ? coursesWithProgress.map((course, index) => (
           <div key={index}>
             <div className="flex justify-between mb-1">
               <span className="font-medium text-gray-700">{course.name}</span>
@@ -26,7 +45,9 @@ const ProgressOverview = () => {
               ></div>
             </div>
           </div>
-        ))}
+        )) : (
+          <p className="text-gray-500">No enrolled courses yet.</p>
+        )}
       </div>
     </div>
   );
@@ -95,13 +116,29 @@ const RecentActivity = () => {
 };
 
 // Stats Cards Component
-const StatsCards = () => {
+const StatsCards = ({ enrolledCourses }) => {
+  // Calculate real stats from enrolled courses
+  const coursesEnrolled = enrolledCourses.length;
+  const assignmentsCompleted = Math.floor(Math.random() * 50); // Mock - replace with real data
+  const quizzesTaken = Math.floor(Math.random() * 30); // Mock - replace with real data
+  const overallProgress = coursesEnrolled > 0 ? Math.floor(Math.random() * 100) : 0; // Mock - replace with real data
+
+  const stats = [
+    { title: 'Courses Enrolled', value: coursesEnrolled.toString(), icon: '📚', color: 'bg-gradient-to-r from-blue-500 to-indigo-600' },
+    { title: 'Assignments Completed', value: assignmentsCompleted.toString(), icon: '✅', color: 'bg-gradient-to-r from-green-500 to-teal-600' },
+    { title: 'Quizzes Taken', value: quizzesTaken.toString(), icon: '📝', color: 'bg-gradient-to-r from-amber-500 to-orange-600' },
+    { title: 'Overall Progress', value: `${overallProgress}%`, icon: '📈', color: 'bg-gradient-to-r from-red-500 to-pink-600' },
+  ];
+
+  // Commented out old hardcoded data
+  /*
   const stats = [
     { title: 'Courses Enrolled', value: '6', icon: '📚', color: 'bg-gradient-to-r from-blue-500 to-indigo-600' },
     { title: 'Assignments Completed', value: '24', icon: '✅', color: 'bg-gradient-to-r from-green-500 to-teal-600' },
     { title: 'Quizzes Taken', value: '18', icon: '📝', color: 'bg-gradient-to-r from-amber-500 to-orange-600' },
     { title: 'Overall Progress', value: '72%', icon: '📈', color: 'bg-gradient-to-r from-red-500 to-pink-600' },
   ];
+  */
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -156,18 +193,74 @@ const WeeklyGoals = () => {
 };
 
 export const Sdashboard = () => {
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
+
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
+
+  // Get user ID from localStorage
+  useEffect(() => {
+    const student = JSON.parse(localStorage.getItem('student'));
+    const userIdFromStorage = student ? student._id : null;
+    console.log('User ID:', userIdFromStorage);
+    setUserId(userIdFromStorage);
+  }, []);
+
+  // Fetch enrolled courses
+  useEffect(() => {
+    const fetchEnrolledCourses = async () => {
+      if (!userId || !databaseUri) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${databaseUri}/students/${userId}/enrolled-courses`, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (Array.isArray(response.data)) {
+          setEnrolledCourses(response.data);
+        } else {
+          setEnrolledCourses([]);
+        }
+      } catch (error) {
+        console.error('Error fetching enrolled courses:', error);
+        setEnrolledCourses([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userId) {
+      fetchEnrolledCourses();
+    }
+  }, [userId, databaseUri]);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-600">Loading dashboard...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Welcome Back, Student!</h1>
-        <div className="text-sm text-gray-500">Today, 10:30 AM</div>
+        <div className="text-sm text-gray-500">Today, {new Date().toLocaleTimeString()}</div>
       </div>
 
-      <StatsCards />
+      <StatsCards enrolledCourses={enrolledCourses} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <ProgressOverview />
+          <ProgressOverview enrolledCourses={enrolledCourses} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <UpcomingTasks />
             <WeeklyGoals />
