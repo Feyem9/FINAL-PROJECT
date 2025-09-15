@@ -28,7 +28,7 @@ export const Profile = () => {
   const [isEditing, setIsEditing] = useState(false); // Ajout d'un état pour le mode édition
 
   // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   const handleInputChange = (e) => {

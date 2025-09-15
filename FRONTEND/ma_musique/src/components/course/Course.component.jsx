@@ -8,7 +8,7 @@ export default function Course() {
 
     // Define databaseUri in a scope accessible to all functions
     // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI || 'http://localhost:3000';
-    const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+    const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
     const [courses, setCourses] = useState([]);

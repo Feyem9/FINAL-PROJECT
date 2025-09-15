@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 // const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
-const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
 export const Checkout = () => {
@@ -204,8 +204,8 @@ export const Checkout = () => {
 
         <div className="space-y-4">
           <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${paymentMethod === 'card'
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+            ? 'border-blue-500 bg-blue-50'
+            : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
             }`}>
             <input
               type="radio"
@@ -218,8 +218,8 @@ export const Checkout = () => {
           </label>
 
           <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${paymentMethod === 'paypal'
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+            ? 'border-blue-500 bg-blue-50'
+            : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
             }`}>
             <input
               type="radio"
@@ -232,8 +232,8 @@ export const Checkout = () => {
           </label>
 
           <label className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${paymentMethod === 'bank_transfer'
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+            ? 'border-blue-500 bg-blue-50'
+            : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
             }`}>
             <input
               type="radio"

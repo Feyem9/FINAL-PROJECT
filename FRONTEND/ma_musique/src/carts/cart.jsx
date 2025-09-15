@@ -3,8 +3,8 @@ import axios from "axios";
 import { Navbar } from "../home/Navbar";
 import Footer from "../home/Footer";
 
-const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
-const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
 export const Cart = () => {
@@ -68,35 +68,35 @@ export const Cart = () => {
       setError("Impossible d'ajouter l'article au panier");
     }
   };
-// Update cart item quantity locally
-const updateCartItems = (itemId, newQuantity) => {
- try {
-   if (newQuantity < 1) return;
+  // Update cart item quantity locally
+  const updateCartItems = (itemId, newQuantity) => {
+    try {
+      if (newQuantity < 1) return;
 
-  // Mets à jour l'état local du panier directement
-  setCart((prevItems) =>
-    prevItems.map((item) =>
-      item._id === itemId ? { ...item, quantity: newQuantity } : item
-    )
-  );
+      // Mets à jour l'état local du panier directement
+      setCart((prevItems) =>
+        prevItems.map((item) =>
+          item._id === itemId ? { ...item, quantity: newQuantity } : item
+        )
+      );
 
-  // Envoie quand même la requête au backend, mais pas besoin de fetchItems
-  axios
-    .patch(`${API_URL}/cart/${itemId}`, { quantity: newQuantity })
-    .catch((error) => {
-      console.error("Erreur lors de la mise à jour:", error);
-      setError("Impossible de mettre à jour l'article");
-    });
- } catch (error) {
-  throw ('Erreur lors de la mise à jour du panier:', error);
- }
-};
+      // Envoie quand même la requête au backend, mais pas besoin de fetchItems
+      axios
+        .patch(`${API_URL}/cart/${itemId}`, { quantity: newQuantity })
+        .catch((error) => {
+          console.error("Erreur lors de la mise à jour:", error);
+          setError("Impossible de mettre à jour l'article");
+        });
+    } catch (error) {
+      throw ('Erreur lors de la mise à jour du panier:', error);
+    }
+  };
 
 
   // Remove single cart item
   const removeCartItem = async (itemId) => {
     try {
-      if(quantity > 1) return;
+      if (quantity > 1) return;
 
       setCart((nextItems) =>
         nextItems.map((item) =>
@@ -105,7 +105,7 @@ const updateCartItems = (itemId, newQuantity) => {
       );
 
 
-      await axios.delete(`${API_URL}/cart/${itemId}`,{ data: { quantity } });
+      await axios.delete(`${API_URL}/cart/${itemId}`, { data: { quantity } });
       // await fetchItems(); // Refresh cart
       alert("Article supprimé du panier");
     } catch (error) {
@@ -138,8 +138,8 @@ const updateCartItems = (itemId, newQuantity) => {
   };
 
   useEffect(() => {
-  calculateTotal(cart);
-}, [cart]);
+    calculateTotal(cart);
+  }, [cart]);
 
 
   // Proceed to checkout

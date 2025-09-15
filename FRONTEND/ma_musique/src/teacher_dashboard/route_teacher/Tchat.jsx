@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 export const Tchat = () => {
   // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   const [students, setStudents] = useState([]);

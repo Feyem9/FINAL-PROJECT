@@ -10,7 +10,7 @@ export const Scalendar = () => {
 
     // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI || 'http://localhost:3000';
     // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-    const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+    const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
     const studentData = JSON.parse(localStorage.getItem('student'));

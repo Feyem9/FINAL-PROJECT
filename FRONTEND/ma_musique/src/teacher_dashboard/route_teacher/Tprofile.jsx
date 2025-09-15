@@ -28,7 +28,7 @@ export const Tprofile = () => {
 
   // Configuration de l'API (remplacez par votre URL)
   // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   const handleImageChange = (e) => {

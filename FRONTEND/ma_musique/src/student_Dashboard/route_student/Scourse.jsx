@@ -22,7 +22,7 @@ export const Scourse = () => {
 
 
   // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   // État pour stocker l'ID utilisateur

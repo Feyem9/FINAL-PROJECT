@@ -44,7 +44,7 @@ export const Resource = () => {
   const [submitting, setSubmitting] = useState(false);
 
   // const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   // Fetch resources depuis backend
@@ -493,9 +493,9 @@ export const Resource = () => {
                             resource.type === 'audio' ? 'Audio' : 'Article'}
                         size="small"
                         className={`${resource.type === 'sheet_music' ? 'bg-blue-100 text-blue-800' :
-                            resource.type === 'video' ? 'bg-red-100 text-red-800' :
-                              resource.type === 'audio' ? 'bg-green-100 text-green-800' :
-                                'bg-purple-100 text-purple-800'
+                          resource.type === 'video' ? 'bg-red-100 text-red-800' :
+                            resource.type === 'audio' ? 'bg-green-100 text-green-800' :
+                              'bg-purple-100 text-purple-800'
                           }`}
                       />
                     </div>
@@ -515,8 +515,8 @@ export const Resource = () => {
                           resource.level === 'intermediate' ? 'Intermédiaire' : 'Avancé'}
                         size="small"
                         className={`${resource.level === 'beginner' ? 'bg-green-100 text-green-800' :
-                            resource.level === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-red-100 text-red-800'
+                          resource.level === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
                           }`}
                       />
                     </div>

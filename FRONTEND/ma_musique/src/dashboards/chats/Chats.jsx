@@ -560,7 +560,7 @@ import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 
 // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
 export const Chats = ({ role, senderId, receiverId }) => {
@@ -1273,8 +1273,8 @@ export const Chats = ({ role, senderId, receiverId }) => {
                   onClick={sendMessage}
                   disabled={!message.trim() || !isConnected}
                   className={`w-10 h-10 rounded-full flex items-center justify-center text-xl transition-transform duration-200 ${!message.trim() || !isConnected
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:scale-105'
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:scale-105'
                     }`}
                   title={!isConnected ? "Connexion requise" : "Envoyer le message"}
                 >

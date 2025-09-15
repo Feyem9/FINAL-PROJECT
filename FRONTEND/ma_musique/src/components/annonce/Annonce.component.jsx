@@ -27,7 +27,7 @@ export const Annonce = () => {
 
   // Utilise la variable d'environnement pour l'URL du backend
   // const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   // Recherche et pagination
@@ -386,8 +386,8 @@ export const Annonce = () => {
                     <div className="flex justify-between items-start mb-3">
                       <h2 className="font-bold text-gray-800 text-lg line-clamp-1">{annonce.title}</h2>
                       <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${annonce.type === 'event' ? 'bg-blue-100 text-blue-800' :
-                          annonce.type === 'training' ? 'bg-green-100 text-green-800' :
-                            'bg-purple-100 text-purple-800'
+                        annonce.type === 'training' ? 'bg-green-100 text-green-800' :
+                          'bg-purple-100 text-purple-800'
                         }`}>
                         {annonce.type.charAt(0).toUpperCase() + annonce.type.slice(1)}
                       </span>

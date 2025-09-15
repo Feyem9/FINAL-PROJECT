@@ -6,7 +6,7 @@ import '../auth/adminLogin.css'; // Assurez-vous d'importer le fichier CSS pour 
 const AdminRegister = () => {
 
   // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
 

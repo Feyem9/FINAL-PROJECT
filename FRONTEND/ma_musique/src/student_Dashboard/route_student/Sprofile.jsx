@@ -31,7 +31,7 @@ export const Sprofile = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   const handleImageChange = (e) => {

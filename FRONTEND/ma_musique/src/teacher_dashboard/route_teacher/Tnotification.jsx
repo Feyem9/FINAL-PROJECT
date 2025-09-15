@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 export const Tnotification = () => {
   // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   const [notifications, setNotifications] = useState([]);
@@ -251,8 +251,8 @@ export const Tnotification = () => {
                   key={tab.key}
                   onClick={() => setFilter(tab.key)}
                   className={`px-4 py-2 text-sm font-medium ${filter === tab.key
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-50'
                     } transition-colors duration-200`}
                 >
                   {tab.label} ({tab.count})
@@ -301,8 +301,8 @@ export const Tnotification = () => {
               <div
                 key={notification._id}
                 className={`bg-white rounded-lg shadow-sm border-l-4 transition-all duration-200 hover:shadow-md ${notification.read
-                    ? 'border-l-gray-200'
-                    : 'border-l-blue-500 bg-gradient-to-r from-blue-50 to-white'
+                  ? 'border-l-gray-200'
+                  : 'border-l-blue-500 bg-gradient-to-r from-blue-50 to-white'
                   }`}
               >
                 <div className="p-6">

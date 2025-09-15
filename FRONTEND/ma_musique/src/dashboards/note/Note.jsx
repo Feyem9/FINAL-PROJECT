@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 // Supposons que tu aies configuré une variable d'environnement pour l'API
 // const databaseUri = 'http://localhost:3000';
-const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
 export const Note = () => {

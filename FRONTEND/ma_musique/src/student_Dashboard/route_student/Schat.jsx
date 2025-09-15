@@ -5,7 +5,7 @@ import axios from 'axios';
 export const Schat = () => {
   // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
   // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   const [teachers, setTeachers] = useState([]);

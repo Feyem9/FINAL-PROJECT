@@ -9,7 +9,7 @@ export const Tcalender = () => {
 
   // const databaseUri = process.env.REACT_APP_BACKEND_ONLINE_URI;
   // const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
   console.log("BACKEND URL:", databaseUri);

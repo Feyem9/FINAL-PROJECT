@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 // const API_URL = import.meta.env.VITE_TESTING_BACKEND_URI;
-const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI;
+const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
 
 export const TransactionDetails = () => {
