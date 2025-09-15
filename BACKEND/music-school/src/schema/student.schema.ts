@@ -6,7 +6,7 @@ export type StudentDocument = Student & Document;
 
 @Schema({ timestamps: true })
 export class Student extends User {  // 👈 Héritage du modèle User
-  @Prop({ required: false  , type: [String], default: []})
+  @Prop({ required: false, type: [String], default: [] })
   enrolledCourses: string[]; // Liste des IDs de cours suivis par l’étudiant
 
   @Prop({ required: true })
@@ -14,6 +14,12 @@ export class Student extends User {  // 👈 Héritage du modèle User
 
   @Prop({ required: true })
   level: string; // Niveau de l’étudiant (ex: "Débutant", "Intermédiaire", "Avancé")
+
+  @Prop({ type: [Object], default: [], required: false })
+  assignments: any[]; // Liste des devoirs de l'étudiant
+
+  @Prop({ type: [Object], default: [], required: false })
+  quizzes: any[]; // Liste des quiz de l'étudiant
 }
 
 

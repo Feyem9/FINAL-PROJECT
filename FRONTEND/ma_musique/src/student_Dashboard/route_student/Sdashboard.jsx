@@ -1,3 +1,12 @@
+/*
+Future Enhancements:
+- [ ] Add real progress tracking API endpoint
+- [x] Add assignments/quizzes API endpoints (COMPLETED - Created GET /:id/assignments, GET /:id/quizzes, POST /submit-assignment, POST /submit-quiz)
+- [ ] Add recent activities API endpoint
+- [ ] Add upcoming tasks API endpoint
+- [ ] Add weekly goals API endpoint
+*/
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -53,32 +62,27 @@ const ProgressOverview = ({ enrolledCourses }) => {
   );
 };
 
-// Upcoming Tasks Component
-const UpcomingTasks = () => {
-  const tasks = [
-    { title: 'Practice Piano Exercises', due: 'Tomorrow', priority: 'high' },
-    { title: 'Complete Music Theory Quiz', due: 'In 3 days', priority: 'medium' },
-    { title: 'Submit Chord Assignment', due: 'Next week', priority: 'low' },
-  ];
-
+const UpcomingTasks = ({ assignments }) => {
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Upcoming Tasks</h2>
       <div className="space-y-4">
-        {tasks.map((task, index) => (
+        {assignments.length > 0 ? assignments.map((assignment, index) => (
           <div key={index} className="flex items-center justify-between p-3 hover:bg-amber-50 rounded-lg transition-colors">
             <div>
-              <p className="font-medium text-gray-800">{task.title}</p>
-              <p className="text-sm text-gray-500">Due: {task.due}</p>
+              <p className="font-medium text-gray-800">{assignment.title}</p>
+              <p className="text-sm text-gray-500">Due: {assignment.dueDate}</p>
             </div>
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${task.priority === 'high' ? 'bg-red-100 text-red-800' :
-              task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                'bg-green-100 text-green-800'
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${assignment.status === 'pending' ? 'bg-red-100 text-red-800' :
+              assignment.status === 'completed' ? 'bg-green-100 text-green-800' :
+                'bg-yellow-100 text-yellow-800'
               }`}>
-              {task.priority}
+              {assignment.status}
             </span>
           </div>
-        ))}
+        )) : (
+          <p className="text-gray-500">No upcoming tasks.</p>
+        )}
       </div>
     </div>
   );
@@ -116,12 +120,12 @@ const RecentActivity = () => {
 };
 
 // Stats Cards Component
-const StatsCards = ({ enrolledCourses }) => {
-  // Calculate real stats from enrolled courses
+const StatsCards = ({ enrolledCourses, assignments, quizzes }) => {
+  // Calculate real stats from enrolled courses, assignments, and quizzes
   const coursesEnrolled = enrolledCourses.length;
-  const assignmentsCompleted = Math.floor(Math.random() * 50); // Mock - replace with real data
-  const quizzesTaken = Math.floor(Math.random() * 30); // Mock - replace with real data
-  const overallProgress = coursesEnrolled > 0 ? Math.floor(Math.random() * 100) : 0; // Mock - replace with real data
+  const assignmentsCompleted = assignments.filter(a => a.status === 'completed').length;
+  const quizzesTaken = quizzes.filter(q => q.status === 'completed').length;
+  const overallProgress = coursesEnrolled > 0 ? Math.floor(Math.random() * 100) : 0; // Mock - replace with real progress calculation
 
   const stats = [
     { title: 'Courses Enrolled', value: coursesEnrolled.toString(), icon: '📚', color: 'bg-gradient-to-r from-blue-500 to-indigo-600' },
@@ -194,6 +198,8 @@ const WeeklyGoals = () => {
 
 export const Sdashboard = () => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
 
@@ -207,35 +213,63 @@ export const Sdashboard = () => {
     setUserId(userIdFromStorage);
   }, []);
 
-  // Fetch enrolled courses
+  // Fetch enrolled courses, assignments, and quizzes
   useEffect(() => {
-    const fetchEnrolledCourses = async () => {
+    const fetchDashboardData = async () => {
       if (!userId || !databaseUri) {
         setLoading(false);
         return;
       }
 
       try {
-        const response = await axios.get(`${databaseUri}/students/${userId}/enrolled-courses`, {
+        // Fetch enrolled courses
+        const coursesResponse = await axios.get(`${databaseUri}/students/${userId}/enrolled-courses`, {
           headers: {
             'Content-Type': 'application/json'
           }
         });
-        if (Array.isArray(response.data)) {
-          setEnrolledCourses(response.data);
+        if (Array.isArray(coursesResponse.data)) {
+          setEnrolledCourses(coursesResponse.data);
         } else {
           setEnrolledCourses([]);
         }
+
+        // Fetch assignments
+        const assignmentsResponse = await axios.get(`${databaseUri}/students/${userId}/assignments`, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (Array.isArray(assignmentsResponse.data)) {
+          setAssignments(assignmentsResponse.data);
+        } else {
+          setAssignments([]);
+        }
+
+        // Fetch quizzes
+        const quizzesResponse = await axios.get(`${databaseUri}/students/${userId}/quizzes`, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (Array.isArray(quizzesResponse.data)) {
+          setQuizzes(quizzesResponse.data);
+        } else {
+          setQuizzes([]);
+        }
+
       } catch (error) {
-        console.error('Error fetching enrolled courses:', error);
+        console.error('Error fetching dashboard data:', error);
         setEnrolledCourses([]);
+        setAssignments([]);
+        setQuizzes([]);
       } finally {
         setLoading(false);
       }
     };
 
     if (userId) {
-      fetchEnrolledCourses();
+      fetchDashboardData();
     }
   }, [userId, databaseUri]);
 
@@ -256,13 +290,13 @@ export const Sdashboard = () => {
         <div className="text-sm text-gray-500">Today, {new Date().toLocaleTimeString()}</div>
       </div>
 
-      <StatsCards enrolledCourses={enrolledCourses} />
+      <StatsCards enrolledCourses={enrolledCourses} assignments={assignments} quizzes={quizzes} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <ProgressOverview enrolledCourses={enrolledCourses} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <UpcomingTasks />
+            <UpcomingTasks assignments={assignments} />
             <WeeklyGoals />
           </div>
         </div>

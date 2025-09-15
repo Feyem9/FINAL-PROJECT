@@ -8,8 +8,6 @@ import * as bcrypt from 'bcryptjs';
 import { MailerService } from '@nestjs-modules/mailer';
 import { LoginDto } from 'src/DTO/login.dto';
 import { ConfigService } from '@nestjs/config';
-import { log } from 'util';
-import { Profile } from 'passport';
 import { ProfileService } from '../profile/profile.service';
 import { Course } from 'src/schema/course.schema';
 import { ProfileImageService } from '../profile/profile-images/profile-image/profile-image.service';
@@ -328,5 +326,42 @@ export class StudentService {
       console.error('❌ Erreur dans uploadProfileImage service:', error);
       throw error;
     }
+  }
+
+  // Assignments and Quizzes endpoints 
+  async getAssignments(studentId: string): Promise<any[]> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    return student.assignments || [];
+  }
+
+  async getQuizzes(studentId: string): Promise<any[]> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    return student.quizzes || [];
+  }
+
+  async submitAssignment(studentId: string, assignment: any): Promise<any> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    student.assignments.push(assignment);
+    await student.save();
+    return assignment;
+  }
+
+  async submitQuiz(studentId: string, quiz: any): Promise<any> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    student.quizzes.push(quiz);
+    await student.save();
+    return quiz;
   }
 }
