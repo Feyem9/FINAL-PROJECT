@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { AiOutlineLogout } from 'react-icons/ai';
+import React, { useState } from "react";
+import { AiOutlineLogout } from "react-icons/ai";
 import {
   FaHome,
   FaCalendarAlt,
@@ -9,10 +9,10 @@ import {
   FaUser,
   FaLink,
   FaBars,
-} from 'react-icons/fa';
-import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
-import Sheader from './Sheader'; // ✅ Ton header global
+} from "react-icons/fa";
+import { Link, useNavigate, Outlet } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+import Sheader from "./Sheader"; // ✅ Ton header global
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -20,8 +20,18 @@ const Sidebar = () => {
   const { logout } = useAuth0();
 
   const handleLogout = () => {
-    navigate('/');
+    // 1️⃣ Nettoyer le localStorage/sessionStorage
+    localStorage.removeItem("student"); // ou tout autre clé utilisée
+    sessionStorage.clear(); // si tu stockes temporairement des données
+
+    // 2️⃣ Réinitialiser d'autres states si nécessaire
+    // ex: setUser(null), setCart([]), etc.
+
+    // 3️⃣ Déconnexion via Auth0 et redirection
     logout({ returnTo: window.location.origin });
+
+    // 4️⃣ Facultatif : redirection locale immédiate
+    // navigate('/'); // normalement pas nécessaire car Auth0 redirige
   };
 
   function SidebarLink({ to, icon, label }) {
@@ -49,8 +59,9 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed z-50 bg-amber-500 text-white w-64 h-full p-6 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:translate-x-0 transition-transform duration-300 ease-in-out`}
+        className={`fixed z-50 bg-amber-500 text-white w-64 h-full p-6 transform ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0 transition-transform duration-300 ease-in-out`}
       >
         <div className="mb-8 text-center">
           <img
@@ -61,13 +72,37 @@ const Sidebar = () => {
         </div>
 
         <nav className="space-y-4">
-          <SidebarLink to="/student/dashboard" icon={<FaHome />} label="Dashboard" />
-          <SidebarLink to="/student/calendars" icon={<FaCalendarAlt />} label="Calendars" />
-          <SidebarLink to="/student/notificatoin" icon={<FaBell />} label="Notification" />
-          <SidebarLink to="/student/chats" icon={<FaComments />} label="Chats" />
-          <SidebarLink to="/student/courses" icon={<FaBook />} label="Learning Plans" />
+          <SidebarLink
+            to="/student/dashboard"
+            icon={<FaHome />}
+            label="Dashboard"
+          />
+          <SidebarLink
+            to="/student/calendars"
+            icon={<FaCalendarAlt />}
+            label="Calendars"
+          />
+          <SidebarLink
+            to="/student/notificatoin"
+            icon={<FaBell />}
+            label="Notification"
+          />
+          <SidebarLink
+            to="/student/chats"
+            icon={<FaComments />}
+            label="Chats"
+          />
+          <SidebarLink
+            to="/student/courses"
+            icon={<FaBook />}
+            label="Learning Plans"
+          />
           <SidebarLink to="/student/note" icon={<FaLink />} label="Note" />
-          <SidebarLink to="/student/profile" icon={<FaUser />} label="My Profile" />
+          <SidebarLink
+            to="/student/profile"
+            icon={<FaUser />}
+            label="My Profile"
+          />
 
           <button
             onClick={handleLogout}
@@ -103,4 +138,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

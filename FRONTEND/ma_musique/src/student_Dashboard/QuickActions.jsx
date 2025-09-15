@@ -1,28 +1,3 @@
-// import React from 'react';
-
-// function QuickActions() {
-//   return (
-//     <div className="bg-white p-6 rounded-2xl shadow-md space-y-5">
-//       <div className="flex justify-between items-center">
-//         <p className="text-gray-700">Leave - Want to take a leave?</p>
-//         <button className="text-blue-600 hover:underline font-medium">Request</button>
-//       </div>
-//       <hr />
-//       <div className="flex justify-between items-center">
-//         <p className="text-gray-700">Complaint - Want to complain against someone?</p>
-//         <button className="text-blue-600 hover:underline font-medium">Report</button>
-//       </div>
-//       <hr />
-//       <div className="flex justify-between items-center">
-//         <p className="text-gray-700">Need Help or Support?</p>
-//         <button className="text-blue-600 hover:underline font-medium">Contact</button>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default QuickActions;
-
 import React from 'react';
 import { PlayIcon, BookOpenIcon, MusicIcon, FileDownIcon } from 'lucide-react';
 

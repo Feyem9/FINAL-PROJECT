@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
-import { FaBars, FaBell, FaSearch } from 'react-icons/fa';
-import Sidebar from './Ssidebar';
-import { Outlet } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { FaBars, FaBell, FaSearch } from "react-icons/fa";
+import Sidebar from "./Ssidebar";
+import { Outlet } from "react-router-dom";
+import getInitials from "../utils/getInitials";
+import { Link } from 'react-router-dom';
+
 
 // Student Dashboard Components
 const StudentSidebar = ({ isOpen, toggleSidebar }) => {
   const navLinks = [
-    { name: 'Dashboard', path: '/student/dashboard' },
-    { name: 'Courses', path: '/student/courses' },
-    { name: 'Calendar', path: '/student/calendars' },
-    { name: 'Notification', path: '/student/notificatoin' },
-    { name: 'Messages', path: '/student/chats' },
-    { name: 'Notes', path: '/student/note' },
-    { name: 'Profile', path: '/student/profile' },
+    { name: "Dashboard", path: "/student/dashboard" },
+    { name: "Courses", path: "/student/courses" },
+    { name: "Calendar", path: "/student/calendars" },
+    { name: "Notification", path: "/student/notificatoin" },
+    { name: "Messages", path: "/student/chats" },
+    { name: "Notes", path: "/student/note" },
+    { name: "Profile", path: "/student/profile" },
   ];
 
   return (
@@ -27,8 +30,9 @@ const StudentSidebar = ({ isOpen, toggleSidebar }) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed md:relative z-50 h-screen w-64 bg-gradient-to-b from-amber-500 to-orange-600 text-white transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-          }`}
+        className={`fixed md:relative z-50 h-screen w-64 bg-gradient-to-b from-amber-500 to-orange-600 text-white transition-transform duration-300 ease-in-out transform ${
+          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
       >
         <div className="p-6 border-b border-amber-400">
           <h1 className="text-2xl font-bold">Student Panel</h1>
@@ -56,6 +60,17 @@ const StudentSidebar = ({ isOpen, toggleSidebar }) => {
 };
 
 const StudentHeader = ({ toggleSidebar }) => {
+
+    const [query, setQuery] = useState("");
+  const studentName =
+    JSON.parse(localStorage.getItem("student"))?.name || "Student";
+
+    const handleSearch = (e) => {
+      e.preventDefault();
+      // Implement search functionality here
+      console.log("Searching for:", query);
+    }
+
   return (
     <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between">
       <div className="flex items-center">
@@ -65,20 +80,37 @@ const StudentHeader = ({ toggleSidebar }) => {
         >
           <FaBars size={20} />
         </button>
-        <h1 className="text-xl font-semibold text-gray-800">Student Dashboard</h1>
+        <h1 className="text-xl font-semibold text-gray-800">
+          Student Dashboard
+        </h1>
       </div>
 
       <div className="flex items-center space-x-4">
-        <button className="text-gray-600 hover:text-amber-600">
-          <FaSearch size={20} />
-        </button>
+        {/* Search bar */}
+        <form onSubmit={handleSearch} className="relative w-64">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+          />
+          <FaSearch
+            className="absolute left-3 top-2.5 text-gray-400 cursor-pointer"
+            onClick={handleSearch}
+          />
+        </form>
         <button className="text-gray-600 hover:text-amber-600 relative">
-          <FaBell size={20} />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">3</span>
+          <Link to="/student/notificatoin">
+            <FaBell size={20} />
+          </Link>
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+            3
+          </span>
         </button>
         <div className="relative">
           <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-white font-bold">
-            S
+            {getInitials(studentName)}
           </div>
         </div>
       </div>
@@ -111,4 +143,3 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
-
