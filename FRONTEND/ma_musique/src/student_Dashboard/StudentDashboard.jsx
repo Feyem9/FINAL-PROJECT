@@ -140,14 +140,7 @@ const StudentHeader = ({ toggleSidebar }) => {
             onClick={handleSearch}
           />
         </form>
-        {/* <button className="text-gray-600 hover:text-amber-600 relative">
-          <Link to="/student/notificatoin">
-            <FaBell size={20} />
-          </Link>
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
-            3
-          </span>
-        </button> */}
+   
         <button className="text-gray-600 hover:text-amber-600 relative">
           <Link to="/student/notification">
             <FaBell size={20} />
