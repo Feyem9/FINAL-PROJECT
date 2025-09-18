@@ -252,24 +252,7 @@ export class StudentController {
     if (!student) throw new NotFoundException('Student not found');
 
     // Mock assignments data - replace with real implementation
-    return [
-      {
-        id: '1',
-        title: 'Music Theory Assignment 1',
-        description: 'Complete the chord progression exercise',
-        dueDate: '2024-02-15',
-        status: 'pending',
-        courseId: 'course1'
-      },
-      {
-        id: '2',
-        title: 'Piano Practice Log',
-        description: 'Log your daily practice sessions',
-        dueDate: '2024-02-20',
-        status: 'completed',
-        courseId: 'course2'
-      }
-    ];
+    return this.studentService.getAssignments(id);
   }
 
   @Get('/:id/quizzes')
@@ -281,27 +264,7 @@ export class StudentController {
     if (!student) throw new NotFoundException('Student not found');
 
     // Mock quizzes data - replace with real implementation
-    return [
-      {
-        id: '1',
-        title: 'Music Theory Quiz 1',
-        description: 'Test your knowledge of basic music theory',
-        dueDate: '2024-02-10',
-        status: 'pending',
-        courseId: 'course1',
-        questions: 10
-      },
-      {
-        id: '2',
-        title: 'Chord Recognition Quiz',
-        description: 'Identify different chord types',
-        dueDate: '2024-02-18',
-        status: 'completed',
-        courseId: 'course2',
-        score: 85,
-        questions: 15
-      }
-    ];
+    return this.studentService.getQuizzes(id);
   }
 
   @Post('/submit-assignment')
@@ -318,8 +281,11 @@ export class StudentController {
 
     return {
       success: true,
+      status: 200,
+      statusText: 'OK',
       message: 'Assignment submitted successfully',
-      submissionId: `sub_${Date.now()}`
+      submissionId: `sub_${Date.now()}`,
+      data: assignmentId
     };
   }
 
