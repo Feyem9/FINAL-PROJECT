@@ -252,20 +252,22 @@ const StatsCards = ({
 export default StatsCards;
 
 // Weekly Goals Component
-const WeeklyGoals = () => {
-  const goals = [
-    { title: "Practice Piano 5 hours", completed: true },
-    { title: "Complete Music Theory Module", completed: false },
-    { title: "Submit Chord Assignment", completed: false },
-    { title: "Take Jazz Quiz", completed: true },
-  ];
+const WeeklyGoals = ({ goals = [] }) => {
+  const [weeklyGoals, setWeeklyGoals] = useState([]);
+
+useEffect(() => {
+  if (!userId || !databaseUri) return;
+  axios.get(`${databaseUri}/students/${userId}/weekly-goals`)
+    .then(res => setWeeklyGoals(Array.isArray(res.data) ? res.data : []))
+    .catch(() => setWeeklyGoals([]));
+}, [userId, databaseUri]);
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Weekly Goals</h2>
       <div className="space-y-3">
-        {goals.map((goal, index) => (
-          <div key={index} className="flex items-center">
+        {goals.length > 0 ? goals.map((goal, index) => (
+          <div key={goal.id || index} className="flex items-center">
             <div
               className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center ${
                 goal.completed ? "bg-green-500" : "border-2 border-gray-300"
@@ -293,7 +295,9 @@ const WeeklyGoals = () => {
               {goal.title}
             </span>
           </div>
-        ))}
+        )) : (
+          <p className="text-gray-500">No weekly goals set.</p>
+        )}
       </div>
     </div>
   );
@@ -410,7 +414,7 @@ export const Sdashboard = () => {
           <ProgressOverview enrolledCourses={enrolledCourses} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <UpcomingTasks assignments={assignments} />
-            <WeeklyGoals />
+            <WeeklyGoals goals={weeklyGoals} />
           </div>
         </div>
         <RecentActivity />
