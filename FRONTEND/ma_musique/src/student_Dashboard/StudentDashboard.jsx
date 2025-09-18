@@ -3,8 +3,8 @@ import { FaBars, FaBell, FaSearch } from "react-icons/fa";
 import Sidebar from "./Ssidebar";
 import { Outlet } from "react-router-dom";
 import getInitials from "../utils/getInitials";
-import { Link } from 'react-router-dom';
-
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 // Student Dashboard Components
 const StudentSidebar = ({ isOpen, toggleSidebar }) => {
@@ -18,7 +18,7 @@ const StudentSidebar = ({ isOpen, toggleSidebar }) => {
     { name: "Profile", path: "/student/profile" },
   ];
 
-   const handleLogout = () => {
+  const handleLogout = () => {
     // 1️⃣ Nettoyer le localStorage/sessionStorage
     localStorage.removeItem("student"); // ou tout autre clé utilisée
     sessionStorage.clear(); // si tu stockes temporairement des données
@@ -27,7 +27,7 @@ const StudentSidebar = ({ isOpen, toggleSidebar }) => {
     // ex: setUser(null), setCart([]), etc.
 
     // 3️⃣ Déconnexion via Auth0 et redirection
-    window.location.href = "/login"; 
+    window.location.href = "/login";
 
     // 4️⃣ Facultatif : redirection locale immédiate
     // navigate('/'); // normalement pas nécessaire car Auth0 redirige
@@ -65,8 +65,10 @@ const StudentSidebar = ({ isOpen, toggleSidebar }) => {
             </a>
           ))}
 
-          <button className="w-full mt-8 py-3 px-4 bg-white text-amber-600 rounded-lg font-semibold hover:bg-amber-100 transition-colors"
-            onClick={handleLogout}>
+          <button
+            className="w-full mt-8 py-3 px-4 bg-white text-amber-600 rounded-lg font-semibold hover:bg-amber-100 transition-colors"
+            onClick={handleLogout}
+          >
             Logout
           </button>
         </nav>
@@ -76,16 +78,38 @@ const StudentSidebar = ({ isOpen, toggleSidebar }) => {
 };
 
 const StudentHeader = ({ toggleSidebar }) => {
+  const [query, setQuery] = useState("");
+  const [notifications, setNotifications] = useState([]);
 
-    const [query, setQuery] = useState("");
   const studentName =
     JSON.parse(localStorage.getItem("student"))?.name || "Student";
 
-    const handleSearch = (e) => {
-      e.preventDefault();
-      // Implement search functionality here
-      console.log("Searching for:", query);
-    }
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // Implement search functionality here
+    console.log("Searching for:", query);
+  };
+
+  useEffect(() => {
+    const studentData = JSON.parse(localStorage.getItem("student"));
+    const studentId = studentData?._id;
+    console.log(studentId);
+
+    // Fetch notifications from backend API
+
+    const fetchNotifications = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/students/${studentId}/notifications`
+        );
+        setNotifications(res.data || []);
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   return (
     <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between">
@@ -116,13 +140,23 @@ const StudentHeader = ({ toggleSidebar }) => {
             onClick={handleSearch}
           />
         </form>
-        <button className="text-gray-600 hover:text-amber-600 relative">
+        {/* <button className="text-gray-600 hover:text-amber-600 relative">
           <Link to="/student/notificatoin">
             <FaBell size={20} />
           </Link>
           <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
             3
           </span>
+        </button> */}
+        <button className="text-gray-600 hover:text-amber-600 relative">
+          <Link to="/student/notification">
+            <FaBell size={20} />
+          </Link>
+          {notifications.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+              {notifications.length}
+            </span>
+          )}
         </button>
         <div className="relative">
           <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-white font-bold">
