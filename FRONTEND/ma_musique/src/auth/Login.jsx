@@ -176,10 +176,12 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
+    setLoading(true);
     try {
       const role = localStorage.getItem('userRole'); // tu stockes admin/student/teacher avant
       if (!role) throw new Error("User role not specified");
@@ -215,6 +217,8 @@ const Login = () => {
     } catch (err) {
       console.error(err);
       setError("Login failed. Please check your credentials and role.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -269,11 +273,29 @@ const Login = () => {
             </div>
           )}
 
-          <button
+        <button
             type="submit"
-            className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg font-medium hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md hover:shadow-lg"
+            disabled={loading} // ✅ disable button while loading
+            className={`w-full flex items-center justify-center gap-2 ${
+              loading ? "bg-green-400 cursor-not-allowed" : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+            } text-white py-3 rounded-lg font-medium transition-all duration-300 shadow-md hover:shadow-lg`}
           >
-            Sign In
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                Signing in...
+              </>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
 

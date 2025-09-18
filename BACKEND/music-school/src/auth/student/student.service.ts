@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Student, StudentDocument } from '../../schema/student.schema';
@@ -21,12 +26,14 @@ export class StudentService {
     private readonly mailerService: MailerService,
     private configService: ConfigService,
     private readonly profile: ProfileService,
-    private readonly profileImageService: ProfileImageService
+    private readonly profileImageService: ProfileImageService,
+  ) {}
 
-  ) { }
-
-  async createStudent(createStudentDto: StudentDto): Promise<{ student: Student; token: string }> {
-    const { name, email, password, contact, level, instrument } = createStudentDto;
+  async createStudent(
+    createStudentDto: StudentDto,
+  ): Promise<{ student: Student; token: string }> {
+    const { name, email, password, contact, level, instrument } =
+      createStudentDto;
 
     // Vérifier si l'email existe déjà
     const existingStudent = await this.studentModel.findOne({ email }).exec();
@@ -51,7 +58,11 @@ export class StudentService {
     await newStudent.save();
 
     // Génération du token JWT
-    const payload = { _id: newStudent._id, email: newStudent.email, role: newStudent.role };
+    const payload = {
+      _id: newStudent._id,
+      email: newStudent.email,
+      role: newStudent.role,
+    };
     const token = this.jwtService.sign(payload);
     await this.sendWelcomeEmail(email, name);
 
@@ -70,14 +81,19 @@ export class StudentService {
     return student;
   }
 
-  async updateStudent(id: string, updateStudentDto: Partial<StudentDto>): Promise<Student> {
+  async updateStudent(
+    id: string,
+    updateStudentDto: Partial<StudentDto>,
+  ): Promise<Student> {
     if (updateStudentDto.password) {
       // Hachage du mot de passe avant mise à jour
       const hashedPassword = await bcrypt.hash(updateStudentDto.password, 10);
       updateStudentDto = { ...updateStudentDto, password: hashedPassword };
     }
 
-    const updatedStudent = await this.studentModel.findByIdAndUpdate(id, updateStudentDto, { new: true }).exec();
+    const updatedStudent = await this.studentModel
+      .findByIdAndUpdate(id, updateStudentDto, { new: true })
+      .exec();
     if (!updatedStudent) {
       throw new NotFoundException('Student not found');
     }
@@ -123,14 +139,16 @@ export class StudentService {
     });
   }
 
-
   async signUpStudent(studentDto: StudentDto): Promise<{
-    student: any
+    student: any;
   }> {
-    const { name, email, password, contact, role, level, instrument } = studentDto;
+    const { name, email, password, contact, role, level, instrument } =
+      studentDto;
     console.log('studentDto : ', studentDto);
 
-    const hashedPassword = await bcrypt.hash(password, 10)
+    console.time('bcrypt-hash');
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.timeEnd('bcrypt-hash');
 
     const student = new this.studentModel({
       name,
@@ -139,23 +157,24 @@ export class StudentService {
       contact,
       role,
       level,
-      instrument
+      instrument,
     });
-
-    await student.save()
-
-
+    console.time('save-student');
+    await student.save();
+    console.timeEnd('save-student');
     const { password: _, ...userWithoutPassword } = student.toObject(); // Supprimer le mot de passe
 
     return {
-      student: userWithoutPassword
-    }
+      student: userWithoutPassword,
+    };
   }
 
-  async loginStudent(loginDto: LoginDto): Promise<{ token: string, student: any }> {
+  async loginStudent(
+    loginDto: LoginDto,
+  ): Promise<{ token: string; student: any }> {
     const { email, password } = loginDto;
 
-    const student = await this.studentModel.findOne({ email })
+    const student = await this.studentModel.findOne({ email });
     // console.log('student email : ', student.email);
 
     if (!student) {
@@ -169,15 +188,16 @@ export class StudentService {
       throw new UnauthorizedException('invalid email or password');
     }
 
-    const token = this.jwtService.sign({ id: student._id, email: student.email, role: student.role }, { secret: this.configService.get<string>('JWT_SECRET') })
+    const token = this.jwtService.sign(
+      { id: student._id, email: student.email, role: student.role },
+      { secret: this.configService.get<string>('JWT_SECRET') },
+    );
     console.log('token is  : ', token);
     // Envoyer le token par email
-    await this.sendWelcomeEmail(student.email, student.name);
+    this.sendWelcomeEmail(student.email, student.name);
 
-    return { token, student }
+    return { token, student };
   }
-
-
 
   /**
    * here i want to add a method to store the student profile image in the database
@@ -189,14 +209,15 @@ export class StudentService {
   //   return this.profile.updateProfileImage(id, 'student', imageUrl);
   // }
 
-
   async getEnrolledCourses(id: string): Promise<Course[]> {
     const student = await this.findById(id);
     if (!student) {
       throw new NotFoundException('Student not found');
     }
 
-    const courses = await this.courseModel.find({ _id: { $in: student.enrolledCourses } }).exec();
+    const courses = await this.courseModel
+      .find({ _id: { $in: student.enrolledCourses } })
+      .exec();
     // if (!courses || courses.length === 0) {
     //   throw new NotFoundException('No enrolled courses found for this student');
     // }
@@ -245,13 +266,13 @@ export class StudentService {
       console.log(`Email sent successfully to ${student.email}`);
     } catch (emailError) {
       console.error('Email sending failed:', emailError);
-      throw new Error('Inscription réussie, mais l\'envoi de l\'email a échoué.');
+      throw new Error("Inscription réussie, mais l'envoi de l'email a échoué.");
       // L'inscription continue même si l'email échoue
     }
 
     // Récupérer et retourner la liste complète des cours inscrits
     const updatedCourses = await this.courseModel.find({
-      _id: { $in: student.enrolledCourses }
+      _id: { $in: student.enrolledCourses },
     });
 
     return updatedCourses;
@@ -266,24 +287,33 @@ export class StudentService {
       console.log('GPS Location data:', data);
 
       return {
-        city: data.address?.city || data.address?.town || data.address?.village || 'Inconnue',
+        city:
+          data.address?.city ||
+          data.address?.town ||
+          data.address?.village ||
+          'Inconnue',
         region: data.address?.state || 'Inconnue',
         country: data.address?.country || 'Inconnu',
         latitude: lat,
         longitude: lon,
-        isGPS: true
+        isGPS: true,
       };
     } catch (error) {
-      throw new NotFoundException('Impossible de récupérer la localisation depuis les coordonnées GPS');
+      throw new NotFoundException(
+        'Impossible de récupérer la localisation depuis les coordonnées GPS',
+      );
     }
   }
 
-  async uploadProfileImage(file: Express.Multer.File, userId: string): Promise<any> {
+  async uploadProfileImage(
+    file: Express.Multer.File,
+    userId: string,
+  ): Promise<any> {
     try {
       console.log('🔧 Service uploadProfileImage appelé:', {
         userId,
         filename: file.filename,
-        originalname: file.originalname
+        originalname: file.originalname,
       });
 
       // Vérifier que le teacher existe
@@ -297,12 +327,12 @@ export class StudentService {
 
       // Appeler le service d'upload d'image de profil
       const profileImage = await this.profileImageService.uploadProfileImage(
-        userId,                    // userId (string)
-        'teacher',                // userType (fixe pour teacher)
-        imageUrl,                 // imageUrl (string)
-        file.originalname,        // fileName (string)
-        file.size,               // fileSize (number)
-        file.mimetype,           // mimeType (string)
+        userId, // userId (string)
+        'teacher', // userType (fixe pour teacher)
+        imageUrl, // imageUrl (string)
+        file.originalname, // fileName (string)
+        file.size, // fileSize (number)
+        file.mimetype, // mimeType (string)
       );
 
       // Mettre à jour le teacher avec la nouvelle image
@@ -310,9 +340,9 @@ export class StudentService {
         userId,
         {
           profileImage: imageUrl,
-          image: imageUrl // Pour compatibilité
+          image: imageUrl, // Pour compatibilité
         },
-        { new: true }
+        { new: true },
       );
 
       console.log('✅ Upload terminé avec succès');
@@ -320,16 +350,15 @@ export class StudentService {
       return {
         imageUrl: imageUrl,
         profileImage: profileImage,
-        teacher: updatedTeacher
+        teacher: updatedTeacher,
       };
-
     } catch (error) {
       console.error('❌ Erreur dans uploadProfileImage service:', error);
       throw error;
     }
   }
 
-  // Assignments and Quizzes endpoints 
+  // Assignments and Quizzes endpoints
   async getAssignments(studentId: string): Promise<any[]> {
     const student = await this.findById(studentId);
     if (!student) {
@@ -385,18 +414,27 @@ export class StudentService {
     return task;
   }
 
-  async updateUpcomingTask(studentId: string, taskId: string, updatedTask: any): Promise<any> {
+  async updateUpcomingTask(
+    studentId: string,
+    taskId: string,
+    updatedTask: any,
+  ): Promise<any> {
     const student = await this.findById(studentId);
     if (!student) {
       throw new NotFoundException('Student not found');
     }
 
-    const taskIndex = student.upcomingTasks.findIndex((task: any) => task.id === taskId);
+    const taskIndex = student.upcomingTasks.findIndex(
+      (task: any) => task.id === taskId,
+    );
     if (taskIndex === -1) {
       throw new NotFoundException('Task not found');
     }
 
-    student.upcomingTasks[taskIndex] = { ...student.upcomingTasks[taskIndex], ...updatedTask };
+    student.upcomingTasks[taskIndex] = {
+      ...student.upcomingTasks[taskIndex],
+      ...updatedTask,
+    };
     await student.save();
     return student.upcomingTasks[taskIndex];
   }
@@ -407,7 +445,9 @@ export class StudentService {
       throw new NotFoundException('Student not found');
     }
 
-    const taskIndex = student.upcomingTasks.findIndex((task: any) => task.id === taskId);
+    const taskIndex = student.upcomingTasks.findIndex(
+      (task: any) => task.id === taskId,
+    );
     if (taskIndex === -1) {
       throw new NotFoundException('Task not found');
     }
