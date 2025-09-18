@@ -18,6 +18,9 @@ const StudentSidebar = ({ isOpen, toggleSidebar }) => {
     { name: "Profile", path: "/student/profile" },
   ];
 
+    const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
+
+
   const handleLogout = () => {
     // 1️⃣ Nettoyer le localStorage/sessionStorage
     localStorage.removeItem("student"); // ou tout autre clé utilisée
@@ -98,9 +101,11 @@ const StudentHeader = ({ toggleSidebar }) => {
     // Fetch notifications from backend API
 
     const fetchNotifications = async () => {
+        const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
+
       try {
         const res = await axios.get(
-          `http://localhost:3000/students/${studentId}/notifications`
+          `${databaseUri}/students/${studentId}/notificatoin`
         );
         setNotifications(res.data || []);
       } catch (err) {
