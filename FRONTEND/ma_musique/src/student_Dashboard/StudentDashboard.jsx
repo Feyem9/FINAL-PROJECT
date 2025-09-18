@@ -18,6 +18,21 @@ const StudentSidebar = ({ isOpen, toggleSidebar }) => {
     { name: "Profile", path: "/student/profile" },
   ];
 
+   const handleLogout = () => {
+    // 1️⃣ Nettoyer le localStorage/sessionStorage
+    localStorage.removeItem("student"); // ou tout autre clé utilisée
+    sessionStorage.clear(); // si tu stockes temporairement des données
+
+    // 2️⃣ Réinitialiser d'autres states si nécessaire
+    // ex: setUser(null), setCart([]), etc.
+
+    // 3️⃣ Déconnexion via Auth0 et redirection
+    logout({ returnTo: window.location.origin });
+
+    // 4️⃣ Facultatif : redirection locale immédiate
+    // navigate('/'); // normalement pas nécessaire car Auth0 redirige
+  };
+
   return (
     <>
       {/* Mobile overlay */}
@@ -50,7 +65,8 @@ const StudentSidebar = ({ isOpen, toggleSidebar }) => {
             </a>
           ))}
 
-          <button className="w-full mt-8 py-3 px-4 bg-white text-amber-600 rounded-lg font-semibold hover:bg-amber-100 transition-colors">
+          <button className="w-full mt-8 py-3 px-4 bg-white text-amber-600 rounded-lg font-semibold hover:bg-amber-100 transition-colors"
+            onClick={handleLogout}>
             Logout
           </button>
         </nav>

@@ -12,7 +12,6 @@ import {
 } from "react-icons/fa";
 import { Link, useNavigate, Outlet } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import Sheader from "./Sheader"; // ✅ Ton header global
 
 const Sidebar = () => {
   const navigate = useNavigate();
