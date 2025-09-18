@@ -119,49 +119,70 @@ const RecentActivity = () => {
   );
 };
 
-// Stats Cards Component
+// StatsCards Component
 const StatsCards = ({ enrolledCourses, assignments, quizzes }) => {
-  // Calculate real stats from enrolled courses, assignments, and quizzes
+  // Calcul des stats
   const coursesEnrolled = enrolledCourses.length;
-  const assignmentsCompleted = assignments.filter(a => a.status === 'completed').length;
-  const quizzesTaken = quizzes.filter(q => q.status === 'completed').length;
-  const overallProgress = coursesEnrolled > 0 ? Math.floor(Math.random() * 100) : 0; // Mock - replace with real progress calculation
+  const assignmentsCompleted = assignments.filter(a => a.status === 'completed');
+  const quizzesCompleted = quizzes.filter(q => q.status === 'completed');
+  const overallProgress = coursesEnrolled > 0 ? Math.floor(Math.random() * 100) : 0; // Mock - remplacer par ton calcul réel
 
   const stats = [
-    { title: 'Courses Enrolled', value: coursesEnrolled.toString(), icon: '📚', color: 'bg-gradient-to-r from-blue-500 to-indigo-600' },
-    { title: 'Assignments Completed', value: assignmentsCompleted.toString(), icon: '✅', color: 'bg-gradient-to-r from-green-500 to-teal-600' },
-    { title: 'Quizzes Taken', value: quizzesTaken.toString(), icon: '📝', color: 'bg-gradient-to-r from-amber-500 to-orange-600' },
-    { title: 'Overall Progress', value: `${overallProgress}%`, icon: '📈', color: 'bg-gradient-to-r from-red-500 to-pink-600' },
+    { title: 'Courses Enrolled', value: coursesEnrolled, icon: '📚', color: 'bg-blue-500' },
+    { title: 'Assignments Completed', value: assignmentsCompleted.length, icon: '✅', color: 'bg-green-500' },
+    { title: 'Quizzes Taken', value: quizzesCompleted.length, icon: '📝', color: 'bg-amber-500' },
+    { title: 'Overall Progress', value: `${overallProgress}%`, icon: '📈', color: 'bg-red-500' },
   ];
 
-  // Commented out old hardcoded data
-  /*
-  const stats = [
-    { title: 'Courses Enrolled', value: '6', icon: '📚', color: 'bg-gradient-to-r from-blue-500 to-indigo-600' },
-    { title: 'Assignments Completed', value: '24', icon: '✅', color: 'bg-gradient-to-r from-green-500 to-teal-600' },
-    { title: 'Quizzes Taken', value: '18', icon: '📝', color: 'bg-gradient-to-r from-amber-500 to-orange-600' },
-    { title: 'Overall Progress', value: '72%', icon: '📈', color: 'bg-gradient-to-r from-red-500 to-pink-600' },
-  ];
-  */
+  // Sous-composant pour la liste (quizzes / assignments)
+  const CompletedList = ({ title, items, type }) => (
+    <div className="bg-white rounded-xl shadow-md p-5 mb-4">
+      <h3 className="text-lg font-bold text-gray-800 mb-3">{title}</h3>
+      {items.length > 0 ? (
+        <ul className="space-y-2">
+          {items.map((item, idx) => (
+            <li key={item.id || idx} className="flex items-center gap-2">
+              <span className="text-green-500">✔️</span>
+              <span className="font-medium">{item.title}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-500">No {type} completed yet.</p>
+      )}
+    </div>
+  );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats.map((stat, index) => (
-        <div key={index} className="bg-white rounded-xl shadow-md p-5">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-gray-600 text-sm">{stat.title}</p>
-              <p className="text-2xl font-bold mt-1">{stat.value}</p>
-            </div>
-            <div className={`text-2xl p-2 rounded-lg ${stat.color.replace('bg-gradient-to-r', 'bg').split(' ')[0]} text-white`}>
-              {stat.icon}
+    <div className="space-y-6">
+      {/* Statistiques */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, index) => (
+          <div key={index} className="bg-white rounded-xl shadow-md p-5">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-600 text-sm">{stat.title}</p>
+                <p className="text-2xl font-bold mt-1">{stat.value}</p>
+              </div>
+              <div className={`text-2xl p-2 rounded-lg ${stat.color} text-white`}>
+                {stat.icon}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      {/* Quizzes complétés */}
+      <CompletedList title="Completed Quizzes" items={quizzesCompleted} type="quizzes" />
+
+      {/* Assignments complétés */}
+      <CompletedList title="Completed Assignments" items={assignmentsCompleted} type="assignments" />
     </div>
   );
 };
+
+export default StatsCards;
+
 
 // Weekly Goals Component
 const WeeklyGoals = () => {
