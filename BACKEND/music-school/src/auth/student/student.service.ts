@@ -156,13 +156,14 @@ export class StudentService {
     const { email, password } = loginDto;
 
     const student = await this.studentModel.findOne({ email })
-    console.log('student email : ', student.email);
+    // console.log('student email : ', student.email);
 
     if (!student) {
       throw new UnauthorizedException('invalid email or password');
     }
 
     const isPasswordMatched = await bcrypt.compare(password, student.password);
+    // console.log('isPasswordMatched : ', isPasswordMatched);
 
     if (!isPasswordMatched) {
       throw new UnauthorizedException('invalid email or password');

@@ -168,7 +168,9 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = () => {
-  const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
+  const databaseUri = import.meta.env.VITE_TESTING_BACKEND_URI;
+
+  // const databaseUri = import.meta.env.VITE_BACKEND_ONLINE_URI || import.meta.env.VITE_TESTING_BACKEND_URI;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -183,8 +185,10 @@ const Login = () => {
       if (!role) throw new Error("User role not specified");
 
       const loginUrl = `${databaseUri}/${role}s/login`;
+      console.log("Login URL:", loginUrl);
+      
+      console.log('response:', { email, password });
       const response = await axios.post(loginUrl, { email, password });
-      console.log('response:', response);
       
 
       const token = response.data.token;
