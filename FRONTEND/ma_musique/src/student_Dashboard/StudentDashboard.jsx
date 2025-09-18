@@ -27,7 +27,7 @@ const StudentSidebar = ({ isOpen, toggleSidebar }) => {
     // ex: setUser(null), setCart([]), etc.
 
     // 3️⃣ Déconnexion via Auth0 et redirection
-    logout({ returnTo: window.location.origin });
+    window.location.href = "/login"; 
 
     // 4️⃣ Facultatif : redirection locale immédiate
     // navigate('/'); // normalement pas nécessaire car Auth0 redirige
