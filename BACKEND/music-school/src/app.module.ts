@@ -41,6 +41,7 @@ import { CartService } from './carts/cart/cart.service';
 import { CartModule } from './carts/cart/cart.module';
 import { TransactionModule } from './transactions/transaction/transaction.module';
 import { UserStatusService } from './chats/user-status/user-status.service';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -50,6 +51,7 @@ import { UserStatusService } from './chats/user-status/user-status.service';
   MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb+srv://feyemlionel:Feyem@blog.oxy0qqt.mongodb.net/music-school?retryWrites=true&w=majority', {
     serverSelectionTimeoutMS: 5000, // Timeout après 5s
     connectTimeoutMS: 10000, // Timeout pour l'établissement de connexion
+    // connectionName: 'music-school',    
 
     retryWrites: true,
   }),
@@ -100,7 +102,8 @@ import { UserStatusService } from './chats/user-status/user-status.service';
     ProfileModule,
     ProfileImageModule,
     CartModule,
-    TransactionModule
+    TransactionModule,
+    HealthModule
   ],
   controllers: [AppController, UserController, CourseController, CalenderController, AnnonceController, BlogController, ProfileImageController],
   providers: [AppService, AdminService, MailService, CalenderService, // 👉 Ajout du RolesGuard comme guard global
