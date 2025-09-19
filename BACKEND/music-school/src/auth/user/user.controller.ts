@@ -17,4 +17,9 @@ export class UserController {
   async findAll() {
     return this.userService.findAll();
   }
+
+  @Get('/:id')
+  async findOne(@Body('id') id: string): Promise<User> {
+    return this.userService.findOne(id);
+  }
 }
