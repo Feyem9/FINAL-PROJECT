@@ -5,7 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as express from 'express';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
-
+import cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,19 +19,24 @@ async function bootstrap() {
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   // Add global validation pipe
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    transform: true,
-    forbidNonWhitelisted: true,
-    transformOptions: {
-      enableImplicitConversion: true,
-    },
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
 
- app.enableCors({
+  app.use(cors());
+
+  app.enableCors({
     origin: [
+      'http://localhost:5173', // frontend Vite en dev
       'http://localhost:3000',
-      'https://final-project-rhl2-git-main-christians-projects-9c9bef59.vercel.app'
+      'https://final-project-rhl2-git-main-christians-projects-9c9bef59.vercel.app',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
@@ -50,6 +55,5 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0'); // 👈 obligé sur Render
 
   console.log(`🚀 Museschool API is running on port ${port}`);
-
 }
 bootstrap();
