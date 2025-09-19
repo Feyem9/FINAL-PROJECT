@@ -253,6 +253,12 @@ export default StatsCards;
 
 // Weekly Goals Component
 const WeeklyGoals = ({ goals = [] }) => {
+  const databaseUri =
+    import.meta.env.VITE_BACKEND_ONLINE_URI ||
+    import.meta.env.VITE_TESTING_BACKEND_URI;
+
+  const studentData = JSON.parse(localStorage.getItem("student"));
+  const userId = studentData?._id;
   const [weeklyGoals, setWeeklyGoals] = useState([]);
 
   useEffect(() => {
@@ -356,35 +362,36 @@ export const Sdashboard = () => {
             headers: { "Content-Type": "application/json" },
           }),
           axios
-  .get(`${databaseUri}/students/${userId}/weekly-goals`, {
-    headers: { "Content-Type": "application/json" }
-  })
-  .then((res) => {
-    console.log("Weekly Goals response:", res.data); // 👈 debug ici
-    setWeeklyGoals(Array.isArray(res.data) ? res.data : []);
-  })
-  .catch((err) => {
-    console.error("Error fetching weekly goals:", err);
-  })
+            .get(`${databaseUri}/students/${userId}/weekly-goals`, {
+              headers: { "Content-Type": "application/json" },
+            })
+            .catch((err) => {
+              console.error("Error fetching weekly goals:", err);
+            }),
         ]);
 
         setEnrolledCourses(
           Array.isArray(coursesResponse.data) ? coursesResponse.data : []
         );
+        console.log("Enrolled Courses:", coursesResponse.data); // 👈 debug ici
         setAssignments(
           Array.isArray(assignmentsResponse.data)
             ? assignmentsResponse.data
             : []
         );
+        console.log("Assignments:", assignmentsResponse.data); // 👈 debug ici
         setQuizzes(
           Array.isArray(quizzesResponse.data) ? quizzesResponse.data : []
         );
+        console.log("Quizzes:", quizzesResponse.data); // 👈 debug ici
         setUpcomingTasks(
           Array.isArray(tasksResponse.data) ? tasksResponse.data : []
         );
+        console.log("Upcoming Tasks:", tasksResponse.data); // 👈 debug ici
         setWeeklyGoals(
           Array.isArray(goalsResponse.data) ? goalsResponse.data : []
         ); // ✅ ajout
+        console.log("Weekly Goals:", goalsResponse.data); // 👈 debug ici
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         setEnrolledCourses([]);
