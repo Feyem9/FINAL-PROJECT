@@ -349,6 +349,43 @@ export class StudentController {
     return { message: 'Task deleted successfully' };
   }
 
+  // Weekly Goals endpoints
+  @Get('/:id/weekly-goals')
+  @ApiOperation({ summary: 'Get weekly goals for a student' })
+  @ApiParam({ name: 'id', description: 'Student ID' })
+  @ApiResponse({ status: 200, description: 'List of weekly goals' })
+  async getWeeklyGoals(@Param('id') id: string) {
+    console.log('Fetching weekly goals for student ID:', id);
+    return this.studentService.getWeeklyGoals(id);
+  }
+
+  @Post('/:id/weekly-goals')
+  @ApiOperation({ summary: 'Add a weekly goal for a student' })
+  @ApiParam({ name: 'id', description: 'Student ID' })
+  @ApiResponse({ status: 201, description: 'Goal added successfully' })
+  async addWeeklyGoal(@Param('id') id: string, @Body() goal: any) {
+    return this.studentService.addWeeklyGoal(id, goal);
+  }
+
+  @Put('/:id/weekly-goals/:goalId')
+  @ApiOperation({ summary: 'Update a weekly goal for a student' })
+  @ApiParam({ name: 'id', description: 'Student ID' })
+  @ApiParam({ name: 'goalId', description: 'Goal ID' })
+  @ApiResponse({ status: 200, description: 'Goal updated successfully' })
+  async updateWeeklyGoal(@Param('id') id: string, @Param('goalId') goalId: string, @Body() updatedGoal: any) {
+    return this.studentService.updateWeeklyGoal(id, goalId, updatedGoal);
+  }
+
+  @Delete('/:id/weekly-goals/:goalId')
+  @ApiOperation({ summary: 'Delete a weekly goal for a student' })
+  @ApiParam({ name: 'id', description: 'Student ID' })
+  @ApiParam({ name: 'goalId', description: 'Goal ID' })
+  @ApiResponse({ status: 200, description: 'Goal deleted successfully' })
+  async deleteWeeklyGoal(@Param('id') id: string, @Param('goalId') goalId: string) {
+    await this.studentService.deleteWeeklyGoal(id, goalId);
+    return { message: 'Goal deleted successfully' };
+  }
+
 }
 
 

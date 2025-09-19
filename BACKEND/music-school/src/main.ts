@@ -28,7 +28,11 @@ async function bootstrap() {
     },
   }));
 
-  app.enableCors(); // 👈 Ajoute cette ligne
+ app.enableCors({
+  origin: ["http://localhost:5173", "https://final-project-music.onrender.com"],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+});
 
   const config = new DocumentBuilder()
     .setTitle('Museschool API')

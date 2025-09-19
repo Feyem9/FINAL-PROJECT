@@ -23,6 +23,9 @@ export class Student extends User {  // 👈 Héritage du modèle User
 
   @Prop({ type: [Object], default: [], required: false })
   upcomingTasks: any[]; // Liste des tâches à venir de l'étudiant
+
+  @Prop({ type: [Object], default: [], required: false , completed: Boolean})
+  weeklyGoals: any[]; // Liste des objectifs hebdomadaires de l'étudiant
 }
 
 

@@ -255,47 +255,50 @@ export default StatsCards;
 const WeeklyGoals = ({ goals = [] }) => {
   const [weeklyGoals, setWeeklyGoals] = useState([]);
 
-useEffect(() => {
-  if (!userId || !databaseUri) return;
-  axios.get(`${databaseUri}/students/${userId}/weekly-goals`)
-    .then(res => setWeeklyGoals(Array.isArray(res.data) ? res.data : []))
-    .catch(() => setWeeklyGoals([]));
-}, [userId, databaseUri]);
+  useEffect(() => {
+    if (!userId || !databaseUri) return;
+    axios
+      .get(`${databaseUri}/students/${userId}/weekly-goals`)
+      .then((res) => setWeeklyGoals(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setWeeklyGoals([]));
+  }, [userId, databaseUri]);
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Weekly Goals</h2>
       <div className="space-y-3">
-        {goals.length > 0 ? goals.map((goal, index) => (
-          <div key={goal.id || index} className="flex items-center">
-            <div
-              className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center ${
-                goal.completed ? "bg-green-500" : "border-2 border-gray-300"
-              }`}
-            >
-              {goal.completed && (
-                <svg
-                  className="w-3 h-3 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
+        {goals.length > 0 ? (
+          goals.map((goal, index) => (
+            <div key={goal.id || index} className="flex items-center">
+              <div
+                className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center ${
+                  goal.completed ? "bg-green-500" : "border-2 border-gray-300"
+                }`}
+              >
+                {goal.completed && (
+                  <svg
+                    className="w-3 h-3 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                )}
+              </div>
+              <span
+                className={`${goal.completed ? "line-through text-gray-500" : "text-gray-800"}`}
+              >
+                {goal.title}
+              </span>
             </div>
-            <span
-              className={`${goal.completed ? "line-through text-gray-500" : "text-gray-800"}`}
-            >
-              {goal.title}
-            </span>
-          </div>
-        )) : (
+          ))
+        ) : (
           <p className="text-gray-500">No weekly goals set.</p>
         )}
       </div>
@@ -310,6 +313,7 @@ export const Sdashboard = () => {
   const [upcomingTasks, setUpcomingTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
+  const [weeklyGoals, setWeeklyGoals] = useState([]); // ✅ ajouté ici
 
   const databaseUri =
     import.meta.env.VITE_BACKEND_ONLINE_URI ||
@@ -337,6 +341,7 @@ export const Sdashboard = () => {
           assignmentsResponse,
           quizzesResponse,
           tasksResponse,
+          goalsResponse, // ✅ ajout
         ] = await Promise.all([
           axios.get(`${databaseUri}/students/${userId}/enrolled-courses`, {
             headers: { "Content-Type": "application/json" },
@@ -350,6 +355,17 @@ export const Sdashboard = () => {
           axios.get(`${databaseUri}/students/${userId}/upcoming-tasks`, {
             headers: { "Content-Type": "application/json" },
           }),
+          axios
+  .get(`${databaseUri}/students/${userId}/weekly-goals`, {
+    headers: { "Content-Type": "application/json" }
+  })
+  .then((res) => {
+    console.log("Weekly Goals response:", res.data); // 👈 debug ici
+    setWeeklyGoals(Array.isArray(res.data) ? res.data : []);
+  })
+  .catch((err) => {
+    console.error("Error fetching weekly goals:", err);
+  })
         ]);
 
         setEnrolledCourses(
@@ -366,12 +382,16 @@ export const Sdashboard = () => {
         setUpcomingTasks(
           Array.isArray(tasksResponse.data) ? tasksResponse.data : []
         );
+        setWeeklyGoals(
+          Array.isArray(goalsResponse.data) ? goalsResponse.data : []
+        ); // ✅ ajout
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         setEnrolledCourses([]);
         setAssignments([]);
         setQuizzes([]);
         setUpcomingTasks([]);
+        setWeeklyGoals([]); // ✅ ajout
       } finally {
         setLoading(false);
       }
@@ -396,7 +416,7 @@ export const Sdashboard = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">
-          Welcome Back, Student!
+          Welcome, {userId.name}!
         </h1>
         <div className="text-sm text-gray-500">
           Today, {new Date().toLocaleTimeString()}

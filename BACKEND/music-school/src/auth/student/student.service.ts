@@ -455,4 +455,65 @@ export class StudentService {
     student.upcomingTasks.splice(taskIndex, 1);
     await student.save();
   }
+
+  // Weekly Goals endpoints
+  async getWeeklyGoals(studentId: string): Promise<any[]> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    return student.weeklyGoals || [];
+  }
+
+  async addWeeklyGoal(studentId: string, goal: any): Promise<any> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+    student.weeklyGoals.push(goal);
+    await student.save();
+    return goal;
+  }
+
+  async updateWeeklyGoal(
+    studentId: string,
+    goalId: string,
+    updatedGoal: any,
+  ): Promise<any> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    const goalIndex = student.weeklyGoals.findIndex(
+      (goal: any) => goal.id === goalId,
+    );
+    if (goalIndex === -1) {
+      throw new NotFoundException('Goal not found');
+    }
+
+    student.weeklyGoals[goalIndex] = {
+      ...student.weeklyGoals[goalIndex],
+      ...updatedGoal,
+    };
+    await student.save();
+    return student.weeklyGoals[goalIndex];
+  }
+
+  async deleteWeeklyGoal(studentId: string, goalId: string): Promise<void> {
+    const student = await this.findById(studentId);
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    const goalIndex = student.weeklyGoals.findIndex(
+      (goal: any) => goal.id === goalId,
+    );
+    if (goalIndex === -1) {
+      throw new NotFoundException('Goal not found');
+    }
+
+    student.weeklyGoals.splice(goalIndex, 1);
+    await student.save();
+  }
 }
