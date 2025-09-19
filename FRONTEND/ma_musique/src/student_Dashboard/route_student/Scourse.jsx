@@ -808,7 +808,7 @@ export const Scourse = () => {
       {activeTab === 'enrolled' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredAndSortedEnrolledCourses.map((course) => (
-            <div key={course.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+            <div key={course.id || course._id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <img
                 src={`${databaseUri}${course.image}`}
                 alt={course.title}
@@ -876,9 +876,9 @@ export const Scourse = () => {
               <h3 className="text-xl font-bold text-gray-800 mb-4">Available Courses</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredAvailableCourses.map((course) => (
-                  <div key={course.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                  <div key={course.id || course._id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                     <img
-                      src={`${databaseUri}${course.image}`}
+  src={course.image ? `${databaseUri}${course.image}` : "/default-course.png"}
                       alt={course.title}
                       className="w-full h-40 object-cover"
                     />

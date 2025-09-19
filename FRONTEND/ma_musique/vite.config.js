@@ -5,6 +5,12 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    proxy: {
+       
+        target: 'https://final-project-music.onrender.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(''),
+      },
     host: true,
     port: 5173,
     // allowedHosts: ['.ngrok-free.app'],
