@@ -29,11 +29,13 @@ async function bootstrap() {
   }));
 
  app.enableCors({
-  origin: ["http://localhost:5173", ""],
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true,
-});
-
+    origin: [
+      'http://localhost:3000',
+      'https://final-project-rhl2-git-main-christians-projects-9c9bef59.vercel.app'
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
   const config = new DocumentBuilder()
     .setTitle('Museschool API')
     .setDescription('The Museschool API description')
