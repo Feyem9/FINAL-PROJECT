@@ -915,7 +915,7 @@ export const Scourse = () => {
       )}
 
       {/* Tabs */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+      <div className="bg-white rounded-xl shadow-md p-6 mb-6">  
         <div className="flex space-x-4 border-b border-gray-200">
           <button
             onClick={() => setActiveTab("enrolled")}
