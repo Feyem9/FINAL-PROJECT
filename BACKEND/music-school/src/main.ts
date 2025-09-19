@@ -30,17 +30,17 @@ async function bootstrap() {
     }),
   );
 
-  app.use(cors());
-
   app.enableCors({
     origin: [
       'http://localhost:5173', // frontend Vite en dev
       'http://localhost:3000',
+      'https://final-project-music.onrender.com',
       'https://final-project-rhl2-git-main-christians-projects-9c9bef59.vercel.app',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
+
   const config = new DocumentBuilder()
     .setTitle('Museschool API')
     .setDescription('The Museschool API description')
