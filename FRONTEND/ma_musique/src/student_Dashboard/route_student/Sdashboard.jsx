@@ -1,12 +1,3 @@
-/*
-Future Enhancements:
-- [ ] Add real progress tracking API endpoint
-- [x] Add assignments/quizzes API endpoints (COMPLETED - Created GET /:id/assignments, GET /:id/quizzes, POST /submit-assignment, POST /submit-quiz)
-- [ ] Add recent activities API endpoint
-- [ ] Add upcoming tasks API endpoint
-- [ ] Add weekly goals API endpoint
-*/
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -26,16 +17,6 @@ const ProgressOverview = ({ enrolledCourses }) => {
       color: colors[index % colors.length],
     };
   });
-
-  // Commented out old hardcoded data
-  /*
-  const courses = [
-    { name: 'Piano Basics', progress: 85, color: 'bg-gradient-to-r from-blue-500 to-indigo-600' },
-    { name: 'Music Theory', progress: 72, color: 'bg-gradient-to-r from-green-500 to-teal-600' },
-    { name: 'Chord Progressions', progress: 60, color: 'bg-gradient-to-r from-amber-500 to-orange-600' },
-    { name: 'Jazz Piano', progress: 45, color: 'bg-gradient-to-r from-red-500 to-pink-600' },
-  ];
-  */
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
@@ -102,45 +83,55 @@ const UpcomingTasks = ({ assignments }) => {
   );
 };
 
-// Recent Activity Component
-const RecentActivity = () => {
-  const activities = [
-    { title: "Completed Piano Basics Quiz", time: "2 hours ago", type: "quiz" },
-    {
-      title: "Submitted Chord Assignment",
-      time: "1 day ago",
-      type: "assignment",
-    },
-    { title: "Joined Jazz Piano Course", time: "3 days ago", type: "course" },
-  ];
+// ✅ Recent Activity Component
+const RecentActivity = ({ userId, databaseUri }) => {
+  const [recentActivities, setRecentActivities] = useState([]);
+
+  useEffect(() => {
+    if (!userId || !databaseUri) return;
+
+    axios
+      .get(`${databaseUri}/students/${userId}/recent-activities`)
+      .then(res =>
+        setRecentActivities(Array.isArray(res.data) ? res.data : [])
+      )
+      .catch(err => {
+        console.error("Error fetching recent activities:", err);
+        setRecentActivities([]);
+      });
+  }, [userId, databaseUri]);
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Recent Activity</h2>
       <div className="space-y-4">
-        {activities.map((activity, index) => (
-          <div key={index} className="flex items-start">
-            <div
-              className={`mr-3 mt-1 w-8 h-8 rounded-full flex items-center justify-center ${
-                activity.type === "quiz"
-                  ? "bg-blue-100 text-blue-600"
-                  : activity.type === "assignment"
+        {recentActivities.length > 0 ? (
+          recentActivities.map((activity, index) => (
+            <div key={activity.id || index} className="flex items-start">
+              <div
+                className={`mr-3 mt-1 w-8 h-8 rounded-full flex items-center justify-center ${
+                  activity.type === "quiz"
+                    ? "bg-blue-100 text-blue-600"
+                    : activity.type === "assignment"
                     ? "bg-green-100 text-green-600"
                     : "bg-amber-100 text-amber-600"
-              }`}
-            >
-              {activity.type === "quiz"
-                ? "📝"
-                : activity.type === "assignment"
+                }`}
+              >
+                {activity.type === "quiz"
+                  ? "📝"
+                  : activity.type === "assignment"
                   ? "✅"
                   : "📚"}
+              </div>
+              <div>
+                <p className="font-medium text-gray-800">{activity.title}</p>
+                <p className="text-sm text-gray-500">{activity.time}</p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-gray-800">{activity.title}</p>
-              <p className="text-sm text-gray-500">{activity.time}</p>
-            </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-gray-500">No recent activity.</p>
+        )}
       </div>
     </div>
   );
@@ -373,25 +364,25 @@ export const Sdashboard = () => {
         setEnrolledCourses(
           Array.isArray(coursesResponse.data) ? coursesResponse.data : []
         );
-        console.log("Enrolled Courses:", coursesResponse.data); // 👈 debug ici
+        // console.log("Enrolled Courses:", coursesResponse.data); // 👈 debug ici
         setAssignments(
           Array.isArray(assignmentsResponse.data)
             ? assignmentsResponse.data
             : []
         );
-        console.log("Assignments:", assignmentsResponse.data); // 👈 debug ici
+        // console.log("Assignments:", assignmentsResponse.data); // 👈 debug ici
         setQuizzes(
           Array.isArray(quizzesResponse.data) ? quizzesResponse.data : []
         );
-        console.log("Quizzes:", quizzesResponse.data); // 👈 debug ici
+        // console.log("Quizzes:", quizzesResponse.data); // 👈 debug ici
         setUpcomingTasks(
           Array.isArray(tasksResponse.data) ? tasksResponse.data : []
         );
-        console.log("Upcoming Tasks:", tasksResponse.data); // 👈 debug ici
+        // console.log("Upcoming Tasks:", tasksResponse.data); // 👈 debug ici
         setWeeklyGoals(
           Array.isArray(goalsResponse.data) ? goalsResponse.data : []
         ); // ✅ ajout
-        console.log("Weekly Goals:", goalsResponse.data); // 👈 debug ici
+        // console.log("Weekly Goals:", goalsResponse.data); // 👈 debug ici
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         setEnrolledCourses([]);
@@ -444,7 +435,7 @@ export const Sdashboard = () => {
             <WeeklyGoals goals={weeklyGoals} />
           </div>
         </div>
-        <RecentActivity />
+        <RecentActivity activities={RecentActivity} />
       </div>
     </div>
   );
