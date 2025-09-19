@@ -195,11 +195,7 @@ export const Chats = ({ role, senderId, receiverId }) => {
     const storedStudent = JSON.parse(localStorage.getItem("student"));
 
     const userRole = storedAdmin?.role || storedTeacher?.role || storedStudent?.role;
-    console.log("Rôle utilisateur:", userRole);
-
-      console.log("Récupération infos utilisateur:", receiverId , databaseUri);
-      console.log("URL complète:",`${databaseUri}/users/${receiverId}`);
-      
+    console.log('userRole', userRole);
       
       // addDebugLog(`👤 Récupération infos utilisateur: ${receiverId}`);
       axios
